@@ -1,0 +1,29 @@
+You already have a React+TS+Vite+Tailwind project with Sidebar, AiChat, Flashcards, BookReader, VideoTrainer and AlphabetTrainer. Please modify and extend it as follows, preserving all existing code and styles:
+
+1. **Tashkeel Toggle in BookReader**  
+   - In `BookReader.tsx` add a toggle switch (e.g. a button or checkbox) labeled “Tashkeel ON/OFF.”  
+   - When “OFF” strip diacritics (Tashkeel) from the text; when “ON” show the original text with Tashkeel.  
+   - You can predefine two strings: `originalText` (with Tashkeel) and `plainText` (without).
+
+2. **Clickable Words with Translation & Grammar**  
+   - In both `BookReader.tsx` and `VideoTrainer.tsx`, wrap each word in the Arabic text/transcript in a `<span className="cursor-pointer underline">`.  
+   - On click, open a small modal or tooltip component that shows:  
+     • the word’s translation (lookup from your existing JSON dictionary or stub object)  
+     • a simple grammar breakdown (e.g. “Verb, 3rd person masc. singular, past”).  
+   - Ensure only one modal appears at a time and can be closed.
+
+3. **“Add to Flashcards” (+) Button**  
+   - Next to each clickable word span, render a little “+” icon button.  
+   - Clicking “+” should call a new callback `addToFlashcards(word, translation, grammar)` that pushes this entry into your Flashcards store (e.g. React context or local state).  
+   - In `Flashcards.tsx`, render all entries from that store in addition to your sample array.
+
+4. **AI Chat Follow-Up Suggestions**  
+   - In `AiChat.tsx`, after displaying the AI’s answer, if `answer.length < 100` or whenever it seems the user might be stuck, render 2–3 suggestion buttons below (`<button className="suggestion"> … </button>`).  
+   - Each suggestion is a conversational prompt like “Explain this word,” “Give example sentence,” or “How do I say X?”.  
+   - Clicking a suggestion fills the input field with that suggestion text and focuses it.
+
+5. **Styling & Layout**  
+   - Maintain the Canva-style theme: purple sidebar, lavender hover, white cards with shadows and 2xl rounded corners.  
+   - Tooltips / Modals should have a white background, slight shadow, rounded corners, padding, and a small arrow pointing to the clicked word.
+
+After AI applies these changes, run in shell:
