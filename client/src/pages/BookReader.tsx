@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { Search, Volume2 } from "lucide-react";
+import ClickableText from "@/components/ClickableText";
 
 interface Book {
   id: number;
@@ -17,6 +19,14 @@ const books: Book[] = [
 
 export default function BookReader() {
   const [selectedBook, setSelectedBook] = useState(books[0]);
+  const [tashkeelEnabled, setTashkeelEnabled] = useState(true);
+
+  // Text with and without tashkeel
+  const originalTextWithTashkeel = "كَانَ يَا مَا كَانَ، فِي قَدِيمِ الزَّمَانِ، تَاجِرٌ غَنِيٌّ فِي بَغْدَادَ...";
+  const plainTextWithoutTashkeel = "كان يا ما كان، في قديم الزمان، تاجر غني في بغداد...";
+  
+  const originalTextWithTashkeel2 = "وَكَانَ لَهُ وَلَدَانِ، الأَكْبَرُ اسْمُهُ عَلِي وَالأَصْغَرُ اسْمُهُ أَحْمَدُ...";
+  const plainTextWithoutTashkeel2 = "وكان له ولدان، الأكبر اسمه علي والأصغر اسمه أحمد...";
 
   return (
     <div>
@@ -58,28 +68,43 @@ export default function BookReader() {
             <CardHeader>
               <div className="flex justify-between items-center">
                 <CardTitle className="text-base">{selectedBook.title} - Chapter 1</CardTitle>
-                <div className="flex space-x-2">
-                  <Button variant="ghost" size="sm" className="p-2">
-                    <Search className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm" className="p-2">
-                    <Volume2 className="h-4 w-4" />
-                  </Button>
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm">Tashkeel</span>
+                    <Switch 
+                      checked={tashkeelEnabled}
+                      onCheckedChange={setTashkeelEnabled}
+                    />
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button variant="ghost" size="sm" className="p-2">
+                      <Search className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="sm" className="p-2">
+                      <Volume2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
               <div className="prose max-w-none">
-                <p className="text-lg leading-relaxed mb-4 text-right" dir="rtl">
-                  كان يا ما كان، في قديم الزمان، تاجر غني في بغداد...
-                </p>
+                <div className="text-lg leading-relaxed mb-4 text-right" dir="rtl">
+                  <ClickableText 
+                    text={tashkeelEnabled ? originalTextWithTashkeel : plainTextWithoutTashkeel}
+                    className=""
+                  />
+                </div>
                 <p className="text-sm text-gray-600 mb-6">
                   Once upon a time, there was a wealthy merchant in Baghdad...
                 </p>
                 
-                <p className="text-lg leading-relaxed mb-4 text-right" dir="rtl">
-                  وكان له ولدان، الأكبر اسمه علي والأصغر اسمه أحمد...
-                </p>
+                <div className="text-lg leading-relaxed mb-4 text-right" dir="rtl">
+                  <ClickableText 
+                    text={tashkeelEnabled ? originalTextWithTashkeel2 : plainTextWithoutTashkeel2}
+                    className=""
+                  />
+                </div>
                 <p className="text-sm text-gray-600">
                   He had two sons, the elder named Ali and the younger named Ahmed...
                 </p>

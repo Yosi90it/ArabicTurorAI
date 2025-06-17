@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { useFlashcards } from "@/contexts/FlashcardContext";
 
 interface FlashcardData {
   id: number;
@@ -30,20 +31,24 @@ const categories: Category[] = [
 ];
 
 export default function Flashcards() {
+  const { userFlashcards } = useFlashcards();
   const [currentCard, setCurrentCard] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
+  
+  // Combine predefined flashcards with user-added ones
+  const allFlashcards = [...flashcards, ...userFlashcards];
 
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
   };
 
   const handleNext = () => {
-    setCurrentCard((prev) => (prev + 1) % flashcards.length);
+    setCurrentCard((prev) => (prev + 1) % allFlashcards.length);
     setIsFlipped(false);
   };
 
   const handlePrevious = () => {
-    setCurrentCard((prev) => (prev - 1 + flashcards.length) % flashcards.length);
+    setCurrentCard((prev) => (prev - 1 + allFlashcards.length) % allFlashcards.length);
     setIsFlipped(false);
   };
 
@@ -61,20 +66,27 @@ export default function Flashcards() {
           onClick={handleFlip}
         >
           <CardContent className="text-center p-8">
-            {!isFlipped ? (
-              <>
-                <div className="text-4xl mb-4">{flashcards[currentCard].arabic}</div>
-                <Button variant="ghost" className="text-primary-purple hover:text-active-purple transition-colors">
-                  Click to flip
-                </Button>
-              </>
+            {allFlashcards.length > 0 ? (
+              !isFlipped ? (
+                <>
+                  <div className="text-4xl mb-4">{allFlashcards[currentCard].arabic}</div>
+                  <Button variant="ghost" className="text-primary-purple hover:text-active-purple transition-colors">
+                    Click to flip
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <div className="text-2xl mb-4 text-gray-600">{allFlashcards[currentCard].translation}</div>
+                  {allFlashcards[currentCard].grammar && (
+                    <div className="text-sm text-gray-500 mb-2">{allFlashcards[currentCard].grammar}</div>
+                  )}
+                  <Button variant="ghost" className="text-primary-purple hover:text-active-purple transition-colors">
+                    Click to flip back
+                  </Button>
+                </>
+              )
             ) : (
-              <>
-                <div className="text-2xl mb-4 text-gray-600">{flashcards[currentCard].translation}</div>
-                <Button variant="ghost" className="text-primary-purple hover:text-active-purple transition-colors">
-                  Click to flip back
-                </Button>
-              </>
+              <div className="text-gray-500">No flashcards available</div>
             )}
           </CardContent>
         </Card>

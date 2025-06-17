@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
+import ClickableText from "@/components/ClickableText";
 
 interface VideoCategory {
   title: string;
@@ -38,12 +39,26 @@ export default function VideoTrainer() {
             </Button>
           </div>
           
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center mb-4">
             <div>
               <CardTitle className="text-base">Arabic Pronunciation Basics</CardTitle>
               <p className="text-sm text-gray-600">Learn the Arabic alphabet sounds</p>
             </div>
             <div className="text-sm text-gray-500">12:34 / 25:67</div>
+          </div>
+          
+          {/* Video Transcript */}
+          <div className="bg-soft-gray rounded-xl p-4">
+            <h4 className="text-sm font-medium mb-2">Video Transcript:</h4>
+            <div className="text-sm leading-relaxed text-right" dir="rtl">
+              <ClickableText 
+                text="مرحبا بكم في درس النطق العربي. سنتعلم اليوم الحروف الأساسية"
+                className=""
+              />
+            </div>
+            <p className="text-xs text-gray-500 mt-2">
+              Welcome to the Arabic pronunciation lesson. Today we will learn the basic letters.
+            </p>
           </div>
         </CardContent>
       </Card>
