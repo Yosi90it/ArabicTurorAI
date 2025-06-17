@@ -33,6 +33,16 @@ export default function AiChat() {
   ]);
   
   const [inputValue, setInputValue] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(true);
+
+  // Suggestion prompts
+  const suggestions = [
+    "Explain this word",
+    "Give me an example sentence",
+    "How do I say 'thank you'?",
+    "Teach me about verb conjugations",
+    "What does this grammar rule mean?"
+  ];
 
   const handleSendMessage = () => {
     if (inputValue.trim()) {
@@ -44,7 +54,18 @@ export default function AiChat() {
       };
       setMessages([...messages, newMessage]);
       setInputValue("");
+      setShowSuggestions(true);
     }
+  };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    setInputValue(suggestion);
+    setShowSuggestions(false);
+    // Focus on input field
+    setTimeout(() => {
+      const input = document.querySelector('input[type="text"]') as HTMLInputElement;
+      if (input) input.focus();
+    }, 100);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -104,6 +125,24 @@ export default function AiChat() {
               ))}
             </div>
           </div>
+
+          {/* AI Follow-up Suggestions */}
+          {showSuggestions && messages.length > 0 && messages[messages.length - 1].sender === "AI" && (
+            <div className="mb-4">
+              <p className="text-sm text-gray-600 mb-2">Need help? Try these:</p>
+              <div className="flex flex-wrap gap-2">
+                {suggestions.slice(0, 3).map((suggestion, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleSuggestionClick(suggestion)}
+                    className="suggestion px-3 py-1 text-xs bg-primary-purple/10 text-primary-purple hover:bg-primary-purple/20 rounded-2xl transition-colors border border-primary-purple/20"
+                  >
+                    {suggestion}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Chat Input */}
           <div className="flex space-x-3">

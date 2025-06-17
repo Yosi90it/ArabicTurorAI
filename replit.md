@@ -95,11 +95,30 @@ The application follows a monorepo structure with clear separation between clien
 3. Static assets served from built frontend
 4. Production server runs bundled backend
 
+## Recent Updates
+
+### June 17, 2025 - Interactive Learning Features
+✓ **Tashkeel Toggle in BookReader**: Added switch to show/hide Arabic diacritics
+✓ **Clickable Word Translation**: Words in BookReader and VideoTrainer are clickable for instant translation and grammar info
+✓ **Word Modal Component**: Custom modal showing translation, grammar, and "Add to Flashcards" functionality
+✓ **Dynamic Flashcard Collection**: User-added words from reading/video content automatically populate flashcards
+✓ **AI Chat Follow-up Suggestions**: Context-aware suggestion buttons appear after AI responses
+✓ **FlashcardContext**: React context for managing user-generated flashcard entries
+✓ **Arabic Dictionary Integration**: Comprehensive word lookup with grammar analysis
+✓ **Toast Notifications**: User feedback when adding words to flashcard collection
+
+### Architecture Enhancements
+- Added `/contexts/FlashcardContext.tsx` for state management
+- Created `/data/arabicDictionary.ts` with Arabic-English word mappings
+- Implemented `/components/WordModal.tsx` for interactive word details
+- Enhanced `/components/ClickableText.tsx` for word interaction across modules
+
 ## Changelog
 
 ```
 Changelog:
-- June 17, 2025. Initial setup
+- June 17, 2025. Initial setup with complete Arabic learning platform
+- June 17, 2025. Added interactive learning features and word-to-flashcard functionality
 ```
 
 ## User Preferences

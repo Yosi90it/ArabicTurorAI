@@ -9,6 +9,7 @@ interface FlashcardData {
   arabic: string;
   translation: string;
   category: string;
+  grammar?: string;
 }
 
 interface Category {
@@ -91,14 +92,16 @@ export default function Flashcards() {
           </CardContent>
         </Card>
         
-        <div className="flex justify-center space-x-4 mt-4">
-          <Button onClick={handlePrevious} variant="outline" className="rounded-2xl">
-            Previous
-          </Button>
-          <Button onClick={handleNext} className="bg-primary-purple hover:bg-active-purple rounded-2xl">
-            Next
-          </Button>
-        </div>
+        {allFlashcards.length > 0 && (
+          <div className="flex justify-center space-x-4 mt-4">
+            <Button onClick={handlePrevious} variant="outline" className="rounded-2xl">
+              Previous
+            </Button>
+            <Button onClick={handleNext} className="bg-primary-purple hover:bg-active-purple rounded-2xl">
+              Next
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Flashcard Categories */}

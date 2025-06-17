@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import WordModal from "./WordModal";
 import { getWordInfo } from "@/data/arabicDictionary";
 import { useFlashcards } from "@/contexts/FlashcardContext";
+import { useToast } from "@/hooks/use-toast";
 
 interface ClickableTextProps {
   text: string;
@@ -19,6 +20,7 @@ export default function ClickableText({ text, className = "" }: ClickableTextPro
   } | null>(null);
   
   const { addFlashcard } = useFlashcards();
+  const { toast } = useToast();
 
   const handleWordClick = (word: string, event: React.MouseEvent) => {
     event.preventDefault();
@@ -56,6 +58,10 @@ export default function ClickableText({ text, className = "" }: ClickableTextPro
     const wordInfo = getWordInfo(word);
     if (wordInfo) {
       addFlashcard(wordInfo.arabic, wordInfo.translation, wordInfo.grammar);
+      toast({
+        title: "Added to Flashcards",
+        description: `"${wordInfo.arabic}" has been added to your flashcard collection.`,
+      });
     }
   };
 
