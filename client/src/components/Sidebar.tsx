@@ -1,6 +1,8 @@
 import { Link, useLocation } from "wouter";
 import { Brain, GraduationCap, BookOpen, Play, Type } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { Switch } from "@/components/ui/switch";
+import { useTashkeel } from "@/contexts/TashkeelContext";
 
 const navigationItems = [
   {
@@ -37,6 +39,7 @@ const navigationItems = [
 
 export default function Sidebar() {
   const [location] = useLocation();
+  const { tashkeelEnabled, setTashkeelEnabled } = useTashkeel();
 
   const isActive = (route: string) => {
     if (route === "/ai-chat" && location === "/") return true;
@@ -68,6 +71,22 @@ export default function Sidebar() {
           </Link>
         ))}
       </nav>
+
+      {/* Tashkeel Toggle */}
+      <div className="p-4 border-t border-white/20">
+        <div className="bg-white/10 rounded-2xl p-4 mb-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-sm font-medium">Tashkeel</span>
+              <p className="text-xs text-hover-lavender">Arabic diacritics</p>
+            </div>
+            <Switch 
+              checked={tashkeelEnabled}
+              onCheckedChange={setTashkeelEnabled}
+            />
+          </div>
+        </div>
+      </div>
 
       {/* Progress Section */}
       <div className="p-4 border-t border-white/20">

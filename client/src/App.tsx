@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { FlashcardProvider } from "@/contexts/FlashcardContext";
+import { TashkeelProvider } from "@/contexts/TashkeelContext";
 import Layout from "@/components/Layout";
 import AiChat from "@/pages/AiChat";
 import Flashcards from "@/pages/Flashcards";
@@ -32,10 +33,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <FlashcardProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
+        <TashkeelProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Router />
+          </TooltipProvider>
+        </TashkeelProvider>
       </FlashcardProvider>
     </QueryClientProvider>
   );
