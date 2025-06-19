@@ -40,6 +40,12 @@ const navigationItems = [
     label: "Subscription",
     route: "/subscription",
     emoji: "🔒"
+  },
+  {
+    icon: Type,
+    label: "7-Day Plan",
+    route: "/weekly-plan",
+    emoji: "📅"
   }
 ];
 
