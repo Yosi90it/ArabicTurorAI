@@ -1,14 +1,12 @@
-```tsx
-// File: src/components/Layout.tsx
-import React, { useState } from 'react'
-import Sidebar from './Sidebar'
+import React, { useState } from 'react';
+import Sidebar from './Sidebar';
 
 interface LayoutProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 export default function Layout({ children }: LayoutProps) {
-  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -32,15 +30,13 @@ export default function Layout({ children }: LayoutProps) {
 
       {/* Sidebar Drawer */}
       <div
-        className={
-          `
-            fixed top-0 left-0 h-full z-30
-            w-64 bg-purple-700 text-white
-            transform transition-transform duration-300
-            ${drawerOpen ? 'translate-x-0' : '-translate-x-full'}
-            sm:relative sm:translate-x-0
-          `
-        }
+        className={`
+          fixed top-0 left-0 h-full z-30
+          w-64 bg-purple-700 text-white
+          transform transition-transform duration-300
+          ${drawerOpen ? 'translate-x-0' : '-translate-x-full'}
+          sm:relative sm:translate-x-0
+        `}
       >
         <Sidebar onLinkClick={() => setDrawerOpen(false)} />
       </div>
@@ -52,6 +48,5 @@ export default function Layout({ children }: LayoutProps) {
         </div>
       </main>
     </div>
-  )
+  );
 }
-```
