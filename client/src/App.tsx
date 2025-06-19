@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { FlashcardProvider } from "@/contexts/FlashcardContext";
 import { TashkeelProvider } from "@/contexts/TashkeelContext";
+import { ContentProvider } from "@/contexts/ContentContext";
 import Layout from "@/components/Layout";
 import AiChat from "@/pages/AiChat";
 import Flashcards from "@/pages/Flashcards";
@@ -13,6 +14,7 @@ import VideoTrainer from "@/pages/VideoTrainer";
 import AlphabetTrainer from "@/pages/AlphabetTrainer";
 import Subscription from "@/pages/Subscription";
 import WeeklyPlan from "@/pages/WeeklyPlan";
+import AdminPanel from "@/pages/AdminPanel";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -27,6 +29,7 @@ function Router() {
         <Route path="/alphabet-trainer" component={AlphabetTrainer} />
         <Route path="/subscription" component={Subscription} />
         <Route path="/weekly-plan" component={WeeklyPlan} />
+        <Route path="/admin-panel" component={AdminPanel} />
         <Route component={NotFound} />
       </Switch>
     </Layout>
@@ -36,14 +39,16 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <FlashcardProvider>
-        <TashkeelProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Router />
-          </TooltipProvider>
-        </TashkeelProvider>
-      </FlashcardProvider>
+      <ContentProvider>
+        <FlashcardProvider>
+          <TashkeelProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Router />
+            </TooltipProvider>
+          </TashkeelProvider>
+        </FlashcardProvider>
+      </ContentProvider>
     </QueryClientProvider>
   );
 }

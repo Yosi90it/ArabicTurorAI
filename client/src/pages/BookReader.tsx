@@ -4,20 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Search, Volume2 } from "lucide-react";
 import ClickableText from "@/components/ClickableText";
 import { useTashkeel } from "@/contexts/TashkeelContext";
-
-interface Book {
-  id: number;
-  title: string;
-  level: string;
-  icon: string;
-}
-
-const books: Book[] = [
-  { id: 1, title: "Arabian Nights", level: "Beginner Level", icon: "📖" },
-  { id: 2, title: "Short Stories", level: "Intermediate", icon: "📚" }
-];
+import { useContent } from "@/contexts/ContentContext";
 
 export default function BookReader() {
+  const { books } = useContent();
   const [selectedBook, setSelectedBook] = useState(books[0]);
   const { tashkeelEnabled } = useTashkeel();
 
@@ -42,23 +32,29 @@ export default function BookReader() {
             <CardTitle className="text-base">My Library</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {books.map((book) => (
-              <div
-                key={book.id}
-                className={`flex items-center space-x-3 p-2 rounded-xl cursor-pointer transition-colors ${
-                  selectedBook.id === book.id ? "bg-soft-gray" : "hover:bg-soft-gray"
-                }`}
-                onClick={() => setSelectedBook(book)}
-              >
-                <div className="w-10 h-12 bg-primary-purple rounded-lg flex items-center justify-center text-white text-xs">
-                  {book.icon}
+            {books.length === 0 ? (
+              <p className="text-center py-4 text-gray-500 text-sm">
+                No books available. Upload books in Admin Panel.
+              </p>
+            ) : (
+              books.map((book) => (
+                <div
+                  key={book.id}
+                  onClick={() => setSelectedBook(book)}
+                  className={`flex items-center space-x-3 p-2 rounded-xl cursor-pointer transition-colors ${
+                    selectedBook?.id === book.id ? "bg-soft-gray" : "hover:bg-soft-gray"
+                  }`}
+                >
+                  <div className="w-10 h-12 bg-primary-purple rounded-lg flex items-center justify-center text-white text-xs">
+                    {book.icon}
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-sm">{book.title}</h3>
+                    <p className="text-xs text-gray-500">{book.level}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-medium text-sm">{book.title}</p>
-                  <p className="text-xs text-gray-500">{book.level}</p>
-                </div>
-              </div>
-            ))}
+              ))
+            )}
           </CardContent>
         </Card>
 
@@ -67,7 +63,7 @@ export default function BookReader() {
           <Card>
             <CardHeader>
               <div className="flex justify-between items-center">
-                <CardTitle className="text-base">{selectedBook.title} - Chapter 1</CardTitle>
+                <CardTitle className="text-base">{selectedBook?.title || "No Book Selected"}</CardTitle>
                 <div className="flex space-x-2">
                   <Button variant="ghost" size="sm" className="p-2">
                     <Search className="h-4 w-4" />
@@ -80,25 +76,17 @@ export default function BookReader() {
             </CardHeader>
             <CardContent>
               <div className="prose max-w-none">
-                <div className="text-lg leading-relaxed mb-4 text-right" dir="rtl">
-                  <ClickableText 
-                    text={tashkeelEnabled ? originalTextWithTashkeel : plainTextWithoutTashkeel}
-                    className=""
+                {selectedBook ? (
+                  <div 
+                    className="text-lg leading-relaxed text-right" 
+                    dir="rtl"
+                    dangerouslySetInnerHTML={{ __html: selectedBook.content }}
                   />
-                </div>
-                <p className="text-sm text-gray-600 mb-6">
-                  Once upon a time, there was a wealthy merchant in Baghdad...
-                </p>
-                
-                <div className="text-lg leading-relaxed mb-4 text-right" dir="rtl">
-                  <ClickableText 
-                    text={tashkeelEnabled ? originalTextWithTashkeel2 : plainTextWithoutTashkeel2}
-                    className=""
-                  />
-                </div>
-                <p className="text-sm text-gray-600">
-                  He had two sons, the elder named Ali and the younger named Ahmed...
-                </p>
+                ) : (
+                  <div className="text-center py-8 text-gray-500">
+                    <p>No books available. Please upload books in the Admin Panel.</p>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>

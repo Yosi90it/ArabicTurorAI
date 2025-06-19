@@ -46,6 +46,12 @@ const navigationItems = [
     label: "7-Day Plan",
     route: "/weekly-plan",
     emoji: "📅"
+  },
+  {
+    icon: Type,
+    label: "Admin",
+    route: "/admin-panel",
+    emoji: "🔧"
   }
 ];
 
