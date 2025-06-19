@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useTashkeel } from "@/contexts/TashkeelContext";
 
 interface Message {
   id: number;
@@ -11,23 +12,30 @@ interface Message {
 }
 
 export default function AiChat() {
+  const { tashkeelEnabled } = useTashkeel();
+  
+  // Define messages with both tashkeel and without
+  const getDisplayText = (withTashkeel: string, withoutTashkeel: string) => {
+    return tashkeelEnabled ? withTashkeel : withoutTashkeel;
+  };
+
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
       sender: "AI",
-      arabic: "مرحبا! كيف حالك؟",
+      arabic: getDisplayText("مَرْحَباً! كَيْفَ حَالُكَ؟", "مرحبا! كيف حالك؟"),
       translation: "Hello! How are you?"
     },
     {
       id: 2,
       sender: "ME",
-      arabic: "أنا بخير، شكرا",
+      arabic: getDisplayText("أَنَا بِخَيْرٍ، شُكْراً", "أنا بخير، شكرا"),
       translation: "I'm fine, thank you"
     },
     {
       id: 3,
       sender: "AI",
-      arabic: "ممتاز! هل تريد أن نتحدث عن الطعام؟",
+      arabic: getDisplayText("مُمْتَازٌ! هَلْ تُرِيدُ أَنْ نَتَحَدَّثَ عَنِ الطَّعَامِ؟", "ممتاز! هل تريد أن نتحدث عن الطعام؟"),
       translation: "Excellent! Would you like to talk about food?"
     }
   ]);

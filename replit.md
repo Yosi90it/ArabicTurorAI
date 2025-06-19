@@ -106,12 +106,17 @@ The application follows a monorepo structure with clear separation between clien
 ✓ **FlashcardContext**: React context for managing user-generated flashcard entries
 ✓ **Arabic Dictionary Integration**: Comprehensive word lookup with grammar analysis
 ✓ **Toast Notifications**: User feedback when adding words to flashcard collection
+✓ **Global Tashkeel Toggle**: Sidebar control for Arabic diacritics across all pages
+✓ **Enhanced Flashcards**: Contextual sentences with highlighted target words
+✓ **Subscription Page**: Premium plan options with feature comparison
 
 ### Architecture Enhancements
 - Added `/contexts/FlashcardContext.tsx` for state management
+- Added `/contexts/TashkeelContext.tsx` for global diacritics toggle
 - Created `/data/arabicDictionary.ts` with Arabic-English word mappings
 - Implemented `/components/WordModal.tsx` for interactive word details
 - Enhanced `/components/ClickableText.tsx` for word interaction across modules
+- Added `/pages/Subscription.tsx` with premium plan options
 
 ## Changelog
 

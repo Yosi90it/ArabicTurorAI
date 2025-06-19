@@ -11,6 +11,7 @@ import Flashcards from "@/pages/Flashcards";
 import BookReader from "@/pages/BookReader";
 import VideoTrainer from "@/pages/VideoTrainer";
 import AlphabetTrainer from "@/pages/AlphabetTrainer";
+import Subscription from "@/pages/Subscription";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -23,6 +24,7 @@ function Router() {
         <Route path="/book-reader" component={BookReader} />
         <Route path="/video-trainer" component={VideoTrainer} />
         <Route path="/alphabet-trainer" component={AlphabetTrainer} />
+        <Route path="/subscription" component={Subscription} />
         <Route component={NotFound} />
       </Switch>
     </Layout>

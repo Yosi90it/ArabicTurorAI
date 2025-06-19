@@ -6,6 +6,7 @@ interface FlashcardEntry {
   translation: string;
   category: string;
   grammar?: string;
+  sentence?: string;
 }
 
 interface FlashcardContextType {
@@ -24,7 +25,8 @@ export function FlashcardProvider({ children }: { children: ReactNode }) {
       arabic: word,
       translation: translation,
       category: "User Added",
-      grammar: grammar
+      grammar: grammar,
+      sentence: `هذا مثال على استخدام كلمة **${word}** في جملة.`
     };
     
     setUserFlashcards(prev => [...prev, newCard]);

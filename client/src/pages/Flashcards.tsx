@@ -10,6 +10,7 @@ interface FlashcardData {
   translation: string;
   category: string;
   grammar?: string;
+  sentence?: string;
 }
 
 interface Category {
@@ -20,9 +21,27 @@ interface Category {
 }
 
 const flashcards: FlashcardData[] = [
-  { id: 1, arabic: "بيت", translation: "House", category: "Home & Family" },
-  { id: 2, arabic: "طعام", translation: "Food", category: "Food & Drink" },
-  { id: 3, arabic: "سيارة", translation: "Car", category: "Transportation" }
+  { 
+    id: 1, 
+    arabic: "بيت", 
+    translation: "House", 
+    category: "Home & Family",
+    sentence: "أنا أسكن في **بيت** كبير مع عائلتي."
+  },
+  { 
+    id: 2, 
+    arabic: "طعام", 
+    translation: "Food", 
+    category: "Food & Drink",
+    sentence: "أحب **الطعام** العربي كثيراً."
+  },
+  { 
+    id: 3, 
+    arabic: "سيارة", 
+    translation: "Car", 
+    category: "Transportation",
+    sentence: "أذهب إلى العمل بـ**السيارة** كل يوم."
+  }
 ];
 
 const categories: Category[] = [
@@ -80,6 +99,18 @@ export default function Flashcards() {
                   <div className="text-2xl mb-4 text-gray-600">{allFlashcards[currentCard].translation}</div>
                   {allFlashcards[currentCard].grammar && (
                     <div className="text-sm text-gray-500 mb-2">{allFlashcards[currentCard].grammar}</div>
+                  )}
+                  {allFlashcards[currentCard].sentence && (
+                    <div className="mt-4 p-3 bg-soft-gray rounded-xl">
+                      <p className="text-xs text-gray-600 mb-1">Example sentence:</p>
+                      <p 
+                        className="text-sm text-right leading-relaxed"
+                        dir="rtl"
+                        dangerouslySetInnerHTML={{
+                          __html: allFlashcards[currentCard].sentence!.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-primary-purple">$1</strong>')
+                        }}
+                      />
+                    </div>
                   )}
                   <Button variant="ghost" className="text-primary-purple hover:text-active-purple transition-colors">
                     Click to flip back

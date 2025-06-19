@@ -34,6 +34,12 @@ const navigationItems = [
     label: "Alphabet Trainer",
     route: "/alphabet-trainer",
     emoji: "🔤"
+  },
+  {
+    icon: Type,
+    label: "Subscription",
+    route: "/subscription",
+    emoji: "🔒"
   }
 ];
 

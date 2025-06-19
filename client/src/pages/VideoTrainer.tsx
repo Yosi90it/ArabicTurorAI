@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
 import ClickableText from "@/components/ClickableText";
+import { useTashkeel } from "@/contexts/TashkeelContext";
 
 interface VideoCategory {
   title: string;
@@ -16,6 +17,12 @@ const videoCategories: VideoCategory[] = [
 ];
 
 export default function VideoTrainer() {
+  const { tashkeelEnabled } = useTashkeel();
+
+  // Video transcript with and without tashkeel
+  const transcriptWithTashkeel = "مَرْحَباً بِكُمْ فِي دَرْسِ النُّطْقِ العَرَبِيِّ. سَنَتَعَلَّمُ اليَوْمَ الحُرُوفَ الأَسَاسِيَّةَ";
+  const transcriptWithoutTashkeel = "مرحبا بكم في درس النطق العربي. سنتعلم اليوم الحروف الأساسية";
+
   return (
     <div>
       <div className="mb-6">
@@ -52,7 +59,7 @@ export default function VideoTrainer() {
             <h4 className="text-sm font-medium mb-2">Video Transcript:</h4>
             <div className="text-sm leading-relaxed text-right" dir="rtl">
               <ClickableText 
-                text="مرحبا بكم في درس النطق العربي. سنتعلم اليوم الحروف الأساسية"
+                text={tashkeelEnabled ? transcriptWithTashkeel : transcriptWithoutTashkeel}
                 className=""
               />
             </div>
