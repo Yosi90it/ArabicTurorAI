@@ -1,3 +1,5 @@
+```tsx
+// File: src/components/Layout.tsx
 import React, { useState } from 'react'
 import Sidebar from './Sidebar'
 
@@ -9,8 +11,8 @@ export default function Layout({ children }: LayoutProps) {
   const [drawerOpen, setDrawerOpen] = useState(false)
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] h-screen bg-gray-100">
-      {/* Mobile hamburger button */}
+    <div className="flex h-screen bg-gray-100">
+      {/* Mobile Hamburger Button */}
       <div className="sm:hidden absolute top-4 left-4 z-30">
         <button
           onClick={() => setDrawerOpen(true)}
@@ -28,25 +30,28 @@ export default function Layout({ children }: LayoutProps) {
         />
       )}
 
-      {/* Sidebar drawer */}
-      <Sidebar
+      {/* Sidebar Drawer */}
+      <div
         className={
           `
-          fixed top-0 left-0 h-full z-30 transform
-          bg-purple-700 text-white w-64
-          sm:relative sm:translate-x-0
-          ${drawerOpen ? 'translate-x-0' : '-translate-x-full'}
-          transition-transform duration-300
-        `}
-        onLinkClick={() => setDrawerOpen(false)}
-      />
+            fixed top-0 left-0 h-full z-30
+            w-64 bg-purple-700 text-white
+            transform transition-transform duration-300
+            ${drawerOpen ? 'translate-x-0' : '-translate-x-full'}
+            sm:relative sm:translate-x-0
+          `
+        }
+      >
+        <Sidebar onLinkClick={() => setDrawerOpen(false)} />
+      </div>
 
-      {/* Main content area */}
-      <main className="overflow-y-auto scrollbar-hide">
-        <div className="container mx-auto px-4 max-w-7xl py-6">
+      {/* Main Content Area */}
+      <main className="flex-1 overflow-y-auto scrollbar-hide">
+        <div className="container mx-auto px-4 max-w-7xl">
           {children}
         </div>
       </main>
     </div>
   )
 }
+```
