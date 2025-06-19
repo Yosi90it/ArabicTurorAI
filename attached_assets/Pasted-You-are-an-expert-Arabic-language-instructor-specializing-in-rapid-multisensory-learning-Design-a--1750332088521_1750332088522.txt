@@ -1,0 +1,28 @@
+You are an expert Arabic language instructor specializing in rapid, multisensory learning. Design a complete lesson plan and learning method that enables absolute beginners to master all 28 Arabic letters with their short vowels (fatha, kasra, damma) in just one week. Your plan must include:
+
+1. **Audio-Vowel Drills**  
+   - Short listening exercises where each letter is spoken first alone, then combined with each of the three short vowels (for example: “بَ – بُ – بِ”), and finally in simple CV (consonant-vowel) syllables or CVC mini-words.  
+   - Guidance on how learners can fit these 5-minute audio drills into daily routines without rigid time slots—e.g. “play once during a commute, repeat when you have free hands.”
+
+2. **Writing & Recognition Practice**  
+   - Exercises where learners trace each letter plus vowel combination (e.g. “بَ”) by hand or on a Canvas.  
+   - Quick recognition quizzes that flash letter+vowel pairs for immediate recall.
+
+3. **Mnemonic Associations**  
+   - A memorable image or story for each letter+vowel combination (e.g. “بَ looks like a boat with a little sail (fatha)”).  
+   - Encourage learners to draw or sketch their own versions.
+
+4. **Spaced Repetition without Strict Times**  
+   - A 7-day review schedule that uses expanding intervals (e.g. review each letter+vowel set after one practice, then after two drills, then after four) rather than fixed clock times.  
+   - Clear instructions like “Day 1: practice all letters with fatha; Day 2: practice all with kasra; Day 3: mix damma and fatha,” etc.
+
+5. **Contextual Mini-Words**  
+   - Provide one very short CVC word for each letter that features the target vowel (e.g. **بَ** with “بَاب” → “door”).  
+   - Highlight the letter+vowel in bold within the word.
+
+6. **Self-Testing & Feedback**  
+   - Multiple-choice or input quizzes where learners identify the correct vowel for a given letter.  
+   - Tips on recognizing common errors (e.g. confusing kasra vs. damma) and how to correct them.
+
+At the end, deliver a simple daily checklist (without clock times) that tells learners which vowel set to focus on each day (e.g. “Day 1: Fatha set—letters with fatha only; Day 2: Kasra set; Day 3: Damma set; Day 4: mix all three; …”).
+

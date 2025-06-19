@@ -3,13 +3,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Clock, Play, CheckCircle, Target, Lightbulb, Book } from "lucide-react";
-import { sevenDayPlan, mnemonics, type WeeklyPlan } from "@/data/weeklyPlan";
+import { Clock, Play, CheckCircle, Target, Lightbulb, Book, Gamepad2 } from "lucide-react";
+import { sevenDayPlan, mnemonics, vowelCombinations, type WeeklyPlan } from "@/data/weeklyPlan";
+import VowelTrainer from "@/components/VowelTrainer";
 
 export default function WeeklyPlan() {
   const [selectedDay, setSelectedDay] = useState(1);
   const [completedTasks, setCompletedTasks] = useState<{ [key: string]: boolean }>({});
   const [showMnemonics, setShowMnemonics] = useState(false);
+  const [showVowelTrainer, setShowVowelTrainer] = useState(false);
 
   const currentPlan = sevenDayPlan.find(plan => plan.day === selectedDay);
   const overallProgress = (Object.keys(completedTasks).length / (sevenDayPlan.length * 5)) * 100;
@@ -72,6 +74,32 @@ export default function WeeklyPlan() {
         ))}
       </div>
 
+      {/* Vowel Trainer Modal */}
+      {showVowelTrainer && currentPlan && (
+        <div className="mb-6">
+          <Card>
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <CardTitle>Interactive Vowel Practice</CardTitle>
+                <Button
+                  onClick={() => setShowVowelTrainer(false)}
+                  variant="outline"
+                  size="sm"
+                >
+                  Close Trainer
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <VowelTrainer 
+                vowelFocus={currentPlan.tasks[0]?.vowelFocus || "fatha"}
+                letters={currentPlan.letters.length > 0 ? currentPlan.letters : ["ب", "ت", "ج", "د", "ر", "س", "ك"]}
+              />
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       {currentPlan && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Plan Content */}
@@ -92,14 +120,25 @@ export default function WeeklyPlan() {
                   <div className="mt-4">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm font-medium">Today's Letters:</span>
-                      <Button
-                        onClick={() => playLetterSequence(currentPlan.letters)}
-                        size="sm"
-                        className="bg-primary-purple hover:bg-active-purple text-white rounded-xl"
-                      >
-                        <Play className="h-4 w-4 mr-1" />
-                        Play All
-                      </Button>
+                      <div className="flex space-x-2">
+                        <Button
+                          onClick={() => playLetterSequence(currentPlan.letters)}
+                          size="sm"
+                          className="bg-primary-purple hover:bg-active-purple text-white rounded-xl"
+                        >
+                          <Play className="h-4 w-4 mr-1" />
+                          Play All
+                        </Button>
+                        <Button
+                          onClick={() => setShowVowelTrainer(!showVowelTrainer)}
+                          size="sm"
+                          variant="outline"
+                          className="border-primary-purple text-primary-purple hover:bg-primary-purple/10 rounded-xl"
+                        >
+                          <Gamepad2 className="h-4 w-4 mr-1" />
+                          Practice
+                        </Button>
+                      </div>
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {currentPlan.letters.map((letter, index) => (
@@ -164,15 +203,19 @@ export default function WeeklyPlan() {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span>Total Time:</span>
-                    <span className="font-medium">35-60 min</span>
+                    <span className="font-medium">30-45 min</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Sessions:</span>
-                    <span className="font-medium">5 per day</span>
+                    <span className="font-medium">5 flexible</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Focus:</span>
-                    <span className="font-medium">Multisensory</span>
+                    <span className="font-medium capitalize">{currentPlan.tasks[0]?.vowelFocus || "Vowels"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Method:</span>
+                    <span className="font-medium">No fixed times</span>
                   </div>
                 </div>
               </CardContent>
@@ -225,12 +268,12 @@ export default function WeeklyPlan() {
               </CardHeader>
               <CardContent className="p-4">
                 <ul className="text-sm space-y-2 text-gray-600">
-                  <li>• Use headphones for better audio quality</li>
-                  <li>• Practice during commute time</li>
-                  <li>• Write with your finger in the air</li>
-                  <li>• Create your own visual associations</li>
-                  <li>• Review before sleeping for better retention</li>
-                  <li>• Don't skip days - consistency is key</li>
+                  <li>• Fit 5-minute drills into any free moment</li>
+                  <li>• Use spaced repetition: repeat after 1, 2, 4 practices</li>
+                  <li>• Focus on one vowel per day for mastery</li>
+                  <li>• Trace letter+vowel combinations with finger</li>
+                  <li>• Create personal mnemonics for each combination</li>
+                  <li>• Practice without rigid time slots</li>
                 </ul>
               </CardContent>
             </Card>

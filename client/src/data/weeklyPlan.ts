@@ -3,6 +3,16 @@ export interface DailyTask {
   activity: string;
   duration: string;
   description: string;
+  vowelFocus?: string;
+}
+
+export interface VowelCombination {
+  letter: string;
+  vowel: string;
+  pronunciation: string;
+  word: string;
+  wordTranslation: string;
+  mnemonic: string;
 }
 
 export interface WeeklyPlan {
@@ -13,270 +23,303 @@ export interface WeeklyPlan {
   letters: string[];
 }
 
+export const vowelCombinations: VowelCombination[] = [
+  // Fatha combinations
+  { letter: "بَ", vowel: "fatha", pronunciation: "ba", word: "بَاب", wordTranslation: "door", mnemonic: "A boat (ب) with a sail (fatha) floating to the door" },
+  { letter: "تَ", vowel: "fatha", pronunciation: "ta", word: "تَمْر", wordTranslation: "dates", mnemonic: "Two dots like dates with fatha sweetness above" },
+  { letter: "جَ", vowel: "fatha", pronunciation: "ja", word: "جَمَل", wordTranslation: "camel", mnemonic: "A hook catching a camel with fatha line" },
+  
+  // Kasra combinations  
+  { letter: "بِ", vowel: "kasra", pronunciation: "bi", word: "بِنْت", wordTranslation: "girl", mnemonic: "Boat with kasra line below like water reflection" },
+  { letter: "تِ", vowel: "kasra", pronunciation: "ti", word: "تِين", wordTranslation: "figs", mnemonic: "Two dots with kasra underneath like fig roots" },
+  { letter: "جِ", vowel: "kasra", pronunciation: "ji", word: "جِسْر", wordTranslation: "bridge", mnemonic: "Hook hanging down with kasra like bridge support" },
+  
+  // Damma combinations
+  { letter: "بُ", vowel: "damma", pronunciation: "bu", word: "بُرْج", wordTranslation: "tower", mnemonic: "Boat with damma curl above like a tower crown" },
+  { letter: "تُ", vowel: "damma", pronunciation: "tu", word: "تُفَّاح", wordTranslation: "apple", mnemonic: "Two dots with damma curl like apple stem" },
+  { letter: "جُ", vowel: "damma", pronunciation: "ju", word: "جُبْن", wordTranslation: "cheese", mnemonic: "Hook with damma curl holding round cheese" }
+];
+
 export const sevenDayPlan: WeeklyPlan[] = [
   {
     day: 1,
-    title: "Foundation Day - First 7 Letters",
-    focus: "Introduction to Arabic script basics",
+    title: "Fatha Foundation - All Letters with Fatha",
+    focus: "Master the 'a' sound (fatha) with all 28 letters",
     letters: ["ا", "ب", "ت", "ث", "ج", "ح", "خ"],
     tasks: [
       {
-        time: "Morning (8:00)",
-        activity: "Audio Introduction",
+        time: "Flexible Morning",
+        activity: "Fatha Audio Drill",
+        duration: "5 min",
+        description: "Play during commute: each letter + fatha sound (بَ، تَ، جَ...)",
+        vowelFocus: "fatha"
+      },
+      {
+        time: "Free Hands Time",
+        activity: "Fatha Writing Practice",
         duration: "10 min",
-        description: "Listen to each letter 3 times, repeat aloud"
+        description: "Trace letters with fatha on paper or tablet",
+        vowelFocus: "fatha"
       },
       {
-        time: "Morning (8:10)",
-        activity: "Visual Recognition",
+        time: "Any Break",
+        activity: "Fatha Recognition Flash",
+        duration: "3 min",
+        description: "Quick flash cards: see letter+fatha, say sound",
+        vowelFocus: "fatha"
+      },
+      {
+        time: "Flexible Afternoon",
+        activity: "Fatha Word Context",
+        duration: "7 min",
+        description: "Learn 5 simple words with fatha (بَاب، تَمْر...)",
+        vowelFocus: "fatha"
+      },
+      {
+        time: "Before Rest",
+        activity: "Fatha Review Audio",
         duration: "5 min",
-        description: "Study letter shapes, trace with finger on screen"
-      },
-      {
-        time: "Midday (12:00)",
-        activity: "Writing Practice",
-        duration: "10 min",
-        description: "Write each letter 5 times on paper"
-      },
-      {
-        time: "Evening (18:00)",
-        activity: "Audio Quiz",
-        duration: "5 min",
-        description: "Listen and identify letters (app quiz mode)"
-      },
-      {
-        time: "Before Sleep (22:00)",
-        activity: "Review Audio",
-        duration: "5 min",
-        description: "Passive listening while relaxing"
+        description: "Passive listening to fatha combinations",
+        vowelFocus: "fatha"
       }
     ]
   },
   {
     day: 2,
-    title: "Building Momentum - Next 7 Letters",
-    focus: "Adding new letters while reviewing day 1",
+    title: "Kasra Foundation - All Letters with Kasra",
+    focus: "Master the 'i' sound (kasra) with all 28 letters",
     letters: ["د", "ذ", "ر", "ز", "س", "ش", "ص"],
     tasks: [
       {
-        time: "Morning (8:00)",
-        activity: "Review + New Audio",
-        duration: "12 min",
-        description: "Quick review of day 1 letters (3 min) + new letters (9 min)"
-      },
-      {
-        time: "Morning (8:12)",
-        activity: "Mixed Recognition",
-        duration: "8 min",
-        description: "Identify random letters from both days"
-      },
-      {
-        time: "Lunch Break (12:30)",
-        activity: "Writing Both Sets",
-        duration: "10 min",
-        description: "Write all 14 letters in sequence"
-      },
-      {
-        time: "Afternoon (15:00)",
-        activity: "Speed Quiz",
+        time: "Flexible Morning",
+        activity: "Kasra Audio Drill",
         duration: "5 min",
-        description: "Quick identification game with timer"
+        description: "Focus on kasra sound: بِ، تِ، جِ... (repeat after 1 practice)",
+        vowelFocus: "kasra"
       },
       {
-        time: "Evening (20:00)",
-        activity: "Context Introduction",
+        time: "Free Hands Time",
+        activity: "Kasra Writing Practice",
         duration: "10 min",
-        description: "Learn simple words using these letters"
+        description: "Trace letters with kasra underneath",
+        vowelFocus: "kasra"
+      },
+      {
+        time: "Any Break",
+        activity: "Kasra vs Fatha Quiz",
+        duration: "5 min",
+        description: "Compare yesterday's fatha with today's kasra",
+        vowelFocus: "kasra"
+      },
+      {
+        time: "Flexible Afternoon",
+        activity: "Kasra Word Building",
+        duration: "7 min",
+        description: "Learn words with kasra (بِنْت، تِين...)",
+        vowelFocus: "kasra"
+      },
+      {
+        time: "Before Rest",
+        activity: "Mixed Fatha-Kasra Review",
+        duration: "8 min",
+        description: "Alternate between fatha and kasra sounds",
+        vowelFocus: "kasra"
       }
     ]
   },
   {
     day: 3,
-    title: "Mid-Week Challenge - Next 7 Letters",
-    focus: "Complex shapes and similar letters",
+    title: "Damma Foundation - All Letters with Damma",
+    focus: "Master the 'u' sound (damma) with all 28 letters",
     letters: ["ض", "ط", "ظ", "ع", "غ", "ف", "ق"],
     tasks: [
       {
-        time: "Morning (7:30)",
-        activity: "Intensive Audio",
-        duration: "15 min",
-        description: "All 21 letters with emphasis on new ones"
+        time: "Flexible Morning",
+        activity: "Damma Audio Drill",
+        duration: "5 min",
+        description: "Focus on damma sound: بُ، تُ، جُ... (repeat after 2 drills)",
+        vowelFocus: "damma"
       },
       {
-        time: "Morning (7:45)",
-        activity: "Similarity Focus",
+        time: "Free Hands Time",
+        activity: "Damma Writing Practice",
         duration: "10 min",
-        description: "Compare similar shapes (ص vs ض, ط vs ظ)"
+        description: "Trace letters with damma curl above",
+        vowelFocus: "damma"
       },
       {
-        time: "Commute/Break (12:00)",
-        activity: "Mobile Quiz",
+        time: "Any Break",
+        activity: "Three-Vowel Recognition",
+        duration: "8 min",
+        description: "Random mix: identify fatha, kasra, or damma",
+        vowelFocus: "damma"
+      },
+      {
+        time: "Flexible Afternoon",
+        activity: "Damma Word Context",
+        duration: "7 min",
+        description: "Learn words with damma (بُرْج، تُفَّاح...)",
+        vowelFocus: "damma"
+      },
+      {
+        time: "Before Rest",
+        activity: "All-Vowel Sequence",
         duration: "10 min",
-        description: "Use app during travel time"
-      },
-      {
-        time: "Afternoon (16:00)",
-        activity: "Memory Palace",
-        duration: "15 min",
-        description: "Create visual mnemonics for difficult letters"
-      },
-      {
-        time: "Evening (19:30)",
-        activity: "Comprehensive Test",
-        duration: "10 min",
-        description: "Test all 21 letters learned so far"
+        description: "Practice بَ بِ بُ sequences for each letter",
+        vowelFocus: "damma"
       }
     ]
   },
   {
     day: 4,
-    title: "Final Letters - Complete Alphabet",
-    focus: "Last 7 letters and alphabet completion",
+    title: "Mixed Vowel Practice - Random Combinations",
+    focus: "Flexible vowel recognition and quick switching",
     letters: ["ك", "ل", "م", "ن", "ه", "و", "ي"],
     tasks: [
       {
-        time: "Morning (8:00)",
-        activity: "Complete Alphabet Audio",
-        duration: "20 min",
-        description: "Listen to all 28 letters in order, repeat sequence"
+        time: "Flexible Morning",
+        activity: "Random Vowel Audio",
+        duration: "8 min",
+        description: "Mixed vowel practice: بَ، دِ، كُ، تَ... (repeat after 4 drills)",
+        vowelFocus: "mixed"
       },
       {
-        time: "Morning (8:20)",
-        activity: "Alphabetical Writing",
-        duration: "15 min",
-        description: "Write complete alphabet from memory"
+        time: "Free Hands Time",
+        activity: "Vowel Writing Challenge",
+        duration: "12 min",
+        description: "Write letters with random vowels from dictation"
       },
       {
-        time: "Midday (13:00)",
-        activity: "Random Testing",
+        time: "Any Break",
+        activity: "Speed Vowel Quiz",
+        duration: "5 min",
+        description: "Fast identification: which vowel do you hear?"
+      },
+      {
+        time: "Flexible Afternoon",
+        activity: "CVC Word Building",
         duration: "10 min",
-        description: "Randomized letter identification challenge"
+        description: "Form simple words mixing all vowels"
       },
       {
-        time: "Afternoon (17:00)",
-        activity: "Word Building",
-        duration: "15 min",
-        description: "Form simple 2-3 letter words"
-      },
-      {
-        time: "Evening (21:00)",
-        activity: "Full Alphabet Review",
+        time: "Before Rest",
+        activity: "Vowel Pattern Recognition",
         duration: "10 min",
-        description: "Audio review of complete alphabet"
+        description: "Identify vowel patterns in short words"
       }
     ]
   },
   {
     day: 5,
-    title: "Mastery Reinforcement",
-    focus: "Speed and accuracy improvement",
+    title: "Speed & Accuracy - Rapid Vowel Recognition",
+    focus: "Quick vowel identification and error correction",
     letters: [], // All letters
     tasks: [
       {
-        time: "Morning (8:00)",
-        activity: "Speed Drills",
-        duration: "15 min",
-        description: "Rapid-fire letter identification under time pressure"
-      },
-      {
-        time: "Morning (8:15)",
-        activity: "Dictation Practice",
+        time: "Flexible Morning",
+        activity: "Rapid Vowel Drills",
         duration: "10 min",
-        description: "Write letters from audio dictation"
+        description: "Speed practice: hear letter+vowel, respond immediately"
       },
       {
-        time: "Break Time (11:00)",
-        activity: "Mobile Flashcards",
-        duration: "10 min",
-        description: "Spaced repetition with digital flashcards"
+        time: "Free Hands Time",
+        activity: "Error Correction Training",
+        duration: "12 min",
+        description: "Focus on commonly confused vowel pairs"
       },
       {
-        time: "Lunch (12:30)",
-        activity: "Context Reading",
+        time: "Any Break",
+        activity: "Vowel Memory Game",
+        duration: "8 min",
+        description: "Remember sequences: بَ تِ جُ، repeat back"
+      },
+      {
+        time: "Flexible Afternoon",
+        activity: "Contextual Reading",
         duration: "15 min",
-        description: "Read simple Arabic words and identify letters"
+        description: "Read short phrases identifying each vowel"
       },
       {
-        time: "Evening (19:00)",
-        activity: "Weakness Analysis",
-        duration: "20 min",
-        description: "Focus on letters with lowest accuracy scores"
+        time: "Before Rest",
+        activity: "Self-Assessment Quiz",
+        duration: "10 min",
+        description: "Test your weakest vowel combinations"
       }
     ]
   },
   {
     day: 6,
-    title: "Real-World Application",
-    focus: "Letters in context and practical usage",
+    title: "Real-World Vowel Application",
+    focus: "Vowels in authentic Arabic context",
     letters: [], // All letters
     tasks: [
       {
-        time: "Morning (8:00)",
-        activity: "Name Recognition",
+        time: "Flexible Morning",
+        activity: "Name Vowel Analysis",
+        duration: "12 min",
+        description: "Identify vowels in Arabic names (أَحْمَد، فَاطِمَة...)"
+      },
+      {
+        time: "Free Hands Time",
+        activity: "Vowel Calligraphy",
         duration: "15 min",
-        description: "Practice with Arabic names and places"
+        description: "Beautiful writing of letters with vowel marks"
       },
       {
-        time: "Morning (8:15)",
-        activity: "Calligraphy Basics",
-        duration: "20 min",
-        description: "Beautiful writing practice for each letter"
+        time: "Any Break",
+        activity: "Sign Vowel Reading",
+        duration: "8 min",
+        description: "Spot vowels in Arabic text images"
       },
       {
-        time: "Midday (12:00)",
-        activity: "Sign Reading",
+        time: "Flexible Afternoon",
+        activity: "Vowel Teaching Practice",
         duration: "10 min",
-        description: "Identify letters in Arabic text images"
+        description: "Explain vowel sounds as if teaching a friend"
       },
       {
-        time: "Afternoon (15:30)",
-        activity: "Game Mode",
-        duration: "15 min",
-        description: "Competitive letter games and challenges"
-      },
-      {
-        time: "Evening (20:00)",
-        activity: "Teaching Practice",
-        duration: "15 min",
-        description: "Explain each letter aloud as if teaching someone"
+        time: "Before Rest",
+        activity: "Authentic Text Scanning",
+        duration: "10 min",
+        description: "Find vowel patterns in simple Arabic texts"
       }
     ]
   },
   {
     day: 7,
-    title: "Mastery Assessment",
-    focus: "Final evaluation and confidence building",
+    title: "Vowel Mastery Assessment",
+    focus: "Complete evaluation of letter+vowel combinations",
     letters: [], // All letters
     tasks: [
       {
-        time: "Morning (8:00)",
-        activity: "Comprehensive Test",
-        duration: "30 min",
-        description: "Complete alphabet assessment - audio and visual"
-      },
-      {
-        time: "Morning (8:30)",
-        activity: "Speed Challenge",
-        duration: "10 min",
-        description: "How fast can you identify all 28 letters?"
-      },
-      {
-        time: "Midday (12:00)",
-        activity: "Memory Test",
-        duration: "15 min",
-        description: "Write alphabet from memory without reference"
-      },
-      {
-        time: "Afternoon (16:00)",
-        activity: "Practical Application",
+        time: "Flexible Morning",
+        activity: "Complete Vowel Test",
         duration: "20 min",
-        description: "Read short Arabic text and identify every letter"
+        description: "Comprehensive test: all letters with all three vowels"
       },
       {
-        time: "Evening (19:00)",
-        activity: "Celebration Review",
+        time: "Free Hands Time",
+        activity: "Vowel Speed Challenge",
+        duration: "10 min",
+        description: "How fast can you identify 84 letter+vowel combinations?"
+      },
+      {
+        time: "Any Break",
+        activity: "Vowel Memory Assessment",
         duration: "15 min",
-        description: "Final review and progress celebration"
+        description: "Write letter+vowel combinations from audio dictation"
+      },
+      {
+        time: "Flexible Afternoon",
+        activity: "Real Text Vowel Reading",
+        duration: "15 min",
+        description: "Read authentic Arabic with full vowel recognition"
+      },
+      {
+        time: "Before Rest",
+        activity: "Mastery Celebration",
+        duration: "10 min",
+        description: "Review progress and celebrate vowel mastery achievement"
       }
     ]
   }
