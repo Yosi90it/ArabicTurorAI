@@ -109,6 +109,7 @@ The application follows a monorepo structure with clear separation between clien
 ✓ **Global Tashkeel Toggle**: Sidebar control for Arabic diacritics across all pages
 ✓ **Enhanced Flashcards**: Contextual sentences with highlighted target words
 ✓ **Subscription Page**: Premium plan options with feature comparison
+✓ **Enhanced Alphabet Trainer**: Audio pronunciation using Web Speech API and interactive quiz mode
 
 ### Architecture Enhancements
 - Added `/contexts/FlashcardContext.tsx` for state management
