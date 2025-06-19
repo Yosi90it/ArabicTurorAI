@@ -3,6 +3,7 @@ import { Brain, GraduationCap, BookOpen, Play, Type } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
 import { useTashkeel } from "@/contexts/TashkeelContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 const navigationItems = [
   {
@@ -46,18 +47,13 @@ const navigationItems = [
     label: "7-Day Plan",
     route: "/weekly-plan",
     emoji: "📅"
-  },
-  {
-    icon: Type,
-    label: "Admin",
-    route: "/admin-panel",
-    emoji: "🔧"
   }
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ onLinkClick }: SidebarProps = {}) {
   const [location] = useLocation();
   const { tashkeelEnabled, setTashkeelEnabled } = useTashkeel();
+  const { isAdmin } = useAuth();
 
   const isActive = (route: string) => {
     if (route === "/ai-chat" && location === "/") return true;
@@ -88,6 +84,22 @@ export default function Sidebar() {
             </button>
           </Link>
         ))}
+        
+        {/* Admin Link - Only show if logged in as admin */}
+        {isAdmin && (
+          <Link href="/admin-panel">
+            <button
+              className={`w-full flex items-center space-x-3 p-3 rounded-2xl transition-all duration-200 ${
+                isActive("/admin-panel")
+                  ? "bg-active-purple shadow-lg"
+                  : "hover:bg-white/20 hover:shadow-md"
+              }`}
+            >
+              <span className="text-xl">🔧</span>
+              <span className="font-medium">Admin</span>
+            </button>
+          </Link>
+        )}
       </nav>
 
       {/* Tashkeel Toggle */}

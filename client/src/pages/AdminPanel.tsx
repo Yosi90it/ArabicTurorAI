@@ -1,16 +1,29 @@
 import React, { useState } from 'react';
+import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
-import { Trash2, Upload, Plus } from 'lucide-react';
+import { Trash2, Upload, Plus, LogOut } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useContent } from '@/contexts/ContentContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState<'books' | 'videos'>('books');
   const [videoUrl, setVideoUrl] = useState('');
+  const [, setLocation] = useLocation();
   const { books, videos, addBook, removeBook, addVideo, removeVideo } = useContent();
+  const { logout } = useAuth();
   const { toast } = useToast();
+
+  const handleLogout = () => {
+    logout();
+    toast({
+      title: "Logged out",
+      description: "You have been logged out of the admin panel."
+    });
+    setLocation('/');
+  };
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -95,7 +108,17 @@ export default function AdminPanel() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-6">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-800 mb-8">Admin Panel</h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-800">Admin Panel</h1>
+          <Button
+            onClick={handleLogout}
+            variant="outline"
+            className="bg-white hover:bg-gray-50 text-gray-700 border-gray-200"
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Logout
+          </Button>
+        </div>
         
         {/* Tab Navigation */}
         <div className="flex mb-8 bg-white rounded-2xl p-2 shadow-sm">
