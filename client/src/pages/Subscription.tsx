@@ -78,8 +78,7 @@ export default function Subscription() {
         <p className="text-gray-600">Unlock the full potential of Arabic learning with AI</p>
       </div>
 
-      <div className="max-w-6xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-4">
           <PlanCard
             title="Monthly Plan"
             price="€14.99"
@@ -95,11 +94,10 @@ export default function Subscription() {
             onSubscribe={() => handleSubscribe('annual')}
           />
         </div>
-      </div>
 
       {/* Additional Info */}
       <div className="mt-8 text-center">
-        <div className="bg-soft-gray rounded-2xl p-6 max-w-2xl mx-auto">
+        <div className="bg-soft-gray rounded-2xl p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-2">Why Choose ArabicAI Premium?</h3>
           <p className="text-gray-600 text-sm leading-relaxed">
             Get unlimited access to our AI-powered Arabic learning platform. Practice conversation, 
