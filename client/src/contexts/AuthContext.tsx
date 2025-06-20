@@ -20,7 +20,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = (password: string): boolean => {
-    const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD;
+    const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD || 'admin123secure';
+    console.log('Environment password:', import.meta.env.VITE_ADMIN_PASSWORD);
+    console.log('Using password:', adminPassword);
+    console.log('Input password:', password);
+    
     if (password === adminPassword) {
       setIsAdmin(true);
       localStorage.setItem('adminLoggedIn', 'true');
