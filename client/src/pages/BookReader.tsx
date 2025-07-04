@@ -8,8 +8,6 @@ import WordModal from "@/components/WordModal";
 import { useFlashcards } from "@/contexts/FlashcardContext";
 import { useToast } from "@/hooks/use-toast";
 import { getWordInfo } from "@/data/arabicDictionary";
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 
 export default function BookReader() {
   const { books } = useContent();
@@ -72,92 +70,61 @@ export default function BookReader() {
     setSelectedWord(null);
   };
 
-  // Custom renderer for ReactMarkdown to make Arabic words clickable
-  const customRenderers = {
-    p: ({ children }: { children: React.ReactNode }) => {
-      return <p className="mb-3">{renderClickableContent(children)}</p>;
-    },
-    h1: ({ children }: { children: React.ReactNode }) => {
-      return <h1 className="text-2xl font-bold mb-4">{renderClickableContent(children)}</h1>;
-    },
-    h2: ({ children }: { children: React.ReactNode }) => {
-      return <h2 className="text-xl font-semibold mb-3 mt-6">{renderClickableContent(children)}</h2>;
-    },
-    div: ({ children }: { children: React.ReactNode }) => {
-      return <div className="mb-4">{renderClickableContent(children)}</div>;
-    },
-    strong: ({ children }: { children: React.ReactNode }) => {
-      return <strong>{renderClickableContent(children)}</strong>;
+  // Process HTML content and make Arabic words clickable
+  const processHTMLContent = (htmlContent: string) => {
+    // Create DOM parser
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlContent, 'text/html');
+    
+    // Function to make text content clickable
+    const makeTextClickable = (text: string) => {
+      return text.replace(/[\u0600-\u06FF\u0750-\u077F]+/g, (match) => {
+        const cleanWord = match.replace(/[۔،؍؎؏ؘؙؚؐؑؒؓؔؕؖؗ؛؜؝؞؟ؠ]/g, '');
+        return `<span class="clickable-word cursor-pointer hover:bg-blue-100 px-1 rounded transition-colors" data-word="${cleanWord}">${match}</span>`;
+      });
+    };
+    
+    // Process all text nodes
+    const walker = document.createTreeWalker(
+      doc.body,
+      NodeFilter.SHOW_TEXT,
+      null
+    );
+    
+    const textNodes: Text[] = [];
+    let node;
+    while (node = walker.nextNode()) {
+      if (node.textContent && /[\u0600-\u06FF\u0750-\u077F]/.test(node.textContent)) {
+        textNodes.push(node as Text);
+      }
     }
+    
+    textNodes.forEach(textNode => {
+      const span = document.createElement('span');
+      span.innerHTML = makeTextClickable(textNode.textContent || '');
+      textNode.parentNode?.replaceChild(span, textNode);
+    });
+    
+    return doc.body.innerHTML;
   };
 
-  const renderClickableContent = (content: React.ReactNode): React.ReactNode => {
-    if (typeof content === 'string') {
-      // Split text by spaces while preserving them
-      const parts = content.split(/(\s+)/);
+  // Handle click events on the content area
+  const handleContentClick = (event: React.MouseEvent) => {
+    const target = event.target as HTMLElement;
+    if (target.classList.contains('clickable-word')) {
+      const word = target.getAttribute('data-word') || target.textContent || '';
+      const rect = target.getBoundingClientRect();
+      const wordInfo = getWordInfo(word);
       
-      return parts.map((part, index) => {
-        // If it's whitespace, return as is
-        if (/^\s+$/.test(part)) {
-          return <span key={index}>{part}</span>;
-        }
-        
-        // Check if part contains Arabic characters
-        const arabicPattern = /[\u0600-\u06FF\u0750-\u077F]+/g;
-        const matches = part.match(arabicPattern);
-        
-        if (matches) {
-          // Replace each Arabic word with clickable span
-          let currentText = part;
-          const elements: React.ReactNode[] = [];
-          
-          matches.forEach((arabicWord, wordIndex) => {
-            const cleanWord = arabicWord.replace(/[۔،؍؎؏ؘؙؚؐؑؒؓؔؕؖؗ؛؜؝؞؟ؠ]/g, '');
-            const wordStart = currentText.indexOf(arabicWord);
-            
-            // Add text before the Arabic word
-            if (wordStart > 0) {
-              elements.push(
-                <span key={`${index}-before-${wordIndex}`}>
-                  {currentText.substring(0, wordStart)}
-                </span>
-              );
-            }
-            
-            // Add the clickable Arabic word
-            elements.push(
-              <span
-                key={`${index}-word-${wordIndex}`}
-                className="clickable-word cursor-pointer hover:bg-blue-100 px-1 rounded transition-colors"
-                onClick={(e) => handleWordClick(cleanWord, e)}
-              >
-                {arabicWord}
-              </span>
-            );
-            
-            // Update currentText to remaining part
-            currentText = currentText.substring(wordStart + arabicWord.length);
-          });
-          
-          // Add any remaining text
-          if (currentText) {
-            elements.push(<span key={`${index}-after`}>{currentText}</span>);
-          }
-          
-          return <span key={index}>{elements}</span>;
-        }
-        
-        return <span key={index}>{part}</span>;
-      });
+      if (wordInfo) {
+        setSelectedWord({
+          word: wordInfo.arabic,
+          translation: wordInfo.translation,
+          grammar: wordInfo.grammar,
+          position: { x: rect.left + rect.width / 2, y: rect.top }
+        });
+      }
     }
-    
-    if (Array.isArray(content)) {
-      return content.map((item, index) => (
-        <span key={index}>{renderClickableContent(item)}</span>
-      ));
-    }
-    
-    return content;
   };
 
 
@@ -286,14 +253,11 @@ export default function BookReader() {
                       className="text-right leading-relaxed space-y-4" 
                       style={{ fontSize: '1.2rem', lineHeight: '2' }}
                       dir="rtl"
-                    >
-                      <ReactMarkdown 
-                        remarkPlugins={[remarkGfm]}
-                        components={customRenderers}
-                      >
-                        {currentBookPages[currentPage] || ''}
-                      </ReactMarkdown>
-                    </div>
+                      onClick={handleContentClick}
+                      dangerouslySetInnerHTML={{ 
+                        __html: currentBookPages[currentPage] ? processHTMLContent(currentBookPages[currentPage]) : ''
+                      }}
+                    />
                   </div>
                 </div>
               ) : (
