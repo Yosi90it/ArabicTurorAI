@@ -31,12 +31,13 @@ export default function GlobalHeader() {
   };
 
   // Check if user is authenticated either by state or by token in localStorage
-  const hasToken = localStorage.getItem('userToken');
-  const shouldShowLogout = isAuthenticated || hasToken;
+  const hasToken = typeof window !== 'undefined' ? localStorage.getItem('userToken') : null;
+  const shouldShowLogout = isAuthenticated || !!hasToken;
 
   console.log('GlobalHeader - isAuthenticated:', isAuthenticated, 'hasToken:', !!hasToken, 'user:', user);
 
-  if (!shouldShowLogout) {
+  // Always show logout button if there's a token, regardless of auth state
+  if (!hasToken && !isAuthenticated) {
     return null;
   }
 
@@ -52,6 +53,10 @@ export default function GlobalHeader() {
         <span className="hidden sm:inline">{strings.logout}</span>
         <span className="sm:hidden">Aus</span>
       </Button>
+      {/* Debug info - remove later */}
+      <div className="absolute top-12 right-0 text-xs bg-black text-white p-1 rounded opacity-50">
+        Auth: {isAuthenticated ? 'Y' : 'N'} | Token: {hasToken ? 'Y' : 'N'}
+      </div>
     </div>
   );
 }
