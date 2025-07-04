@@ -25,6 +25,7 @@ import Login from "@/pages/Login";
 import Learn from "@/pages/Learn";
 import SelectLanguage from "@/pages/SelectLanguage";
 import TrialExpiredBanner from "@/components/TrialExpiredBanner";
+import GlobalHeader from "@/components/GlobalHeader";
 import NotFound from "@/pages/not-found";
 
 function ProtectedAdminRoute() {
@@ -109,6 +110,7 @@ function App() {
               <FlashcardProvider>
                 <TashkeelProvider>
                   <TooltipProvider>
+                    <GlobalHeader />
                     <Toaster />
                     <Router />
                   </TooltipProvider>

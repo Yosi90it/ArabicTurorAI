@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import Sidebar from './Sidebar';
-import Header from './Header';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -11,9 +10,6 @@ export default function Layout({ children }: LayoutProps) {
 
   return (
     <div className="flex h-screen bg-gray-100 relative">
-      {/* Header with Logout */}
-      <Header />
-      
       {/* Mobile Hamburger Button */}
       <div className="sm:hidden absolute top-4 left-4 z-30">
         <button

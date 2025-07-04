@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
 
-export default function Header() {
+export default function GlobalHeader() {
   const [, setLocation] = useLocation();
   const { isAuthenticated, logout } = useAuth();
   const { strings } = useLanguage();
@@ -23,7 +23,7 @@ export default function Header() {
     } catch (error) {
       console.error('Logout error:', error);
       toast({
-        title: "Fehler",
+        title: "Fehler", 
         description: "Beim Abmelden ist ein Fehler aufgetreten.",
         variant: "destructive"
       });
@@ -35,14 +35,16 @@ export default function Header() {
   }
 
   return (
-    <div className="fixed top-4 right-4 z-50">
+    <div className="fixed top-4 right-4 z-[100]">
       <Button
         onClick={handleLogout}
         variant="outline"
-        className="bg-white/90 hover:bg-white text-gray-700 border-gray-200 shadow-lg backdrop-blur-sm"
+        size="sm"
+        className="bg-white/95 hover:bg-white text-gray-700 border-gray-300 shadow-lg backdrop-blur-sm transition-all duration-200 hover:shadow-xl"
       >
         <LogOut className="w-4 h-4 mr-2" />
-        {strings.logout}
+        <span className="hidden sm:inline">{strings.logout}</span>
+        <span className="sm:hidden">Aus</span>
       </Button>
     </div>
   );
