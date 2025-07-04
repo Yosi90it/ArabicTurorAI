@@ -8,7 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 
 export default function GlobalHeader() {
   const [, setLocation] = useLocation();
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, user } = useAuth();
   const { strings } = useLanguage();
   const { toast } = useToast();
 
@@ -30,7 +30,13 @@ export default function GlobalHeader() {
     }
   };
 
-  if (!isAuthenticated) {
+  // Check if user is authenticated either by state or by token in localStorage
+  const hasToken = localStorage.getItem('userToken');
+  const shouldShowLogout = isAuthenticated || hasToken;
+
+  console.log('GlobalHeader - isAuthenticated:', isAuthenticated, 'hasToken:', !!hasToken, 'user:', user);
+
+  if (!shouldShowLogout) {
     return null;
   }
 
