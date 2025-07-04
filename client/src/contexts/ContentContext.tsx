@@ -53,25 +53,36 @@ export function ContentProvider({ children }: { children: ReactNode }) {
       title: "قراءة الراشدة (Qiraatu Al Rashida)",
       content: `<h1>قراءة الراشدة</h1>
       
-      <h2>كيْفَ اقضي يَوْمِي</h2>
-      <p><span class="clickable-word" data-word="أنام" data-translation="I sleep" data-grammar="verb">أنامُ</span> <span class="clickable-word" data-word="مُبَكِّرًا" data-translation="early" data-grammar="adverb">مُبَكِّرًا</span> في <span class="clickable-word" data-word="اللَّيْل" data-translation="the night" data-grammar="noun">اللَّيْلِ</span> وأقومُ <span class="clickable-word" data-word="مُبَكِّرًا" data-translation="early" data-grammar="adverb">مُبَكِّرًا</span> فِي <span class="clickable-word" data-word="الصَّبَاح" data-translation="the morning" data-grammar="noun">الصَّبَاحِ</span>، <span class="clickable-word" data-word="أسْتَيْقِظُ" data-translation="I wake up" data-grammar="verb">أسْتَيْقِظُ</span> عَلَى <span class="clickable-word" data-word="اسْمِ" data-translation="name" data-grammar="noun">اسْمِ</span> <span class="clickable-word" data-word="الله" data-translation="Allah" data-grammar="noun">اللهِ</span> وذِكْرِه.</p>
+      <h2>كيْفَ أقضي يَوْمِي</h2>
+      <p>أنامُ مُبَكِّرًا في اللَّيْلِ وأقومُ مُبَكِّرًا فِي الصَّبَاحِ، أسْتَيْقِظُ عَلَى اسْمِ اللهِ وذِكْرِه، أسْتَعِدُّ لِلصَّلاةِ ثُمَّ أذْهَبُ مَعَ وَالِدِي إلى الْمَسْجِدِ، والْمَسْجِدُ قَرِيْبٌ مِن بَيْتِيْ، فَأَتَوَضَّأُ وأُصَلِّيْ مَعَ الْجَماعَةِ، وأرْجِعُ إِلى البَيْتِ وأتْلُو شَيْئًا مِن الْقُرْآنِ الْكَرِيمِ، ثُمَّ أخْرُجُ إلى البُسْتَانِ وَأجْرِيْ، ثُمَّ أَرْجِعُ إلى الْبَيْتِ فَأَشْرَبُ اللَّبَنَ وأسْتَعِدُّ لِلذَّهابِ إلى المَدْرَسَةِ.</p>
       
-      <p><span class="clickable-word" data-word="أسْتَعِدُّ" data-translation="I prepare" data-grammar="verb">أسْتَعِدُّ</span> لِ<span class="clickable-word" data-word="الصَّلاة" data-translation="prayer" data-grammar="noun">الصَّلاةِ</span> ثُمَّ <span class="clickable-word" data-word="أذْهَب" data-translation="I go" data-grammar="verb">أذْهَبُ</span> مَعَ <span class="clickable-word" data-word="وَالِدِي" data-translation="my father" data-grammar="noun">وَالِدِي</span> إلى <span class="clickable-word" data-word="الْمَسْجِد" data-translation="the mosque" data-grammar="noun">الْمَسْجِدِ</span>، والْمَسْجِدُ <span class="clickable-word" data-word="قَرِيْب" data-translation="close/near" data-grammar="adjective">قَرِيْبٌ</span> مِن <span class="clickable-word" data-word="بَيْتِي" data-translation="my house" data-grammar="noun">بَيْتِيْ</span>.</p>
-      
-      <p>فَ<span class="clickable-word" data-word="أَتَوَضَّأ" data-translation="I perform ablution" data-grammar="verb">أَتَوَضَّأُ</span> وأُصَلِّيْ مَعَ <span class="clickable-word" data-word="الْجَماعَة" data-translation="the congregation" data-grammar="noun">الْجَماعَةِ</span>، وأرْجِعُ إِلى <span class="clickable-word" data-word="البَيْت" data-translation="the house" data-grammar="noun">البَيْتِ</span> وأتْلُو <span class="clickable-word" data-word="شَيْئًا" data-translation="something" data-grammar="noun">شَيْئًا</span> مِن <span class="clickable-word" data-word="الْقُرْآن" data-translation="the Quran" data-grammar="noun">الْقُرْآنِ</span> <span class="clickable-word" data-word="الْكَرِيم" data-translation="the Noble" data-grammar="adjective">الْكَرِيمِ</span>.</p>
-      
+      <p>وأفْطِرُ إذَا كانَتْ أيَّامُ الصَّيْفِ، وأتَغَدَّى إذَا كَانَتْ أيَّامُ الشِّتاءِ، وأصِلُ إلى الْمَدْرَسَةِ في الْمِيْعادِ وَأَمْكُثُ فِي الْمَدْرَسَةِ سِتَّ سَاعَاتٍ، وَأَسْمَعُ الدُّرُوْسَ بِنَشَاطٍ وَرَغْبَةٍ، وَأَجْلِسُ بِأَدَبٍ وَسَكِينَةٍ، حَتَّى إِذَا انْتَهَى الْوَقْتُ وَضُرِبَ الْجَرَسُ خَرَجْتُ مِنْ الْمَدْرَسَةِ وَرَجَعْتُ إِلَى الْبَيْتِ.</p>
+
       <h2>لمَّا بَلَغْتُ السَّابِعَةَ مِنْ عُمُرِيْ</h2>
-      <p><span class="clickable-word" data-word="لَمَّا" data-translation="when" data-grammar="conjunction">لَمَّا</span> <span class="clickable-word" data-word="بَلَغْت" data-translation="I reached" data-grammar="verb">بَلَغْتُ</span> <span class="clickable-word" data-word="السَّابِعَة" data-translation="the seventh" data-grammar="ordinal">السَّابِعَةَ</span> مِنْ <span class="clickable-word" data-word="عُمُرِي" data-translation="my age" data-grammar="noun">عُمْرِيْ</span> <span class="clickable-word" data-word="أَمَرَنِي" data-translation="he commanded me" data-grammar="verb">أَمَرَنِيْ</span> <span class="clickable-word" data-word="أَبِي" data-translation="my father" data-grammar="noun">أَبِيْ</span> بِ<span class="clickable-word" data-word="الصَّلَاة" data-translation="prayer" data-grammar="noun">الصَّلَاةِ</span>.</p>
+      <p>لَمَّا بَلَغْتُ السَّابِعَةَ مِنْ عُمْرِيْ أَمَرَنِيْ أَبِيْ بِالصَّلَاةِ، وَكُنْتُ تَعَلَّمْتُ كَثِيرًا مِنْ الْأَدْعِيَةِ وَحَفِظْتُ سُوَرًا مِنْ الْقُرْآنِ الْكَرِيمِ مِنْ أُمِّيْ، وَكَانَتْ أُمِّي تَتَكَلَّمُ مَعِيْ كُلَّ لَيْلَةٍ عِنْدَ الْمَنَامِ فَتَقُصُّ عَلَيَّ قِصَصَ الْأَنْبِيَاءِ، وَكُنْتُ أَسْمَعُ هَذِهِ الْقِصَصَ بِنَشَاطٍ وَرَغْبَةٍ.</p>
       
-      <p>وَكُنْتُ <span class="clickable-word" data-word="تَعَلَّمْت" data-translation="I had learned" data-grammar="verb">تَعَلَّمْتُ</span> <span class="clickable-word" data-word="كَثِيرًا" data-translation="much/many" data-grammar="adverb">كَثِيرًا</span> مِنْ <span class="clickable-word" data-word="الْأَدْعِيَة" data-translation="supplications" data-grammar="noun">الْأَدْعِيَةِ</span> وَ<span class="clickable-word" data-word="حَفِظْت" data-translation="I memorized" data-grammar="verb">حَفِظْتُ</span> <span class="clickable-word" data-word="سُوَرًا" data-translation="chapters" data-grammar="noun">سُوَرًا</span> مِنْ <span class="clickable-word" data-word="الْقُرْآن" data-translation="the Quran" data-grammar="noun">الْقُرْآنِ</span> <span class="clickable-word" data-word="الْكَرِيم" data-translation="the Noble" data-grammar="adjective">الْكَرِيمِ</span> مِنْ <span class="clickable-word" data-word="أُمِّي" data-translation="my mother" data-grammar="noun">أُمِّيْ</span>.</p>
-      
+      <p>وَبَدَأْتُ أَذْهَبُ مَعَ أَبِي إِلَى الْمَسْجِدِ، وَأَقُوْمُ فِيْ صَفِّ الْأَطْفَالِ خَلْفَ صَفِّ الرِّجَالِ، وَلَمَّا بَلَغْتُ الْعَاشِرَةَ مِنْ عُمْرِيْ قَالَ لِي مَرَّةً: قَدْ أَكْمَلْتَ الْآنَ مِنْ عُمُرِكَ تِسْعَ سِنِيْنَ، وَالآنَ أَنْتَ ابْنُ عَشْرِ سِنِيْنَ فَإِذَا تَرَكْتَ صَلَاةً ضَرَبْتُكَ، لِأَنَّ النَّبِيَّ قَالَ: مُرُّوا أَوْلَادَكُمْ بِالصَّلَاةِ وَهُمْ أَبْنَاءُ سَبْعِ سِنِينَ، وَاضْرِبُوهُمْ عَلَيْهَا وَهُمْ أَبْنَاءُ عَشْرٍ.</p>
+
       <h2>النَّمْلَة</h2>
-      <div class="poetry">
-        <p><span class="clickable-word" data-word="لَسْت" data-translation="I am not" data-grammar="verb">لَسْتُ</span> <span class="clickable-word" data-word="أَرْضَى" data-translation="I am satisfied" data-grammar="verb">أَرْضَى</span> بِ<span class="clickable-word" data-word="الْكَسَل" data-translation="laziness" data-grammar="noun">الْكَسَلْ</span></p>
-        <p><span class="clickable-word" data-word="طَال" data-translation="lengthened" data-grammar="verb">طَالَ</span> <span class="clickable-word" data-word="سَعْيِي" data-translation="my effort" data-grammar="noun">سَعْيِيْ</span> بِ<span class="clickable-word" data-word="الْأَمَل" data-translation="hope" data-grammar="noun">الْأَمَلْ</span></p>
-        <p><span class="clickable-word" data-word="لَا" data-translation="no" data-grammar="negative">لَا</span> <span class="clickable-word" data-word="أُبَالِي" data-translation="I care" data-grammar="verb">أُبَالِيْ</span> بِ<span class="clickable-word" data-word="التَّعَب" data-translation="fatigue" data-grammar="noun">التَّعَبْ</span></p>
-        <p><span class="clickable-word" data-word="غَايَتِي" data-translation="my goal" data-grammar="noun">غَايَتِيْ</span> <span class="clickable-word" data-word="نَيْل" data-translation="attaining" data-grammar="noun">نَيْلُ</span> <span class="clickable-word" data-word="الطَّلَب" data-translation="the request" data-grammar="noun">الطَّلَبْ</span></p>
-      </div>`,
+      <div style="text-align: center; font-style: italic; margin: 20px 0;">
+        <p>لَسْتُ أَرْضَى بِالْكَسَلْ</p>
+        <p>طَالَ سَعْيِيْ بِالْأَمَلْ</p>
+        <p>لَا أُبَالِيْ بِالتَّعَبْ</p>
+        <p>غَايَتِيْ نَيْلُ الطَّلَبْ</p>
+        <p>بِنِظَامٍ لِلسَّكَنْ</p>
+        <p>أَبْتَنِي الْبَيْتَ الْحَسَنْ</p>
+      </div>
+
+      <h2>فِي السُّوقِ</h2>
+      <p><strong>عُمَرُ:</strong> هَلْ زُرْتَ سُوْقَ هَذَا الْبَلَدِ يَا صَدِيْقِيْ؟</p>
+      <p><strong>خَالِدٌ:</strong> لَا يَا أَخِيْ، فَإِنِّيْ غَرِيْبٌ جَدِيْدٌ فِيْ هَذَا الْبَلَدِ لَا أَعْرِفُ الطَّرِيْقَ.</p>
+      <p><strong>عُمَرُ:</strong> تَعَالَ مَعِيْ فَإِنِّيْ ذَاهِبٌ إِلَى السُّوْقِ لِأَشْتَرِيَ بَعْضَ الْحَوَائِجِ وَنَرْجِع قَبْلَ الْمَغْرِبِ إِنْ شَاءَ اللَّهِ فَإِنَّ السُّوْقَ غَيْرُ بَعِيدَةٍ.</p>
+      <p><strong>خَالِدٌ:</strong> مَا شَاءَ اللَّهُ هَذِهِ سُّوقٌ كَبِيْرَةٌ وَالدَّكَاكِيْنُ نَظِيْفَةٌ جَمِيْلَةٌ، وَمَا هَذَا الدُّكَّانُ الْجَمِيْلُ إِلَى الْيَمِيْنِ يَا عُمَرُ؟</p>
+
+      <h2>مَنْ يَمْنَعُكَ مِنِّيْ</h2>
+      <p>خَرَجَ رَسُوْلُ اللَّهِ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ فِيْ غَزْوَةٍ وَرَجَعَ عَنْهَا فِي الظَّهِيْرَةِ وَكَانَتْ أَيَّامُ الصَّيْفِ فَأَرَادَ رَسُوْلُ اللّهِ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ أَنْ يَسْتَرِيْحَ. وَلَيْسَ فِيْ الْبَرِّيَّةِ مَكَانٌ يَسْتَرِيْحُ فِيْهِ الْإِنْسَانُ إِلَّا الشَّجَرُ.</p>
+      
+      <p>فَنَزَلَ رَسُوْلُ اللَّهِ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ تَحْتَ سَمُرَةٍ وَعَلَّقَ بِهَا سَيْفَهُ، وَتَفَرَّقَ النَّاسُ وَنَامُوْا، وَنَامَ رَسُوْلُ اللَّهِ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ تَحْتَ السَّمُرَةِ. وَجَاءَ رَجُلٌ مِنْ الْمُشْرِكِينَ وَسَيْفُ رَسُوْلِ اللَّهِ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ مُعَلَّقٌ بِالسَّمُرَةِ وَهُوَ فِيْ غِمْدِهِ.</p>`,
       level: "intermediate",
       icon: "📖"
     }

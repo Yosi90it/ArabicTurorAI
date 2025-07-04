@@ -1,22 +1,99 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Search, Volume2 } from "lucide-react";
+import { Search, Volume2, ChevronLeft, ChevronRight, BookOpen } from "lucide-react";
 import ClickableText from "@/components/ClickableText";
 import { useTashkeel } from "@/contexts/TashkeelContext";
 import { useContent } from "@/contexts/ContentContext";
+import WordModal from "@/components/WordModal";
+import { useFlashcards } from "@/contexts/FlashcardContext";
+import { useToast } from "@/hooks/use-toast";
+import { getWordInfo } from "@/data/arabicDictionary";
 
 export default function BookReader() {
   const { books } = useContent();
+  const { addFlashcard } = useFlashcards();
+  const { toast } = useToast();
   const [selectedBook, setSelectedBook] = useState(books[0]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [selectedWord, setSelectedWord] = useState<{
+    word: string;
+    translation: string;
+    grammar: string;
+    position: { x: number; y: number };
+  } | null>(null);
   const { tashkeelEnabled } = useTashkeel();
 
-  // Text with and without tashkeel
-  const originalTextWithTashkeel = "كَانَ يَا مَا كَانَ، فِي قَدِيمِ الزَّمَانِ، تَاجِرٌ غَنِيٌّ فِي بَغْدَادَ...";
-  const plainTextWithoutTashkeel = "كان يا ما كان، في قديم الزمان، تاجر غني في بغداد...";
-  
-  const originalTextWithTashkeel2 = "وَكَانَ لَهُ وَلَدَانِ، الأَكْبَرُ اسْمُهُ عَلِي وَالأَصْغَرُ اسْمُهُ أَحْمَدُ...";
-  const plainTextWithoutTashkeel2 = "وكان له ولدان، الأكبر اسمه علي والأصغر اسمه أحمد...";
+  // Split book content into pages
+  const splitIntoPages = (content: string) => {
+    const sections = content.split('<h2>').filter(section => section.trim());
+    if (sections.length === 0) return [content];
+    
+    // First section starts with h1, others with h2
+    const pages = sections.map((section, index) => {
+      if (index === 0) return section;
+      return '<h2>' + section;
+    });
+    
+    return pages;
+  };
+
+  const currentBookPages = selectedBook ? splitIntoPages(selectedBook.content) : [];
+  const totalPages = currentBookPages.length;
+
+  const handleWordClick = (word: string, event: React.MouseEvent) => {
+    const rect = (event.target as HTMLElement).getBoundingClientRect();
+    const wordInfo = getWordInfo(word);
+    
+    if (wordInfo) {
+      setSelectedWord({
+        word: wordInfo.arabic,
+        translation: wordInfo.translation,
+        grammar: wordInfo.grammar,
+        position: { x: rect.left + rect.width / 2, y: rect.top }
+      });
+    }
+  };
+
+  const handleAddToFlashcards = (word: string, translation: string, grammar: string) => {
+    addFlashcard(word, translation, grammar);
+    toast({
+      title: "Added to Flashcards",
+      description: `"${word}" has been added to your flashcard collection.`,
+    });
+    setSelectedWord(null);
+  };
+
+  const renderClickableText = (text: string) => {
+    // Split text into words while preserving HTML tags
+    const parts = text.split(/(\s+|<[^>]*>)/);
+    
+    return parts.map((part, index) => {
+      // Skip whitespace and HTML tags
+      if (/^\s+$/.test(part) || /^<[^>]*>$/.test(part)) {
+        return <span key={index} dangerouslySetInnerHTML={{ __html: part }} />;
+      }
+      
+      // Process Arabic words
+      const arabicWords = part.match(/[\u0600-\u06FF\u0750-\u077F]+/g);
+      if (arabicWords && arabicWords.length > 0) {
+        return arabicWords.map((word, wordIndex) => {
+          const cleanWord = word.replace(/[۔،؍؎؏ؘؙؚؐؑؒؓؔؕؖؗ؛؜؝؞؟ؠ]/g, '');
+          return (
+            <span
+              key={`${index}-${wordIndex}`}
+              className="clickable-word cursor-pointer hover:bg-blue-100 px-1 rounded transition-colors"
+              onClick={(e) => handleWordClick(cleanWord, e)}
+            >
+              {word}
+            </span>
+          );
+        });
+      }
+      
+      return <span key={index}>{part}</span>;
+    });
+  };
 
   return (
     <div>
@@ -92,6 +169,18 @@ export default function BookReader() {
           </Card>
         </div>
       </div>
+
+      {/* Word Modal */}
+      {selectedWord && (
+        <WordModal
+          word={selectedWord.word}
+          translation={selectedWord.translation}
+          grammar={selectedWord.grammar}
+          position={selectedWord.position}
+          onClose={() => setSelectedWord(null)}
+          onAddToFlashcards={handleAddToFlashcards}
+        />
+      )}
     </div>
   );
 }
