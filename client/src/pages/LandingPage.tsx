@@ -19,13 +19,14 @@ import {
   Award,
   Zap,
   Heart,
-  MessageCircle
+  MessageCircle,
+  LogOut
 } from 'lucide-react';
 
 export default function LandingPage() {
   const [isYearly, setIsYearly] = useState(false);
   const [, setLocation] = useLocation();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
   const { isTrialActive, startTrial } = useTrial();
   const { strings } = useLanguage();
 
@@ -387,10 +388,25 @@ export default function LandingPage() {
               <p className="text-gray-400 mb-4">
                 Revolutionary AI-powered Arabic learning platform for the modern world.
               </p>
-              <div className="flex space-x-4">
+              <div className="flex items-center space-x-2">
                 <Heart className="w-5 h-5 text-red-400" />
                 <span className="text-gray-400">Made with love for language learners</span>
               </div>
+              {isAuthenticated && (
+                <div className="mt-4">
+                  <Button
+                    onClick={() => {
+                      logout();
+                      setLocation('/');
+                    }}
+                    variant="outline"
+                    className="text-gray-400 border-gray-600 hover:text-white hover:border-gray-400"
+                  >
+                    <LogOut className="w-4 h-4 mr-2" />
+                    {strings.logout}
+                  </Button>
+                </div>
+              )}
             </div>
             
             <div>
@@ -425,7 +441,7 @@ export default function LandingPage() {
           </div>
           
           <div className="border-t border-gray-800 pt-8 mt-8 text-center text-gray-400">
-            <p>&copy; 2024 ArabicAI. All rights reserved. Built with ❤️ for Arabic learners worldwide.</p>
+            <p>&copy; 2024 ArabicAI. All rights reserved. Built with love for Arabic learners worldwide.</p>
           </div>
         </div>
       </footer>

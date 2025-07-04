@@ -52,7 +52,7 @@ const navigationItems = [
   }
 ];
 
-export default function Sidebar({ onLinkClick }: SidebarProps = {}) {
+export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
   const [location] = useLocation();
   const { tashkeelEnabled, setTashkeelEnabled } = useTashkeel();
   const { isAdmin, isAuthenticated } = useAuth();

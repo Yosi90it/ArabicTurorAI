@@ -178,6 +178,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setTrialStatus('none');
     localStorage.removeItem('userToken');
     localStorage.removeItem('language');
+    localStorage.removeItem('trialStart');
   };
 
   return (
