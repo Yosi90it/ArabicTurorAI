@@ -176,8 +176,7 @@ export default function LandingPage() {
               </Button>
               <Button 
                 onClick={() => setShowDemoModal(true)}
-                variant="outline" 
-                className="border-white text-white hover:bg-white hover:text-purple-700 px-8 py-4 text-lg rounded-2xl transition-all duration-200"
+                className="bg-purple-500 hover:bg-purple-600 text-white border-2 border-white/30 px-8 py-4 text-lg font-semibold rounded-2xl shadow-2xl transition-all duration-200"
               >
                 Watch Demo
                 <Play className="ml-2 w-5 h-5" />
@@ -379,8 +378,7 @@ export default function LandingPage() {
             </Button>
             <Button 
               onClick={() => setShowDemoModal(true)}
-              variant="outline" 
-              className="border-white text-white hover:bg-white hover:text-purple-700 px-8 py-4 text-lg rounded-2xl transition-all duration-200"
+              className="bg-purple-500 hover:bg-purple-600 text-white border-2 border-white/30 px-8 py-4 text-lg font-semibold rounded-2xl shadow-2xl transition-all duration-200"
             >
               Watch Demo
               <Play className="ml-2 w-5 h-5" />
