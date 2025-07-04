@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Search, Volume2, ChevronLeft, ChevronRight, BookOpen } from "lucide-react";
+import { Search, Volume2, ChevronLeft, ChevronRight, BookOpen, Loader2 } from "lucide-react";
 import { useTashkeel } from "@/contexts/TashkeelContext";
 import { useContent } from "@/contexts/ContentContext";
 import WordModal from "@/components/WordModal";
 import { useFlashcards } from "@/contexts/FlashcardContext";
 import { useToast } from "@/hooks/use-toast";
-import { getWordInfo } from "@/data/arabicDictionary";
+import { analyzeArabicWord, type WordAnalysis } from "@/lib/openai";
 
 export default function BookReader() {
   const { books } = useContent();
@@ -20,7 +20,10 @@ export default function BookReader() {
     translation: string;
     grammar: string;
     position: { x: number; y: number };
+    examples?: string[];
+    pronunciation?: string;
   } | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const { tashkeelEnabled } = useTashkeel();
 
   // Update selected book when books change
@@ -47,19 +50,7 @@ export default function BookReader() {
   const currentBookPages = selectedBook ? splitIntoPages(selectedBook.content) : [];
   const totalPages = currentBookPages.length;
 
-  const handleWordClick = (word: string, event: React.MouseEvent) => {
-    const rect = (event.target as HTMLElement).getBoundingClientRect();
-    const wordInfo = getWordInfo(word);
-    
-    if (wordInfo) {
-      setSelectedWord({
-        word: wordInfo.arabic,
-        translation: wordInfo.translation,
-        grammar: wordInfo.grammar,
-        position: { x: rect.left + rect.width / 2, y: rect.top }
-      });
-    }
-  };
+
 
   const handleAddToFlashcards = (word: string, translation: string, grammar: string) => {
     addFlashcard(word, translation, grammar);
@@ -109,20 +100,46 @@ export default function BookReader() {
   };
 
   // Handle click events on the content area
-  const handleContentClick = (event: React.MouseEvent) => {
+  const handleContentClick = async (event: React.MouseEvent) => {
     const target = event.target as HTMLElement;
     if (target.classList.contains('clickable-word')) {
       const word = target.getAttribute('data-word') || target.textContent || '';
       const rect = target.getBoundingClientRect();
-      const wordInfo = getWordInfo(word);
       
-      if (wordInfo) {
+      console.log('Clicked word:', word); // Debug log
+      
+      // Show loading state
+      setSelectedWord({
+        word: word,
+        translation: "Analyzing...",
+        grammar: "Getting grammar information...",
+        position: { x: rect.left + rect.width / 2, y: rect.top }
+      });
+      
+      setIsAnalyzing(true);
+      
+      try {
+        // Get word analysis from OpenAI
+        const analysis = await analyzeArabicWord(word);
+        
         setSelectedWord({
-          word: wordInfo.arabic,
-          translation: wordInfo.translation,
-          grammar: wordInfo.grammar,
+          word: analysis.word,
+          translation: analysis.translation,
+          grammar: analysis.grammar,
+          position: { x: rect.left + rect.width / 2, y: rect.top },
+          examples: analysis.examples,
+          pronunciation: analysis.pronunciation
+        });
+      } catch (error) {
+        console.error('Error analyzing word:', error);
+        setSelectedWord({
+          word: word,
+          translation: "Translation service unavailable",
+          grammar: "Grammar analysis unavailable",
           position: { x: rect.left + rect.width / 2, y: rect.top }
         });
+      } finally {
+        setIsAnalyzing(false);
       }
     }
   };
@@ -279,6 +296,9 @@ export default function BookReader() {
           position={selectedWord.position}
           onClose={() => setSelectedWord(null)}
           onAddToFlashcards={handleAddToFlashcards}
+          examples={selectedWord.examples}
+          pronunciation={selectedWord.pronunciation}
+          isAnalyzing={isAnalyzing}
         />
       )}
     </div>

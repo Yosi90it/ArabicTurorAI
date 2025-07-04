@@ -9,6 +9,9 @@ interface WordModalProps {
   position: { x: number; y: number };
   onClose: () => void;
   onAddToFlashcards: (word: string, translation: string, grammar: string) => void;
+  examples?: string[];
+  pronunciation?: string;
+  isAnalyzing?: boolean;
 }
 
 export default function WordModal({ 
@@ -17,7 +20,10 @@ export default function WordModal({
   grammar, 
   position, 
   onClose, 
-  onAddToFlashcards 
+  onAddToFlashcards,
+  examples = [],
+  pronunciation,
+  isAnalyzing = false
 }: WordModalProps) {
   return (
     <div className="fixed inset-0 z-50" onClick={onClose}>
@@ -44,16 +50,34 @@ export default function WordModal({
             </Button>
           </div>
           
-          <div className="space-y-2">
+          <div className="space-y-3">
             <div>
-              <span className="text-sm font-medium text-gray-600">Translation:</span>
-              <p className="text-sm">{translation}</p>
+              <h4 className="font-semibold text-purple-700 mb-1">Translation</h4>
+              <p className="text-gray-700">{translation}</p>
             </div>
             
+            {pronunciation && (
+              <div>
+                <h4 className="font-semibold text-purple-700 mb-1">Pronunciation</h4>
+                <p className="text-gray-600 text-sm font-mono">{pronunciation}</p>
+              </div>
+            )}
+            
             <div>
-              <span className="text-sm font-medium text-gray-600">Grammar:</span>
-              <p className="text-xs text-gray-500">{grammar}</p>
+              <h4 className="font-semibold text-purple-700 mb-1">Grammar</h4>
+              <p className="text-gray-600 text-sm">{grammar}</p>
             </div>
+
+            {examples && examples.length > 0 && (
+              <div>
+                <h4 className="font-semibold text-purple-700 mb-1">Examples</h4>
+                <div className="space-y-1">
+                  {examples.slice(0, 2).map((example, index) => (
+                    <p key={index} className="text-gray-600 text-sm italic">"{example}"</p>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
           
           <Button 

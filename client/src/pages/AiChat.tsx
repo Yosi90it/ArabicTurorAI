@@ -3,6 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTashkeel } from "@/contexts/TashkeelContext";
+import { Send, Bot, User, Volume2, Loader2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { useFlashcards } from "@/contexts/FlashcardContext";
+import { useToast } from "@/hooks/use-toast";
+import OpenAI from "openai";
 
 interface Message {
   id: number;
@@ -11,75 +16,99 @@ interface Message {
   translation: string;
 }
 
+// the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+const openai = new OpenAI({ 
+  apiKey: import.meta.env.VITE_OPENAI_API_KEY || "YOUR_API_KEY_HERE",
+  dangerouslyAllowBrowser: true
+});
+
 export default function AiChat() {
   const { tashkeelEnabled } = useTashkeel();
+  const { addFlashcard } = useFlashcards();
+  const { toast } = useToast();
   
   // Define messages with both tashkeel and without
   const getDisplayText = (withTashkeel: string, withoutTashkeel: string) => {
     return tashkeelEnabled ? withTashkeel : withoutTashkeel;
   };
 
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1,
-      sender: "AI",
-      arabic: getDisplayText("مَرْحَباً! كَيْفَ حَالُكَ؟", "مرحبا! كيف حالك؟"),
-      translation: "Hello! How are you?"
-    },
-    {
-      id: 2,
-      sender: "ME",
-      arabic: getDisplayText("أَنَا بِخَيْرٍ، شُكْراً", "أنا بخير، شكرا"),
-      translation: "I'm fine, thank you"
-    },
-    {
-      id: 3,
-      sender: "AI",
-      arabic: getDisplayText("مُمْتَازٌ! هَلْ تُرِيدُ أَنْ نَتَحَدَّثَ عَنِ الطَّعَامِ؟", "ممتاز! هل تريد أن نتحدث عن الطعام؟"),
-      translation: "Excellent! Would you like to talk about food?"
-    }
-  ]);
-  
-  const [inputValue, setInputValue] = useState("");
-  const [showSuggestions, setShowSuggestions] = useState(true);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Suggestion prompts
+  const handleSend = async () => {
+    if (!input.trim()) return;
+
+    const userMessage = input.trim();
+    setInput("");
+    setIsLoading(true);
+
+    // Add user message
+    const newMessage: Message = {
+      id: messages.length + 1,
+      sender: "ME",
+      arabic: userMessage,
+      translation: ""
+    };
+    setMessages(prev => [...prev, newMessage]);
+
+    try {
+      // Call OpenAI API
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: `You are an expert Arabic language teacher. Always respond in Arabic and provide English translations. 
+            Format your response as JSON:
+            {
+              "arabic": "your Arabic response",
+              "translation": "English translation of your response"
+            }`
+          },
+          {
+            role: "user",
+            content: userMessage
+          }
+        ],
+        response_format: { type: "json_object" },
+        max_tokens: 300
+      });
+
+      const result = JSON.parse(response.choices[0].message.content || '{}');
+      
+      const aiResponse: Message = {
+        id: messages.length + 2,
+        sender: "AI",
+        arabic: result.arabic || "عذراً، لم أتمكن من فهم سؤالك.",
+        translation: result.translation || "Sorry, I couldn't understand your question."
+      };
+      
+      setMessages(prev => [...prev, aiResponse]);
+    } catch (error) {
+      console.error("OpenAI API error:", error);
+      const errorResponse: Message = {
+        id: messages.length + 2,
+        sender: "AI",
+        arabic: "عذراً، حدث خطأ في الخدمة.",
+        translation: "Sorry, there was a service error."
+      };
+      setMessages(prev => [...prev, errorResponse]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const suggestions = [
-    "Explain this word",
-    "Give me an example sentence",
     "How do I say 'thank you'?",
-    "Teach me about verb conjugations",
-    "What does this grammar rule mean?"
+    "Teach me basic greetings",
+    "Explain Arabic verb conjugations",
+    "What are common Arabic phrases?",
+    "Help me with pronunciation"
   ];
 
-  const handleSendMessage = () => {
-    if (inputValue.trim()) {
-      const newMessage: Message = {
-        id: messages.length + 1,
-        sender: "ME",
-        arabic: inputValue,
-        translation: "Translation would be provided by AI"
-      };
-      setMessages([...messages, newMessage]);
-      setInputValue("");
-      setShowSuggestions(true);
-    }
-  };
-
   const handleSuggestionClick = (suggestion: string) => {
-    setInputValue(suggestion);
-    setShowSuggestions(false);
-    // Focus on input field
-    setTimeout(() => {
-      const input = document.querySelector('input[type="text"]') as HTMLInputElement;
-      if (input) input.focus();
-    }, 100);
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleSendMessage();
-    }
+    setInput(suggestion);
   };
 
   return (
@@ -134,39 +163,42 @@ export default function AiChat() {
             </div>
           </div>
 
-          {/* AI Follow-up Suggestions */}
-          {showSuggestions && messages.length > 0 && messages[messages.length - 1].sender === "AI" && (
-            <div className="mb-4">
-              <p className="text-sm text-gray-600 mb-2">Need help? Try these:</p>
+          {/* Suggestions */}
+          {messages.length === 0 && (
+            <div className="space-y-2">
+              <h4 className="text-sm font-medium text-gray-700">Try asking:</h4>
               <div className="flex flex-wrap gap-2">
-                {suggestions.slice(0, 3).map((suggestion, index) => (
-                  <button
+                {suggestions.map((suggestion, index) => (
+                  <Badge
                     key={index}
+                    variant="outline"
+                    className="cursor-pointer hover:bg-purple-50"
                     onClick={() => handleSuggestionClick(suggestion)}
-                    className="suggestion px-3 py-1 text-xs bg-primary-purple/10 text-primary-purple hover:bg-primary-purple/20 rounded-2xl transition-colors border border-primary-purple/20"
                   >
                     {suggestion}
-                  </button>
+                  </Badge>
                 ))}
               </div>
             </div>
           )}
-
-          {/* Chat Input */}
-          <div className="flex space-x-3">
+          
+          {/* Input area */}
+          <div className="flex space-x-2">
             <Input
               type="text"
-              placeholder="Type your message in Arabic..."
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyPress={handleKeyPress}
-              className="flex-1 p-3 border-gentle-shadow rounded-2xl focus:ring-2 focus:ring-primary-purple focus:border-transparent"
+              placeholder="Type your message in Arabic or English..."
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyPress={(e) => e.key === "Enter" && handleSend()}
+              className="flex-1"
+              disabled={isLoading}
             />
-            <Button
-              onClick={handleSendMessage}
-              className="bg-primary-purple text-white px-6 py-3 rounded-2xl hover:bg-active-purple transition-colors duration-200 shadow-md hover:shadow-lg"
+            <Button 
+              onClick={handleSend}
+              disabled={isLoading || !input.trim()}
+              className="px-6"
             >
-              Send
+              {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
             </Button>
           </div>
         </CardContent>
