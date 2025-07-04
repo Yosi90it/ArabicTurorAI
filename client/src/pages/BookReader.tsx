@@ -8,6 +8,8 @@ import WordModal from "@/components/WordModal";
 import { useFlashcards } from "@/contexts/FlashcardContext";
 import { useToast } from "@/hooks/use-toast";
 import { getWordInfo } from "@/data/arabicDictionary";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 export default function BookReader() {
   const { books } = useContent();
@@ -70,23 +72,7 @@ export default function BookReader() {
     setSelectedWord(null);
   };
 
-  const handleContentClick = (event: React.MouseEvent) => {
-    const target = event.target as HTMLElement;
-    if (target.classList.contains('clickable-word')) {
-      const word = target.getAttribute('data-word') || target.textContent || '';
-      const rect = target.getBoundingClientRect();
-      const wordInfo = getWordInfo(word);
-      
-      if (wordInfo) {
-        setSelectedWord({
-          word: wordInfo.arabic,
-          translation: wordInfo.translation,
-          grammar: wordInfo.grammar,
-          position: { x: rect.left + rect.width / 2, y: rect.top }
-        });
-      }
-    }
-  };
+
 
   const renderClickableText = (text: string) => {
     // Split text into words while preserving HTML tags
@@ -212,11 +198,15 @@ export default function BookReader() {
                       className="text-right leading-relaxed space-y-4" 
                       style={{ fontSize: '1.2rem', lineHeight: '2' }}
                       dir="rtl"
-                      onClick={handleContentClick}
-                      dangerouslySetInnerHTML={{ 
-                        __html: currentBookPages[currentPage] ? processBookContent(currentBookPages[currentPage]) : ''
-                      }}
-                    />
+                    >
+                      <ReactMarkdown 
+                        className="prose prose-lg max-w-none"
+                        remarkPlugins={[remarkGfm]}
+                        components={customRenderers}
+                      >
+                        {currentBookPages[currentPage] || ''}
+                      </ReactMarkdown>
+                    </div>
                   </div>
                 </div>
               ) : (
