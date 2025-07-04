@@ -148,8 +148,98 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Navigation */}
+      <nav className="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex justify-between items-center h-16">
+            {/* Logo */}
+            <div className="flex items-center">
+              <div className="text-2xl font-bold text-purple-600">ArabicAI</div>
+            </div>
+
+            {/* Desktop Menu */}
+            <div className="hidden md:flex items-center space-x-8">
+              <a href="#features" className="text-gray-700 hover:text-purple-600 transition-colors">{strings.features}</a>
+              <a href="#testimonials" className="text-gray-700 hover:text-purple-600 transition-colors">{strings.testimonials}</a>
+              <a href="#pricing" className="text-gray-700 hover:text-purple-600 transition-colors">{strings.pricing}</a>
+              {!isAuthenticated ? (
+                <div className="flex items-center space-x-4">
+                  <Button 
+                    onClick={() => setLocation('/login')}
+                    variant="outline" 
+                    className="text-purple-600 border-purple-600 hover:bg-purple-50"
+                  >
+                    {strings.login}
+                  </Button>
+                  <Button 
+                    onClick={handleStartFree}
+                    className="bg-purple-600 hover:bg-purple-700 text-white"
+                  >
+                    {strings.startFree}
+                  </Button>
+                </div>
+              ) : (
+                <Button 
+                  onClick={() => setLocation('/learn')}
+                  className="bg-purple-600 hover:bg-purple-700 text-white"
+                >
+                  {strings.startLearning}
+                </Button>
+              )}
+            </div>
+
+            {/* Mobile Menu Button */}
+            <div className="md:hidden">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="p-2"
+              >
+                ☰
+              </Button>
+            </div>
+          </div>
+
+          {/* Mobile Menu */}
+          {mobileMenuOpen && (
+            <div className="md:hidden border-t border-gray-200 py-4">
+              <div className="flex flex-col space-y-4">
+                <a href="#features" className="text-gray-700 hover:text-purple-600 transition-colors">{strings.features}</a>
+                <a href="#testimonials" className="text-gray-700 hover:text-purple-600 transition-colors">{strings.testimonials}</a>
+                <a href="#pricing" className="text-gray-700 hover:text-purple-600 transition-colors">{strings.pricing}</a>
+                {!isAuthenticated ? (
+                  <div className="flex flex-col space-y-2">
+                    <Button 
+                      onClick={() => setLocation('/login')}
+                      variant="outline" 
+                      className="w-full text-purple-600 border-purple-600"
+                    >
+                      {strings.login}
+                    </Button>
+                    <Button 
+                      onClick={handleStartFree}
+                      className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                    >
+                      {strings.startFree}
+                    </Button>
+                  </div>
+                ) : (
+                  <Button 
+                    onClick={() => setLocation('/learn')}
+                    className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                  >
+                    {strings.startLearning}
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </nav>
+
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-purple-600 via-purple-700 to-blue-800 text-white overflow-hidden">
+      <section className="relative bg-gradient-to-br from-purple-600 via-purple-700 to-blue-800 text-white overflow-hidden pt-16">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative max-w-7xl mx-auto px-4 py-20 sm:py-32">
           <div className="text-center">
@@ -182,6 +272,16 @@ export default function LandingPage() {
                 <Play className="ml-2 w-5 h-5" />
               </Button>
             </div>
+            <div className="mt-8 text-center">
+              <p className="text-purple-200 mb-2">Already have an account?</p>
+              <Button 
+                onClick={() => setLocation('/login')}
+                variant="link" 
+                className="text-white underline hover:text-purple-200 text-lg"
+              >
+                Sign in here
+              </Button>
+            </div>
             <div className="mt-12 flex items-center justify-center gap-8 text-purple-200">
               <div className="flex items-center gap-2">
                 <Users className="w-5 h-5" />
@@ -197,7 +297,7 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-gray-50">
+      <section id="features" className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl sm:text-5xl font-bold text-gray-800 mb-6">
@@ -226,7 +326,7 @@ export default function LandingPage() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-20 bg-white">
+      <section id="testimonials" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl sm:text-5xl font-bold text-gray-800 mb-6">
