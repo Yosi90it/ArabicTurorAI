@@ -1,9 +1,7 @@
-import { useState } from "react";
-import React from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Search, Volume2, ChevronLeft, ChevronRight, BookOpen } from "lucide-react";
-import ClickableText from "@/components/ClickableText";
 import { useTashkeel } from "@/contexts/TashkeelContext";
 import { useContent } from "@/contexts/ContentContext";
 import WordModal from "@/components/WordModal";
@@ -26,7 +24,7 @@ export default function BookReader() {
   const { tashkeelEnabled } = useTashkeel();
 
   // Update selected book when books change
-  React.useEffect(() => {
+  useEffect(() => {
     if (books.length > 0 && !selectedBook) {
       setSelectedBook(books[0]);
     }
@@ -70,6 +68,24 @@ export default function BookReader() {
       description: `"${word}" has been added to your flashcard collection.`,
     });
     setSelectedWord(null);
+  };
+
+  const handleContentClick = (event: React.MouseEvent) => {
+    const target = event.target as HTMLElement;
+    if (target.classList.contains('clickable-word')) {
+      const word = target.getAttribute('data-word') || target.textContent || '';
+      const rect = target.getBoundingClientRect();
+      const wordInfo = getWordInfo(word);
+      
+      if (wordInfo) {
+        setSelectedWord({
+          word: wordInfo.arabic,
+          translation: wordInfo.translation,
+          grammar: wordInfo.grammar,
+          position: { x: rect.left + rect.width / 2, y: rect.top }
+        });
+      }
+    }
   };
 
   const renderClickableText = (text: string) => {
@@ -146,36 +162,68 @@ export default function BookReader() {
           </CardContent>
         </Card>
 
-        {/* Reading Area */}
+        {/* Reading Content */}
         <div className="lg:col-span-2">
-          <Card>
-            <CardHeader>
-              <div className="flex justify-between items-center">
-                <CardTitle className="text-base">{selectedBook?.title || "No Book Selected"}</CardTitle>
-                <div className="flex space-x-2">
-                  <Button variant="ghost" size="sm" className="p-2">
-                    <Search className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm" className="p-2">
-                    <Volume2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="prose max-w-none">
-                {selectedBook ? (
-                  <div 
-                    className="text-lg leading-relaxed text-right" 
-                    dir="rtl"
-                    dangerouslySetInnerHTML={{ __html: selectedBook.content }}
-                  />
-                ) : (
-                  <div className="text-center py-8 text-gray-500">
-                    <p>No books available. Please upload books in the Admin Panel.</p>
+          <Card className="h-full">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-lg flex items-center">
+                <BookOpen className="w-5 h-5 mr-2" />
+                {selectedBook?.title || "Select a Book"}
+              </CardTitle>
+              <div className="flex items-center space-x-2">
+                {selectedBook && totalPages > 1 && (
+                  <div className="flex items-center space-x-2 mr-4">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setCurrentPage(Math.max(0, currentPage - 1))}
+                      disabled={currentPage === 0}
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </Button>
+                    <span className="text-sm text-gray-600 px-2">
+                      Page {currentPage + 1} of {totalPages}
+                    </span>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setCurrentPage(Math.min(totalPages - 1, currentPage + 1))}
+                      disabled={currentPage === totalPages - 1}
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </Button>
                   </div>
                 )}
+                <Button variant="outline" size="sm">
+                  <Search className="w-4 h-4 mr-2" />
+                  Search
+                </Button>
+                <Button variant="outline" size="sm">
+                  <Volume2 className="w-4 h-4 mr-2" />
+                  Listen
+                </Button>
               </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {selectedBook ? (
+                <div className="prose prose-lg max-w-none">
+                  <div className="bg-gradient-to-br from-amber-50 to-orange-50 p-6 rounded-2xl border border-amber-200 min-h-[500px]">
+                    <div 
+                      className="text-right leading-relaxed space-y-4" 
+                      style={{ fontSize: '1.2rem', lineHeight: '2' }}
+                      dir="rtl"
+                      onClick={handleContentClick}
+                      dangerouslySetInnerHTML={{ 
+                        __html: currentBookPages[currentPage] ? processBookContent(currentBookPages[currentPage]) : ''
+                      }}
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <p className="text-gray-500">Please select a book from your library to start reading.</p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
