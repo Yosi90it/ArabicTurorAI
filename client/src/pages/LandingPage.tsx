@@ -26,6 +26,7 @@ import {
 export default function LandingPage() {
   const [isYearly, setIsYearly] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showDemoModal, setShowDemoModal] = useState(false);
   const [, setLocation] = useLocation();
   const { isAuthenticated, logout } = useAuth();
   const { isTrialActive, startTrial } = useTrial();
@@ -173,7 +174,11 @@ export default function LandingPage() {
                 {isTrialActive ? strings.startLearning : strings.startFree}
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
-              <Button variant="outline" className="border-white/30 text-white hover:bg-white/10 px-8 py-4 text-lg rounded-2xl">
+              <Button 
+                onClick={() => setShowDemoModal(true)}
+                variant="outline" 
+                className="border-white text-white hover:bg-white hover:text-purple-700 px-8 py-4 text-lg rounded-2xl transition-all duration-200"
+              >
                 Watch Demo
                 <Play className="ml-2 w-5 h-5" />
               </Button>
@@ -372,9 +377,13 @@ export default function LandingPage() {
               {isTrialActive ? strings.startLearning : strings.startFree}
               <Zap className="ml-2 w-5 h-5" />
             </Button>
-            <Button variant="outline" className="border-white/30 text-white hover:bg-white/10 px-8 py-4 text-lg rounded-2xl">
-              Contact Sales
-              <MessageCircle className="ml-2 w-5 h-5" />
+            <Button 
+              onClick={() => setShowDemoModal(true)}
+              variant="outline" 
+              className="border-white text-white hover:bg-white hover:text-purple-700 px-8 py-4 text-lg rounded-2xl transition-all duration-200"
+            >
+              Watch Demo
+              <Play className="ml-2 w-5 h-5" />
             </Button>
           </div>
         </div>
@@ -432,6 +441,67 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+
+      {/* Demo Modal */}
+      {showDemoModal && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            <div className="flex justify-between items-center p-6 border-b">
+              <h3 className="text-2xl font-bold text-gray-800">ArabicAI Demo</h3>
+              <Button
+                onClick={() => setShowDemoModal(false)}
+                variant="outline"
+                size="sm"
+                className="p-2"
+              >
+                ✕
+              </Button>
+            </div>
+            
+            <div className="p-6">
+              <div className="aspect-video bg-gray-100 rounded-xl mb-6 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="w-20 h-20 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Play className="w-8 h-8 text-white ml-1" />
+                  </div>
+                  <h4 className="text-xl font-semibold text-gray-800 mb-2">Demo Video</h4>
+                  <p className="text-gray-600 mb-4">See how ArabicAI transforms language learning</p>
+                  <div className="bg-purple-50 p-4 rounded-lg">
+                    <p className="text-sm text-purple-700 mb-2">Demo features:</p>
+                    <ul className="text-sm text-purple-600 space-y-1">
+                      <li>• AI Chat conversations in Arabic</li>
+                      <li>• Interactive book reading with instant translations</li>
+                      <li>• Smart flashcard system</li>
+                      <li>• Video pronunciation training</li>
+                      <li>• 7-day structured learning plan</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button 
+                  onClick={() => {
+                    setShowDemoModal(false);
+                    handleStartFree();
+                  }}
+                  className="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-3"
+                >
+                  Start Free Trial
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Button>
+                <Button 
+                  onClick={() => setShowDemoModal(false)}
+                  variant="outline"
+                  className="flex-1 py-3"
+                >
+                  Close Demo
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
