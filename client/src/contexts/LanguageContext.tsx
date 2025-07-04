@@ -60,7 +60,14 @@ const translations = {
     videoTraining: "Video Training",
     smartFlashcards: "Smart Flashcards",
     culturalContext: "Cultural Context",
-    progressTracking: "Progress Tracking"
+    progressTracking: "Progress Tracking",
+    
+    // Navigation
+    features: "Features",
+    testimonials: "Testimonials",
+    pricing: "Pricing",
+    about: "About",
+    contact: "Contact"
   },
   de: {
     // Landing Page
@@ -113,7 +120,14 @@ const translations = {
     videoTraining: "Video-Training",
     smartFlashcards: "Intelligente Karteikarten",
     culturalContext: "Kultureller Kontext", 
-    progressTracking: "Fortschrittsverfolgung"
+    progressTracking: "Fortschrittsverfolgung",
+    
+    // Navigation
+    features: "Funktionen",
+    testimonials: "Bewertungen", 
+    pricing: "Preise",
+    about: "Über uns",
+    contact: "Kontakt"
   }
 };
 

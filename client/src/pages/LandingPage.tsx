@@ -25,6 +25,7 @@ import {
 
 export default function LandingPage() {
   const [isYearly, setIsYearly] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [, setLocation] = useLocation();
   const { isAuthenticated, logout } = useAuth();
   const { isTrialActive, startTrial } = useTrial();
