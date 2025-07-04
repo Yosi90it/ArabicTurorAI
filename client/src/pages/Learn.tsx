@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Link } from 'wouter';
 import TrialExpiredBanner from '@/components/TrialExpiredBanner';
+import Header from '@/components/Header';
 import { 
   Brain, 
   BookOpen, 
@@ -61,7 +62,8 @@ export default function Learn() {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-6 relative">
+      <Header />
       <div className="max-w-6xl mx-auto">
         {/* Trial Status Banner */}
         {isTrialActive && (

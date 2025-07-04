@@ -392,21 +392,7 @@ export default function LandingPage() {
                 <Heart className="w-5 h-5 text-red-400" />
                 <span className="text-gray-400">Made with love for language learners</span>
               </div>
-              {isAuthenticated && (
-                <div className="mt-4">
-                  <Button
-                    onClick={() => {
-                      logout();
-                      setLocation('/');
-                    }}
-                    variant="outline"
-                    className="text-gray-400 border-gray-600 hover:text-white hover:border-gray-400"
-                  >
-                    <LogOut className="w-4 h-4 mr-2" />
-                    {strings.logout}
-                  </Button>
-                </div>
-              )}
+
             </div>
             
             <div>

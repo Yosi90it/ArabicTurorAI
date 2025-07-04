@@ -174,11 +174,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = () => {
+    console.log('Logout function called');
     setUser(null);
     setTrialStatus('none');
     localStorage.removeItem('userToken');
     localStorage.removeItem('language');
     localStorage.removeItem('trialStart');
+    console.log('Logout completed, user state cleared');
   };
 
   return (

@@ -5,7 +5,6 @@ import { Switch } from "@/components/ui/switch";
 import { useTashkeel } from "@/contexts/TashkeelContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import LogoutButton from "@/components/LogoutButton";
 
 const navigationItems = [
   {
@@ -51,6 +50,10 @@ const navigationItems = [
     emoji: "📅"
   }
 ];
+
+interface SidebarProps {
+  onLinkClick?: () => void;
+}
 
 export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
   const [location] = useLocation();
@@ -120,13 +123,6 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
           </div>
         </div>
       </div>
-
-      {/* Logout Section */}
-      {isAuthenticated && (
-        <div className="p-4 border-t border-white/20">
-          <LogoutButton />
-        </div>
-      )}
 
       {/* Progress Section */}
       <div className="p-4 border-t border-white/20">
