@@ -18,6 +18,9 @@ import WeeklyPlan from "@/pages/WeeklyPlan";
 import AdminPanel from "@/pages/AdminPanel";
 import AdminLogin from "@/pages/AdminLogin";
 import LandingPage from "@/pages/LandingPage";
+import Signup from "@/pages/Signup";
+import Login from "@/pages/Login";
+import Learn from "@/pages/Learn";
 import NotFound from "@/pages/not-found";
 
 function ProtectedAdminRoute() {
@@ -38,10 +41,27 @@ function Router() {
       {/* Landing page without layout */}
       <Route path="/" component={LandingPage} />
       
-      {/* Admin login without layout */}
+      {/* Auth pages without layout */}
+      <Route path="/signup">
+        <div className="min-h-screen">
+          <Signup />
+        </div>
+      </Route>
+      <Route path="/login">
+        <div className="min-h-screen">
+          <Login />
+        </div>
+      </Route>
       <Route path="/admin-login">
         <div className="min-h-screen">
           <AdminLogin />
+        </div>
+      </Route>
+      
+      {/* Learning dashboard without sidebar layout */}
+      <Route path="/learn">
+        <div className="min-h-screen">
+          <Learn />
         </div>
       </Route>
       

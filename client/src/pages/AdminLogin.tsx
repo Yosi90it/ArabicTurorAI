@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 export default function AdminLogin() {
   const [password, setPassword] = useState('');
   const [, setLocation] = useLocation();
-  const { login } = useAuth();
+  const { adminLogin } = useAuth();
   const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -25,7 +25,7 @@ export default function AdminLogin() {
       return;
     }
 
-    const success = login(password);
+    const success = adminLogin(password);
     if (success) {
       toast({
         title: "Login successful",

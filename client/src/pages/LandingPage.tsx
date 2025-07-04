@@ -146,7 +146,7 @@ export default function LandingPage() {
               and cultural immersion designed for modern learners.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link href="/ai-chat">
+              <Link href="/signup">
                 <Button className="bg-white text-purple-700 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-2xl shadow-2xl">
                   Start Learning Free
                   <ArrowRight className="ml-2 w-5 h-5" />
@@ -344,7 +344,7 @@ export default function LandingPage() {
             Join thousands of learners who are already transforming their Arabic skills with AI-powered education.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/ai-chat">
+            <Link href="/signup">
               <Button className="bg-white text-purple-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-2xl">
                 Start Free Trial
                 <Zap className="ml-2 w-5 h-5" />

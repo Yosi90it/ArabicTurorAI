@@ -13,11 +13,11 @@ export default function AdminPanel() {
   const [videoUrl, setVideoUrl] = useState('');
   const [, setLocation] = useLocation();
   const { books, videos, addBook, removeBook, addVideo, removeVideo } = useContent();
-  const { logout } = useAuth();
+  const { adminLogout } = useAuth();
   const { toast } = useToast();
 
   const handleLogout = () => {
-    logout();
+    adminLogout();
     toast({
       title: "Logged out",
       description: "You have been logged out of the admin panel."
