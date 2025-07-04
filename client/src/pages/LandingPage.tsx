@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
-import { Link } from 'wouter';
+import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
+import { useTrial } from '@/contexts/TrialContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -21,6 +24,21 @@ import {
 
 export default function LandingPage() {
   const [isYearly, setIsYearly] = useState(false);
+  const [, setLocation] = useLocation();
+  const { isAuthenticated } = useAuth();
+  const { isTrialActive, startTrial } = useTrial();
+  const { strings } = useLanguage();
+
+  const handleStartFree = () => {
+    if (!isAuthenticated) {
+      setLocation('/signup');
+    } else if (!isTrialActive) {
+      startTrial();
+      setLocation('/learn');
+    } else {
+      setLocation('/learn');
+    }
+  };
 
   const features = [
     {
@@ -146,12 +164,13 @@ export default function LandingPage() {
               and cultural immersion designed for modern learners.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link href="/signup">
-                <Button className="bg-white text-purple-700 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-2xl shadow-2xl">
-                  Start Learning Free
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
-              </Link>
+              <Button 
+                onClick={handleStartFree}
+                className="bg-white text-purple-700 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-2xl shadow-2xl"
+              >
+                {isTrialActive ? strings.startLearning : strings.startFree}
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Button>
               <Button variant="outline" className="border-white/30 text-white hover:bg-white/10 px-8 py-4 text-lg rounded-2xl">
                 Watch Demo
                 <Play className="ml-2 w-5 h-5" />
@@ -344,12 +363,13 @@ export default function LandingPage() {
             Join thousands of learners who are already transforming their Arabic skills with AI-powered education.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/signup">
-              <Button className="bg-white text-purple-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-2xl">
-                Start Free Trial
-                <Zap className="ml-2 w-5 h-5" />
-              </Button>
-            </Link>
+            <Button 
+              onClick={handleStartFree}
+              className="bg-white text-purple-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-2xl"
+            >
+              {isTrialActive ? strings.startLearning : strings.startFree}
+              <Zap className="ml-2 w-5 h-5" />
+            </Button>
             <Button variant="outline" className="border-white/30 text-white hover:bg-white/10 px-8 py-4 text-lg rounded-2xl">
               Contact Sales
               <MessageCircle className="ml-2 w-5 h-5" />

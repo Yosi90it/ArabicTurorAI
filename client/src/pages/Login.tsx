@@ -22,25 +22,24 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      const success = await login(formData.email, formData.password);
-
-      if (success) {
-        toast({
-          title: "Welcome back!",
-          description: "Successfully signed in to your account."
-        });
-        setLocation('/learn');
+      await login(formData.email, formData.password);
+      
+      toast({
+        title: "Welcome back!",
+        description: "Successfully signed in to your account."
+      });
+      
+      // Check if language is set
+      const hasLanguage = localStorage.getItem('language');
+      if (!hasLanguage) {
+        setLocation('/select-language');
       } else {
-        toast({
-          title: "Login failed",
-          description: "Invalid email or password. Please try again.",
-          variant: "destructive"
-        });
+        setLocation('/learn');
       }
     } catch (error) {
       toast({
-        title: "Something went wrong",
-        description: "Please check your connection and try again.",
+        title: "Login failed",
+        description: "Invalid email or password. Please try again.",
         variant: "destructive"
       });
     } finally {

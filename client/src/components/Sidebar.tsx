@@ -4,6 +4,8 @@ import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
 import { useTashkeel } from "@/contexts/TashkeelContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
+import LogoutButton from "@/components/LogoutButton";
 
 const navigationItems = [
   {
@@ -53,7 +55,8 @@ const navigationItems = [
 export default function Sidebar({ onLinkClick }: SidebarProps = {}) {
   const [location] = useLocation();
   const { tashkeelEnabled, setTashkeelEnabled } = useTashkeel();
-  const { isAdmin } = useAuth();
+  const { isAdmin, isAuthenticated } = useAuth();
+  const { strings } = useLanguage();
 
   const isActive = (route: string) => {
     if (route === "/ai-chat" && location === "/") return true;
@@ -117,6 +120,13 @@ export default function Sidebar({ onLinkClick }: SidebarProps = {}) {
           </div>
         </div>
       </div>
+
+      {/* Logout Section */}
+      {isAuthenticated && (
+        <div className="p-4 border-t border-white/20">
+          <LogoutButton />
+        </div>
+      )}
 
       {/* Progress Section */}
       <div className="p-4 border-t border-white/20">

@@ -17,7 +17,7 @@ export default function Signup() {
   const [isLoading, setIsLoading] = useState(false);
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const { signupAndStartTrial } = useAuth();
+  const { signup } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,29 +43,17 @@ export default function Signup() {
     setIsLoading(true);
 
     try {
-      const success = await signupAndStartTrial({
-        name: formData.name,
-        email: formData.email,
-        password: formData.password
+      await signup(formData.email, formData.password, formData.name);
+      
+      toast({
+        title: "Welcome to ArabicAI!",
+        description: "Your account has been created successfully!"
       });
-
-      if (success) {
-        toast({
-          title: "Welcome to ArabicAI!",
-          description: "Your 72-hour free trial has started. Start learning now!"
-        });
-        setLocation('/learn');
-      } else {
-        toast({
-          title: "Signup failed",
-          description: "This email might already be registered. Please try a different email.",
-          variant: "destructive"
-        });
-      }
+      setLocation('/select-language');
     } catch (error) {
       toast({
-        title: "Something went wrong",
-        description: "Please check your connection and try again.",
+        title: "Signup failed",
+        description: "This email might already be registered. Please try a different email.",
         variant: "destructive"
       });
     } finally {

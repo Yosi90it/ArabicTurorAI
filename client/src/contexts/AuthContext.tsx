@@ -20,7 +20,8 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   trialStatus: 'none' | 'active' | 'expired';
-  login: (email: string, password: string) => Promise<boolean>;
+  signup: (email: string, password: string, name: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
   signupAndStartTrial: (userData: { name: string; email: string; password: string }) => Promise<boolean>;
   logout: () => void;
 }
@@ -144,10 +145,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const signup = async (email: string, password: string, name: string): Promise<void> => {
+    const success = await signupAndStartTrial({ email, password, name });
+    if (!success) {
+      throw new Error('Signup failed');
+    }
+  };
+
+  const loginUser = async (email: string, password: string): Promise<void> => {
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('userToken', data.token);
+        setUser(data.user);
+        calculateTrialStatus(data.user);
+      } else {
+        throw new Error('Login failed');
+      }
+    } catch (error) {
+      throw new Error('Login failed');
+    }
+  };
+
   const logout = () => {
     setUser(null);
     setTrialStatus('none');
     localStorage.removeItem('userToken');
+    localStorage.removeItem('language');
   };
 
   return (
@@ -158,7 +188,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user,
       isAuthenticated: !!user,
       trialStatus,
-      login,
+      signup,
+      login: loginUser,
       signupAndStartTrial,
       logout
     }}>

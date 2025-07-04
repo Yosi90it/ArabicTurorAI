@@ -1,0 +1,110 @@
+Extend your existing React+TypeScript+Vite+Tailwind application to implement the following complete user flow, including authentication, free trial, language selection, and logout:
+
+1. **Signup Page & Route**
+   - Create a new page `src/pages/Signup.tsx` with an email/password form and “Sign up” button.
+   - Add route:  
+     ```tsx
+     <Route path="/signup" component={Signup} />
+     ```
+   - On submit, call `useAuth().signup()`, then redirect to `/select-language`.
+
+2. **Login Page & Route**  
+   - Create `src/pages/Login.tsx` with email/password form and “Log in” button.
+   - Add route:  
+     ```tsx
+     <Route path="/login" component={Login} />
+     ```
+   - On successful login, redirect:
+     - If no language chosen → `/select-language`
+     - Else → `/learn`
+
+3. **Auth Context & Logout**  
+   - In `src/contexts/AuthContext.tsx`, ensure you expose:
+     ```ts
+     interface AuthContextType {
+       isAuthenticated: boolean;
+       signup: (email: string, pw: string) => Promise<void>;
+       login: (email: string, pw: string) => Promise<void>;
+       logout: () => void;
+     }
+     ```
+   - Implement `logout()` to clear auth state and redirect to `/`.
+
+4. **Language Selection Page & Route**
+   - After signup or login (if no language set), redirect to `/select-language`.
+   - Create `src/pages/SelectLanguage.tsx` with two buttons: “English” and “Deutsch”.
+   - On click, call `useLanguage().setLanguage('en'|'de')`, persist in `localStorage`, then navigate to `/learn`.
+
+5. **Language Context**
+   - Create `src/contexts/LanguageContext.tsx` exposing:
+     ```ts
+     interface LanguageContextType {
+       lang: 'en' | 'de';
+       strings: Record<string, string>;
+       setLanguage: (lang: 'en'|'de') => void;
+     }
+     ```
+   - Load `localStorage.language` on init; default to `'en'`.
+   - Provide a `strings` object for translations of all UI text.
+
+6. **Trial Context & Auto-Expiration**
+   - Create `src/contexts/TrialContext.tsx` exposing:
+     ```ts
+     interface TrialContextType {
+       trialStart: number | null;
+       isTrialActive: boolean;
+       startTrial: () => void;
+     }
+     ```
+   - On `startTrial()`, set `trialStart = Date.now()` and save to `localStorage`.
+   - Compute `isTrialActive = trialStart !== null && (Date.now() - trialStart) <= 72*3600*1000`.
+   - Use a `useEffect` or `setTimeout` to re-check expiration exactly at 72h.
+
+7. **Protect Learning Routes**
+   - Wrap your `/learn` routes:
+     ```tsx
+     { !auth.isAuthenticated
+         ? <Navigate to="/login" replace/>
+       : !trial.isTrialActive
+         ? <TrialExpiredBanner />
+       : !language.lang
+         ? <Navigate to="/select-language" replace/>
+       : <LearningEnvironment /> }
+     ```
+
+8. **“Start for Free” & “Logout” Buttons**
+   - On your landing/pricing page:
+     ```tsx
+     <button onClick={() => {
+       if (!auth.isAuthenticated) navigate('/signup')
+       else if (!trial.isTrialActive) trial.startTrial()
+       else navigate('/learn')
+     }}>
+       {trial.isTrialActive ? strings.startLearning : strings.startFree}
+     </button>
+     ```
+   - In your main navigation or header, show a “Logout” button when `auth.isAuthenticated`:
+     ```tsx
+     {auth.isAuthenticated && (
+       <button onClick={() => {
+         auth.logout();
+         navigate('/');
+       }}>
+         {strings.logout}
+       </button>
+     )}
+     ```
+
+9. **Routes & Sidebar Updates**
+   - Add routes for `/login`, `/signup`, `/select-language`.
+   - In your `Sidebar.tsx`, only render user-specific links (e.g. “Learn”, “Logout”) when `auth.isAuthenticated`.
+
+10. **Run & Verify**
+    ```
+    npm install
+    npm run dev
+    ```
+    - New user → `/signup` → choose language → `/learn` → 3-day trial active.
+    - After 72h → sees “Trial expired” banner.
+    - At any time → “Logout” clears session and returns to `/`.
+    - UI text appears in selected language (English/Deutsch).

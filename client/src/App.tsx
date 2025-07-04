@@ -7,6 +7,8 @@ import { FlashcardProvider } from "@/contexts/FlashcardContext";
 import { TashkeelProvider } from "@/contexts/TashkeelContext";
 import { ContentProvider } from "@/contexts/ContentContext";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { LanguageProvider } from "@/contexts/LanguageContext";
+import { TrialProvider } from "@/contexts/TrialContext";
 import Layout from "@/components/Layout";
 import AiChat from "@/pages/AiChat";
 import Flashcards from "@/pages/Flashcards";
@@ -21,6 +23,8 @@ import LandingPage from "@/pages/LandingPage";
 import Signup from "@/pages/Signup";
 import Login from "@/pages/Login";
 import Learn from "@/pages/Learn";
+import SelectLanguage from "@/pages/SelectLanguage";
+import TrialExpiredBanner from "@/components/TrialExpiredBanner";
 import NotFound from "@/pages/not-found";
 
 function ProtectedAdminRoute() {
@@ -35,6 +39,25 @@ function ProtectedAdminRoute() {
   return <AdminPanel />;
 }
 
+function ProtectedLearningRoute() {
+  const { isAuthenticated } = useAuth();
+  const [location, setLocation] = useLocation();
+  
+  if (!isAuthenticated) {
+    setLocation('/login');
+    return null;
+  }
+
+  // Check if language is selected
+  const hasLanguage = localStorage.getItem('language');
+  if (!hasLanguage) {
+    setLocation('/select-language');
+    return null;
+  }
+
+  return <Learn />;
+}
+
 function Router() {
   return (
     <Switch>
@@ -42,27 +65,18 @@ function Router() {
       <Route path="/" component={LandingPage} />
       
       {/* Auth pages without layout */}
-      <Route path="/signup">
-        <div className="min-h-screen">
-          <Signup />
-        </div>
-      </Route>
-      <Route path="/login">
-        <div className="min-h-screen">
-          <Login />
-        </div>
-      </Route>
+      <Route path="/signup" component={Signup} />
+      <Route path="/login" component={Login} />
+      <Route path="/select-language" component={SelectLanguage} />
       <Route path="/admin-login">
         <div className="min-h-screen">
           <AdminLogin />
         </div>
       </Route>
       
-      {/* Learning dashboard without sidebar layout */}
+      {/* Protected learning routes */}
       <Route path="/learn">
-        <div className="min-h-screen">
-          <Learn />
-        </div>
+        <ProtectedLearningRoute />
       </Route>
       
       {/* All other routes with layout */}
@@ -88,18 +102,22 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <ContentProvider>
-          <FlashcardProvider>
-            <TashkeelProvider>
-              <TooltipProvider>
-                <Toaster />
-                <Router />
-              </TooltipProvider>
-            </TashkeelProvider>
-          </FlashcardProvider>
-        </ContentProvider>
-      </AuthProvider>
+      <LanguageProvider>
+        <TrialProvider>
+          <AuthProvider>
+            <ContentProvider>
+              <FlashcardProvider>
+                <TashkeelProvider>
+                  <TooltipProvider>
+                    <Toaster />
+                    <Router />
+                  </TooltipProvider>
+                </TashkeelProvider>
+              </FlashcardProvider>
+            </ContentProvider>
+          </AuthProvider>
+        </TrialProvider>
+      </LanguageProvider>
     </QueryClientProvider>
   );
 }

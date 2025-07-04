@@ -1,9 +1,12 @@
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTrial } from '@/contexts/TrialContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Link } from 'wouter';
+import TrialExpiredBanner from '@/components/TrialExpiredBanner';
 import { 
   Brain, 
   BookOpen, 
@@ -16,34 +19,38 @@ import {
 } from 'lucide-react';
 
 export default function Learn() {
-  const { user, trialStatus } = useAuth();
-  const isTrialExpired = trialStatus === 'expired';
-  const isInTrial = trialStatus === 'active';
+  const { user } = useAuth();
+  const { isTrialActive } = useTrial();
+  const { strings } = useLanguage();
+
+  if (!isTrialActive) {
+    return <TrialExpiredBanner />;
+  }
 
   const learningModules = [
     {
-      title: "AI Chat Assistant",
+      title: strings.aiChat,
       description: "Practice conversations with your AI Arabic tutor",
       icon: Brain,
       route: "/ai-chat",
       color: "bg-purple-500"
     },
     {
-      title: "Interactive Books",
+      title: strings.bookReader,
       description: "Read Arabic stories with instant translation",
       icon: BookOpen,
       route: "/book-reader",
       color: "bg-blue-500"
     },
     {
-      title: "Video Training",
+      title: strings.videoTrainer,
       description: "Learn pronunciation through video lessons",
       icon: Play,
       route: "/video-trainer",
       color: "bg-green-500"
     },
     {
-      title: "Smart Flashcards",
+      title: strings.flashcards,
       description: "Build vocabulary with spaced repetition",
       icon: GraduationCap,
       route: "/flashcards",
@@ -51,68 +58,17 @@ export default function Learn() {
     }
   ];
 
-  if (isTrialExpired) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-6">
-        <div className="max-w-4xl mx-auto">
-          <Alert className="mb-8 border-orange-200 bg-orange-50">
-            <AlertTriangle className="h-4 w-4 text-orange-600" />
-            <AlertDescription className="text-orange-800">
-              <strong>Free trial expired!</strong> Your 72-hour trial has ended. 
-              Subscribe now to continue your Arabic learning journey.
-            </AlertDescription>
-          </Alert>
 
-          <Card className="text-center">
-            <CardHeader>
-              <div className="mx-auto w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mb-4">
-                <Crown className="w-10 h-10 text-purple-600" />
-              </div>
-              <CardTitle className="text-3xl font-bold text-gray-800">
-                Continue Your Learning
-              </CardTitle>
-              <p className="text-gray-600 mt-2">
-                Unlock unlimited access to all Arabic learning features
-              </p>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                {learningModules.map((module, index) => (
-                  <div key={index} className="p-4 bg-gray-100 rounded-xl opacity-50">
-                    <div className={`w-12 h-12 ${module.color} rounded-xl flex items-center justify-center mb-3 mx-auto`}>
-                      <module.icon className="w-6 h-6 text-white" />
-                    </div>
-                    <h3 className="font-semibold text-gray-500">{module.title}</h3>
-                    <p className="text-sm text-gray-400 mt-1">{module.description}</p>
-                    <div className="text-xs text-gray-400 mt-2">🔒 Requires subscription</div>
-                  </div>
-                ))}
-              </div>
-
-              <Link href="/subscription">
-                <Button className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-xl font-semibold">
-                  Choose Your Plan
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-6">
       <div className="max-w-6xl mx-auto">
         {/* Trial Status Banner */}
-        {isInTrial && (
+        {isTrialActive && (
           <Alert className="mb-8 border-green-200 bg-green-50">
             <Clock className="h-4 w-4 text-green-600" />
             <AlertDescription className="text-green-800">
-              <strong>Free trial active!</strong> You have{' '}
-              {user?.trialTimeRemaining || 'limited time'} remaining. 
-              Enjoy full access to all features!
+              <strong>{strings.trialActive}</strong> Enjoy full access to all features!
             </AlertDescription>
           </Alert>
         )}
@@ -120,10 +76,10 @@ export default function Learn() {
         {/* Welcome Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-800 mb-4">
-            Welcome back, {user?.name || 'Learner'}!
+            {strings.welcomeBackUser}, {user?.name || 'Learner'}!
           </h1>
           <p className="text-xl text-gray-600">
-            Continue your Arabic learning journey with AI-powered lessons
+            {strings.continueJourney}
           </p>
         </div>
 
@@ -140,7 +96,7 @@ export default function Learn() {
                   <p className="text-gray-600 text-sm">{module.description}</p>
                   <div className="mt-4">
                     <Button className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl">
-                      Start Learning
+                      {strings.startLearning}
                     </Button>
                   </div>
                 </CardContent>
@@ -153,7 +109,7 @@ export default function Learn() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card className="bg-gradient-to-r from-purple-500 to-blue-500 text-white border-0">
             <CardContent className="p-6">
-              <h3 className="text-xl font-bold mb-2">7-Day Learning Plan</h3>
+              <h3 className="text-xl font-bold mb-2">{strings.weeklyPlan}</h3>
               <p className="mb-4 text-purple-100">
                 Follow our structured program to master Arabic fundamentals
               </p>
@@ -167,7 +123,7 @@ export default function Learn() {
 
           <Card className="bg-gradient-to-r from-green-500 to-teal-500 text-white border-0">
             <CardContent className="p-6">
-              <h3 className="text-xl font-bold mb-2">Alphabet Trainer</h3>
+              <h3 className="text-xl font-bold mb-2">{strings.alphabetTrainer}</h3>
               <p className="mb-4 text-green-100">
                 Master Arabic letters and pronunciation fundamentals
               </p>
