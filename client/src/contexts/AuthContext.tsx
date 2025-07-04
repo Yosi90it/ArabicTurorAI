@@ -162,9 +162,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (response.ok) {
         const data = await response.json();
+        console.log('Login response:', data);
         localStorage.setItem('userToken', data.token);
-        setUser(data.user);
-        calculateTrialStatus(data.user);
+        
+        // Ensure user has trial data
+        const userWithTrial = {
+          ...data.user,
+          trialStartDate: data.user.trialStartDate || new Date().toISOString(),
+          subscriptionStatus: data.user.subscriptionStatus || 'trial'
+        };
+        
+        console.log('Setting user after login:', userWithTrial);
+        setUser(userWithTrial);
+        calculateTrialStatus(userWithTrial);
       } else {
         throw new Error('Login failed');
       }

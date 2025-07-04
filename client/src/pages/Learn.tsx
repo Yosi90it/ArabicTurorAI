@@ -20,11 +20,16 @@ import {
 } from 'lucide-react';
 
 export default function Learn() {
-  const { user } = useAuth();
+  const { user, trialStatus } = useAuth();
   const { isTrialActive } = useTrial();
   const { strings } = useLanguage();
 
-  if (!isTrialActive) {
+  console.log('Learn page - trialStatus:', trialStatus, 'isTrialActive:', isTrialActive, 'user:', user);
+
+  // Check both trial systems - prefer AuthContext trial status
+  const hasActiveTrial = trialStatus === 'active' || isTrialActive;
+
+  if (!hasActiveTrial && trialStatus === 'expired') {
     return <TrialExpiredBanner />;
   }
 
@@ -65,11 +70,13 @@ export default function Learn() {
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-6 relative">
       <div className="max-w-6xl mx-auto">
         {/* Trial Status Banner */}
-        {isTrialActive && (
+        {hasActiveTrial && (
           <Alert className="mb-8 border-green-200 bg-green-50">
             <Clock className="h-4 w-4 text-green-600" />
             <AlertDescription className="text-green-800">
-              <strong>{strings.trialActive}</strong> Enjoy full access to all features!
+              <strong>{strings.trialActive}</strong> 
+              {user?.trialTimeRemaining && ` ${user.trialTimeRemaining} remaining.`} 
+              Enjoy full access to all features!
             </AlertDescription>
           </Alert>
         )}

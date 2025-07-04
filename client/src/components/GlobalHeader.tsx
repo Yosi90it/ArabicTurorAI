@@ -53,10 +53,6 @@ export default function GlobalHeader() {
         <span className="hidden sm:inline">{strings.logout}</span>
         <span className="sm:hidden">Aus</span>
       </Button>
-      {/* Debug info - remove later */}
-      <div className="absolute top-12 right-0 text-xs bg-black text-white p-1 rounded opacity-50">
-        Auth: {isAuthenticated ? 'Y' : 'N'} | Token: {hasToken ? 'Y' : 'N'}
-      </div>
     </div>
   );
 }
