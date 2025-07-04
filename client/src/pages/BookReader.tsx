@@ -1,4 +1,5 @@
 import { useState } from "react";
+import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Search, Volume2, ChevronLeft, ChevronRight, BookOpen } from "lucide-react";
@@ -14,7 +15,7 @@ export default function BookReader() {
   const { books } = useContent();
   const { addFlashcard } = useFlashcards();
   const { toast } = useToast();
-  const [selectedBook, setSelectedBook] = useState(books[0]);
+  const [selectedBook, setSelectedBook] = useState(books.length > 0 ? books[0] : null);
   const [currentPage, setCurrentPage] = useState(0);
   const [selectedWord, setSelectedWord] = useState<{
     word: string;
@@ -23,6 +24,13 @@ export default function BookReader() {
     position: { x: number; y: number };
   } | null>(null);
   const { tashkeelEnabled } = useTashkeel();
+
+  // Update selected book when books change
+  React.useEffect(() => {
+    if (books.length > 0 && !selectedBook) {
+      setSelectedBook(books[0]);
+    }
+  }, [books, selectedBook]);
 
   // Split book content into pages
   const splitIntoPages = (content: string) => {
@@ -117,12 +125,15 @@ export default function BookReader() {
               books.map((book) => (
                 <div
                   key={book.id}
-                  onClick={() => setSelectedBook(book)}
+                  onClick={() => {
+                    setSelectedBook(book);
+                    setCurrentPage(0);
+                  }}
                   className={`flex items-center space-x-3 p-2 rounded-xl cursor-pointer transition-colors ${
-                    selectedBook?.id === book.id ? "bg-soft-gray" : "hover:bg-soft-gray"
+                    selectedBook?.id === book.id ? "bg-purple-100" : "hover:bg-gray-100"
                   }`}
                 >
-                  <div className="w-10 h-12 bg-primary-purple rounded-lg flex items-center justify-center text-white text-xs">
+                  <div className="w-10 h-12 bg-purple-600 rounded-lg flex items-center justify-center text-white text-xs">
                     {book.icon}
                   </div>
                   <div>
