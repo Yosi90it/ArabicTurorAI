@@ -17,6 +17,7 @@ import Subscription from "@/pages/Subscription";
 import WeeklyPlan from "@/pages/WeeklyPlan";
 import AdminPanel from "@/pages/AdminPanel";
 import AdminLogin from "@/pages/AdminLogin";
+import LandingPage from "@/pages/LandingPage";
 import NotFound from "@/pages/not-found";
 
 function ProtectedAdminRoute() {
@@ -34,15 +35,20 @@ function ProtectedAdminRoute() {
 function Router() {
   return (
     <Switch>
+      {/* Landing page without layout */}
+      <Route path="/" component={LandingPage} />
+      
+      {/* Admin login without layout */}
       <Route path="/admin-login">
         <div className="min-h-screen">
           <AdminLogin />
         </div>
       </Route>
+      
+      {/* All other routes with layout */}
       <Route path="*">
         <Layout>
           <Switch>
-            <Route path="/" component={AiChat} />
             <Route path="/ai-chat" component={AiChat} />
             <Route path="/flashcards" component={Flashcards} />
             <Route path="/book-reader" component={BookReader} />

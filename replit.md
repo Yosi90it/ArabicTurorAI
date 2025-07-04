@@ -97,6 +97,16 @@ The application follows a monorepo structure with clear separation between clien
 
 ## Recent Updates
 
+### January 5, 2025 - Landing Page & Admin Security
+✓ **Landing Page**: Created comprehensive marketing landing page at root route `/`
+✓ **Full-screen Layout**: Landing page renders without sidebar using route-based layout control
+✓ **Hero Section**: Gradient hero with CTA buttons and key metrics
+✓ **Features Grid**: Six key platform features with icons and descriptions
+✓ **Testimonials**: User testimonials with ratings and avatars
+✓ **Pricing Section**: Monthly/yearly toggle with three pricing tiers
+✓ **Admin Security**: Protected admin panel with password authentication
+✓ **AuthContext**: Secure login system with localStorage persistence
+
 ### June 17, 2025 - Interactive Learning Features
 ✓ **Tashkeel Toggle in BookReader**: Added switch to show/hide Arabic diacritics
 ✓ **Clickable Word Translation**: Words in BookReader and VideoTrainer are clickable for instant translation and grammar info
@@ -114,12 +124,18 @@ The application follows a monorepo structure with clear separation between clien
 ✓ **Vowel Mastery System**: Comprehensive fatha, kasra, damma training with flexible scheduling and spaced repetition
 
 ### Architecture Enhancements
+- Added `/pages/LandingPage.tsx` as comprehensive marketing homepage
+- Implemented route-based layout control for full-screen landing experience
+- Added `/contexts/AuthContext.tsx` for admin authentication
 - Added `/contexts/FlashcardContext.tsx` for state management
 - Added `/contexts/TashkeelContext.tsx` for global diacritics toggle
+- Added `/contexts/ContentContext.tsx` for book/video management
 - Created `/data/arabicDictionary.ts` with Arabic-English word mappings
 - Implemented `/components/WordModal.tsx` for interactive word details
 - Enhanced `/components/ClickableText.tsx` for word interaction across modules
 - Added `/pages/Subscription.tsx` with premium plan options
+- Added `/pages/AdminPanel.tsx` with secure content management
+- Added `/pages/AdminLogin.tsx` with password protection
 
 ## Changelog
 
