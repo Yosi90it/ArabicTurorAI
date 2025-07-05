@@ -27,56 +27,59 @@ function BookContent({ content, tashkeelEnabled, onWordClick }: BookContentProps
         // Process content for tashkeel
         const withTashkeel = tashkeelEnabled ? content : content.replace(/[\u064B-\u065F\u0670\u0640]/g, '');
         
-        // Split into sentences and process each
-        const sentences = withTashkeel.split(/[.!?۔]+/).filter(s => s.trim() && /[\u0600-\u06FF]/.test(s));
+        // Split content into lines/paragraphs
+        const lines = withTashkeel.split(/\n/).filter(line => line.trim());
         
         let result = '';
-        for (const sentence of sentences) {
-          const trimmedSentence = sentence.trim();
-          if (trimmedSentence) {
+        for (const line of lines) {
+          const trimmedLine = line.trim();
+          if (trimmedLine && /[\u0600-\u06FF]/.test(trimmedLine)) {
             try {
-              const analysis = await analyzeArabicWord(trimmedSentence);
+              const analysis = await analyzeArabicWord(trimmedLine);
               
               // Create words with clickable spans
-              const words = trimmedSentence.split(/(\s+)/);
+              const words = trimmedLine.split(/(\s+)/);
               const wordsHtml = words.map(word => {
                 if (word.trim() && /[\u0600-\u06FF]/.test(word)) {
-                  return `<span class="clickable-word cursor-pointer hover:bg-purple-100 px-1 rounded transition-colors" data-word="${word.trim()}">${word}</span>`;
+                  return `<span class="clickable-word cursor-pointer hover:bg-blue-100 px-1 rounded transition-colors" data-word="${word.trim()}">${word}</span>`;
                 }
                 return word;
               }).join('');
               
               result += `
-                <div class="sentence-block mb-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl border border-purple-100">
-                  <div class="arabic-text text-xl leading-relaxed mb-3" dir="rtl">
+                <div class="line-block mb-4">
+                  <div class="arabic-text text-xl leading-relaxed mb-2" dir="rtl" style="line-height: 2;">
                     ${wordsHtml}
                   </div>
-                  <div class="translation-text text-sm text-gray-600 italic">
+                  <div class="translation-text text-sm text-gray-600 italic mb-3">
                     ${analysis.translation}
                   </div>
                 </div>
               `;
             } catch (error) {
               // Fallback for failed translations
-              const words = trimmedSentence.split(/(\s+)/);
+              const words = trimmedLine.split(/(\s+)/);
               const wordsHtml = words.map(word => {
                 if (word.trim() && /[\u0600-\u06FF]/.test(word)) {
-                  return `<span class="clickable-word cursor-pointer hover:bg-purple-100 px-1 rounded transition-colors" data-word="${word.trim()}">${word}</span>`;
+                  return `<span class="clickable-word cursor-pointer hover:bg-blue-100 px-1 rounded transition-colors" data-word="${word.trim()}">${word}</span>`;
                 }
                 return word;
               }).join('');
               
               result += `
-                <div class="sentence-block mb-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl border border-purple-100">
-                  <div class="arabic-text text-xl leading-relaxed mb-3" dir="rtl">
+                <div class="line-block mb-4">
+                  <div class="arabic-text text-xl leading-relaxed mb-2" dir="rtl" style="line-height: 2;">
                     ${wordsHtml}
                   </div>
-                  <div class="translation-text text-sm text-gray-600 italic">
+                  <div class="translation-text text-sm text-gray-600 italic mb-3">
                     Translation not available
                   </div>
                 </div>
               `;
             }
+          } else {
+            // Non-Arabic lines (like HTML or empty lines)
+            result += `<div class="mb-4">${trimmedLine}</div>`;
           }
         }
         
