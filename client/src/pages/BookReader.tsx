@@ -9,6 +9,108 @@ import { useFlashcards } from "@/contexts/FlashcardContext";
 import { useToast } from "@/hooks/use-toast";
 import { analyzeArabicWord, type WordAnalysis } from "@/lib/openai";
 
+// BookContent component to handle content rendering
+interface BookContentProps {
+  content: string;
+  tashkeelEnabled: boolean;
+  onWordClick: (event: React.MouseEvent) => void;
+}
+
+function BookContent({ content, tashkeelEnabled, onWordClick }: BookContentProps) {
+  const [processedContent, setProcessedContent] = useState<string>('');
+  const [isTranslating, setIsTranslating] = useState(false);
+
+  useEffect(() => {
+    const processContent = async () => {
+      setIsTranslating(true);
+      try {
+        // Process content for tashkeel
+        const withTashkeel = tashkeelEnabled ? content : content.replace(/[\u064B-\u065F\u0670\u0640]/g, '');
+        
+        // Split into sentences and process each
+        const sentences = withTashkeel.split(/[.!?۔]+/).filter(s => s.trim() && /[\u0600-\u06FF]/.test(s));
+        
+        let result = '';
+        for (const sentence of sentences) {
+          const trimmedSentence = sentence.trim();
+          if (trimmedSentence) {
+            try {
+              const analysis = await analyzeArabicWord(trimmedSentence);
+              
+              // Create words with clickable spans
+              const words = trimmedSentence.split(/(\s+)/);
+              const wordsHtml = words.map(word => {
+                if (word.trim() && /[\u0600-\u06FF]/.test(word)) {
+                  return `<span class="clickable-word cursor-pointer hover:bg-purple-100 px-1 rounded transition-colors" data-word="${word.trim()}">${word}</span>`;
+                }
+                return word;
+              }).join('');
+              
+              result += `
+                <div class="sentence-block mb-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl border border-purple-100">
+                  <div class="arabic-text text-xl leading-relaxed mb-3" dir="rtl">
+                    ${wordsHtml}
+                  </div>
+                  <div class="translation-text text-sm text-gray-600 italic">
+                    ${analysis.translation}
+                  </div>
+                </div>
+              `;
+            } catch (error) {
+              // Fallback for failed translations
+              const words = trimmedSentence.split(/(\s+)/);
+              const wordsHtml = words.map(word => {
+                if (word.trim() && /[\u0600-\u06FF]/.test(word)) {
+                  return `<span class="clickable-word cursor-pointer hover:bg-purple-100 px-1 rounded transition-colors" data-word="${word.trim()}">${word}</span>`;
+                }
+                return word;
+              }).join('');
+              
+              result += `
+                <div class="sentence-block mb-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl border border-purple-100">
+                  <div class="arabic-text text-xl leading-relaxed mb-3" dir="rtl">
+                    ${wordsHtml}
+                  </div>
+                  <div class="translation-text text-sm text-gray-600 italic">
+                    Translation not available
+                  </div>
+                </div>
+              `;
+            }
+          }
+        }
+        
+        setProcessedContent(result);
+      } catch (error) {
+        console.error('Error processing content:', error);
+        setProcessedContent(content);
+      } finally {
+        setIsTranslating(false);
+      }
+    };
+
+    if (content) {
+      processContent();
+    }
+  }, [content, tashkeelEnabled]);
+
+  if (isTranslating) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <Loader2 className="w-6 h-6 animate-spin mr-2" />
+        <span>Translating content...</span>
+      </div>
+    );
+  }
+
+  return (
+    <div 
+      onClick={onWordClick}
+      dangerouslySetInnerHTML={{ __html: processedContent }}
+    />
+  );
+}
+
 export default function BookReader() {
   const { books } = useContent();
   const { addFlashcard } = useFlashcards();
@@ -147,58 +249,81 @@ export default function BookReader() {
   // Create enhanced content processing function
   const makeWordsClickable = (content: string): string => {
     const processedContent = tashkeelEnabled ? content : content.replace(/[\u064B-\u065F\u0670\u0640]/g, '');
-    const sentences = processedContent.split(/[.!?۔]+/).filter(s => s.trim());
     
-    return sentences.map(sentence => {
-      const trimmedSentence = sentence.trim();
-      if (!trimmedSentence) return '';
+    // Create a temporary div to parse HTML properly
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = processedContent;
+    
+    // Process all text nodes to make Arabic words clickable
+    const walker = document.createTreeWalker(
+      tempDiv,
+      NodeFilter.SHOW_TEXT,
+      null
+    );
+    
+    const textNodes: Text[] = [];
+    let node;
+    while (node = walker.nextNode()) {
+      if (node.textContent && /[\u0600-\u06FF]/.test(node.textContent)) {
+        textNodes.push(node as Text);
+      }
+    }
+    
+    textNodes.forEach(textNode => {
+      const text = textNode.textContent || '';
+      const words = text.split(/(\s+)/);
       
-      const words = trimmedSentence.split(/(\s+)/);
-      const wordsHtml = words.map(word => {
-        if (word.trim() && /[\u0600-\u06FF]/.test(word)) {
-          return `<span class="clickable-word cursor-pointer hover:bg-purple-100 px-1 rounded transition-colors" data-word="${word.trim()}">${word}</span>`;
-        }
-        return word;
-      }).join('');
-      
-      return `
-        <div class="sentence-block mb-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl border border-purple-100">
-          <div class="arabic-text text-xl leading-relaxed mb-3" dir="rtl">
-            ${wordsHtml}
-          </div>
-          <div class="translation-text text-sm text-gray-600 italic" data-sentence="${trimmedSentence}">
-            <span class="loading-translation">Getting translation...</span>
-          </div>
-        </div>
-      `;
-    }).join('');
+      if (words.length > 1) {
+        const fragment = document.createDocumentFragment();
+        
+        words.forEach(word => {
+          if (word.trim() && /[\u0600-\u06FF]/.test(word)) {
+            const span = document.createElement('span');
+            span.className = 'clickable-word cursor-pointer hover:bg-purple-100 px-1 rounded transition-colors';
+            span.setAttribute('data-word', word.trim());
+            span.textContent = word;
+            fragment.appendChild(span);
+          } else {
+            fragment.appendChild(document.createTextNode(word));
+          }
+        });
+        
+        textNode.parentNode?.replaceChild(fragment, textNode);
+      }
+    });
+    
+    return tempDiv.innerHTML;
   };
 
-  // Load sentence translations after content is rendered
-  useEffect(() => {
-    const loadTranslations = async () => {
-      const translationElements = document.querySelectorAll('.loading-translation');
-      
-      for (let i = 0; i < translationElements.length; i++) {
-        const element = translationElements[i];
-        const sentenceDiv = element.closest('.sentence-block');
-        const sentence = sentenceDiv?.querySelector('.translation-text')?.getAttribute('data-sentence');
-        
-        if (sentence) {
-          try {
-            const analysis = await analyzeArabicWord(sentence);
-            element.textContent = analysis.translation;
-          } catch (error) {
-            element.textContent = 'Translation not available';
-          }
+  // Auto-translate sentences using OpenAI
+  const translateArabicSentences = async (content: string): Promise<string> => {
+    // Split content into sentences
+    const sentences = content.split(/[.!?۔]+/).filter(s => s.trim() && /[\u0600-\u06FF]/.test(s));
+    let processedContent = content;
+    
+    for (const sentence of sentences) {
+      const trimmedSentence = sentence.trim();
+      if (trimmedSentence) {
+        try {
+          const analysis = await analyzeArabicWord(trimmedSentence);
+          const translation = analysis.translation;
+          
+          // Replace the sentence with a formatted version including translation
+          const sentencePattern = new RegExp(trimmedSentence.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+          processedContent = processedContent.replace(sentencePattern, 
+            `<div class="sentence-block mb-4 p-3 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-100">
+              <div class="arabic-text text-lg leading-relaxed mb-2" dir="rtl">${trimmedSentence}</div>
+              <div class="translation-text text-sm text-gray-600 italic">${translation}</div>
+            </div>`
+          );
+        } catch (error) {
+          console.error('Translation error for sentence:', trimmedSentence, error);
         }
       }
-    };
-
-    if (selectedBook && currentBookPages[currentPage]) {
-      setTimeout(loadTranslations, 100);
     }
-  }, [selectedBook, currentPage, tashkeelEnabled]);
+    
+    return processedContent;
+  };
 
 
 
@@ -325,10 +450,15 @@ export default function BookReader() {
                     <div 
                       className="leading-relaxed space-y-4" 
                       onClick={handleContentClick}
-                      dangerouslySetInnerHTML={{ 
-                        __html: currentBookPages[currentPage] ? makeWordsClickable(currentBookPages[currentPage]) : ''
-                      }}
-                    />
+                    >
+                      {selectedBook && currentBookPages[currentPage] && (
+                        <BookContent 
+                          content={currentBookPages[currentPage]} 
+                          tashkeelEnabled={tashkeelEnabled}
+                          onWordClick={handleContentClick}
+                        />
+                      )}
+                    </div>
                   </div>
                 </div>
               ) : (
