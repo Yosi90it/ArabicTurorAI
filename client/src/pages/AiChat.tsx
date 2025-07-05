@@ -208,21 +208,45 @@ export default function AiChat() {
                     </div>
                   )}
                   
-                  <div
-                    className={`rounded-2xl p-3 max-w-xs ${
-                      message.sender === "AI"
-                        ? "bg-white shadow-sm"
-                        : "bg-primary-purple text-white"
-                    }`}
-                  >
-                    <p className="text-sm">{message.arabic}</p>
-                    <p
-                      className={`text-xs mt-1 ${
-                        message.sender === "AI" ? "text-gray-500" : "text-hover-lavender"
-                      }`}
-                    >
+                  <div className={`max-w-md ${
+                    message.sender === "ME" ? "bg-blue-600 text-white" : "bg-white border"
+                  } rounded-2xl p-3 shadow-sm relative group`}>
+                    <div className="text-lg font-medium mb-1" dir="rtl">
+                      {message.arabic.split(' ').map((word, wordIndex) => (
+                        <span
+                          key={wordIndex}
+                          className="clickable-word cursor-pointer hover:bg-purple-100 px-1 rounded"
+                          onClick={(e) => handleWordClick(word, e)}
+                        >
+                          {word}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="text-sm opacity-80 mb-2">
                       {message.translation}
-                    </p>
+                    </div>
+                    {message.sender === "AI" && (
+                      <div className="flex space-x-2">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => playAudio(message.arabic)}
+                          className="h-6 px-2 text-xs"
+                        >
+                          <Volume2 className="w-3 h-3 mr-1" />
+                          Play
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => addWholePhrase(message.arabic, message.translation)}
+                          className="h-6 px-2 text-xs"
+                        >
+                          <Plus className="w-3 h-3 mr-1" />
+                          Add Phrase
+                        </Button>
+                      </div>
+                    )}
                   </div>
 
                   {message.sender === "ME" && (

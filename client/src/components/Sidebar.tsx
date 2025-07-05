@@ -1,5 +1,14 @@
 import { Link, useLocation } from "wouter";
-import { Brain, GraduationCap, BookOpen, Play, Type } from "lucide-react";
+import { 
+  Sparkles, 
+  Brain, 
+  BookOpen, 
+  Video, 
+  Languages, 
+  Calendar,
+  Settings,
+  Crown
+} from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
 import { useTashkeel } from "@/contexts/TashkeelContext";
@@ -8,46 +17,39 @@ import { useLanguage } from "@/contexts/LanguageContext";
 
 const navigationItems = [
   {
-    icon: Brain,
+    icon: Sparkles,
     label: "AI Chat",
-    route: "/ai-chat",
-    emoji: "🧠"
+    route: "/ai-chat"
   },
   {
-    icon: GraduationCap,
+    icon: Brain,
     label: "Flashcards",
-    route: "/flashcards",
-    emoji: "🎓"
+    route: "/flashcards"
   },
   {
     icon: BookOpen,
     label: "Book Reader",
-    route: "/book-reader",
-    emoji: "📘"
+    route: "/book-reader"
   },
   {
-    icon: Play,
+    icon: Video,
     label: "Video Trainer",
-    route: "/video-trainer",
-    emoji: "▶️"
+    route: "/video-trainer"
   },
   {
-    icon: Type,
+    icon: Languages,
     label: "Alphabet Trainer",
-    route: "/alphabet-trainer",
-    emoji: "🔤"
+    route: "/alphabet-trainer"
   },
   {
-    icon: Type,
+    icon: Crown,
     label: "Subscription",
-    route: "/subscription",
-    emoji: "🔒"
+    route: "/subscription"
   },
   {
-    icon: Type,
+    icon: Calendar,
     label: "7-Day Plan",
-    route: "/weekly-plan",
-    emoji: "📅"
+    route: "/weekly-plan"
   }
 ];
 
@@ -85,7 +87,7 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
                   : "hover:bg-white/20 hover:shadow-md"
               }`}
             >
-              <span className="text-xl">{item.emoji}</span>
+              <item.icon className="w-5 h-5" />
               <span className="font-medium">{item.label}</span>
             </button>
           </Link>

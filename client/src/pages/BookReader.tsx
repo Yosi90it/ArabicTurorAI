@@ -144,6 +144,32 @@ export default function BookReader() {
     }
   };
 
+  // Load sentence translations after content is rendered
+  useEffect(() => {
+    const loadTranslations = async () => {
+      const translationElements = document.querySelectorAll('.loading-translation');
+      
+      for (const element of translationElements) {
+        const sentenceDiv = element.closest('.sentence-block');
+        const sentence = sentenceDiv?.querySelector('.translation-text')?.getAttribute('data-sentence');
+        
+        if (sentence) {
+          try {
+            const analysis = await analyzeArabicWord(sentence);
+            element.textContent = analysis.translation;
+          } catch (error) {
+            element.textContent = 'Translation not available';
+          }
+        }
+      }
+    };
+
+    if (selectedBook && currentBookPages[currentPage]) {
+      // Small delay to ensure DOM is updated
+      setTimeout(loadTranslations, 100);
+    }
+  }, [selectedBook, currentPage, tashkeelEnabled]);
+
 
 
   const renderClickableText = (text: string) => {
@@ -267,12 +293,10 @@ export default function BookReader() {
                 <div className="prose prose-lg max-w-none">
                   <div className="bg-gradient-to-br from-amber-50 to-orange-50 p-6 rounded-2xl border border-amber-200 min-h-[500px]">
                     <div 
-                      className="text-right leading-relaxed space-y-4" 
-                      style={{ fontSize: '1.2rem', lineHeight: '2' }}
-                      dir="rtl"
+                      className="leading-relaxed space-y-4" 
                       onClick={handleContentClick}
                       dangerouslySetInnerHTML={{ 
-                        __html: currentBookPages[currentPage] ? processHTMLContent(currentBookPages[currentPage]) : ''
+                        __html: currentBookPages[currentPage] ? makeWordsClickable(currentBookPages[currentPage]) : ''
                       }}
                     />
                   </div>
