@@ -64,16 +64,17 @@ function BookContent({ content, tashkeelEnabled, onWordClick }: BookContentProps
               const wordsHtml = words.map((word, index) => {
                 const cleanWord = word.trim();
                 if (cleanWord && /[\u0600-\u06FF]/.test(cleanWord)) {
-                  // Remove any punctuation for the data-word attribute
-                  const wordForData = cleanWord.replace(/[۔،؍؎؏ؘؙؚؐؑؒؓؔؕؖؗ؛؜؝؞؟ؠ]/g, '');
-                  return `<span class="clickable-word cursor-pointer hover:bg-blue-100 px-1 rounded transition-colors" data-word="${wordForData}">${word}</span>`;
+                  // Apply tashkeel toggle to individual words
+                  const displayWord = tashkeelEnabled ? word : word.replace(/[\u064B-\u065F\u0670\u0640]/g, '');
+                  const wordForData = cleanWord.replace(/[۔،؍؎؏ؘؙؚؐؑؒؓؔؕؖؗ؛؜؝؞؟ؠ]/g, '').replace(/[\u064B-\u065F\u0670\u0640]/g, '');
+                  return `<span class="clickable-word cursor-pointer hover:bg-blue-100 px-1 rounded transition-colors" data-word="${wordForData}" style="display: inline-block; margin: 0 1px;">${displayWord}</span>`;
                 }
                 return word;
               }).join('');
               
               result += `
                 <div class="line-block mb-4">
-                  <div class="arabic-text text-xl leading-relaxed mb-2" dir="rtl" style="line-height: 2;">
+                  <div class="arabic-text text-xl leading-relaxed mb-2" dir="rtl" style="line-height: 2.5; font-family: 'Arial', sans-serif; word-spacing: 0.3em;">
                     ${wordsHtml}
                   </div>
                   <div class="translation-text text-sm text-gray-600 italic mb-3">
@@ -87,15 +88,17 @@ function BookContent({ content, tashkeelEnabled, onWordClick }: BookContentProps
               const wordsHtml = words.map((word, index) => {
                 const cleanWord = word.trim();
                 if (cleanWord && /[\u0600-\u06FF]/.test(cleanWord)) {
-                  const wordForData = cleanWord.replace(/[۔،؍؎؏ؘؙؚؐؑؒؓؔؕؖؗ؛؜؝؞؟ؠ]/g, '');
-                  return `<span class="clickable-word cursor-pointer hover:bg-blue-100 px-1 rounded transition-colors" data-word="${wordForData}">${word}</span>`;
+                  // Apply tashkeel toggle to individual words
+                  const displayWord = tashkeelEnabled ? word : word.replace(/[\u064B-\u065F\u0670\u0640]/g, '');
+                  const wordForData = cleanWord.replace(/[۔،؍؎؏ؘؙؚؐؑؒؓؔؕؖؗ؛؜؝؞؟ؠ]/g, '').replace(/[\u064B-\u065F\u0670\u0640]/g, '');
+                  return `<span class="clickable-word cursor-pointer hover:bg-blue-100 px-1 rounded transition-colors" data-word="${wordForData}" style="display: inline-block; margin: 0 1px;">${displayWord}</span>`;
                 }
                 return word;
               }).join('');
               
               result += `
                 <div class="line-block mb-4">
-                  <div class="arabic-text text-xl leading-relaxed mb-2" dir="rtl" style="line-height: 2;">
+                  <div class="arabic-text text-xl leading-relaxed mb-2" dir="rtl" style="line-height: 2.5; font-family: 'Arial', sans-serif; word-spacing: 0.3em;">
                     ${wordsHtml}
                   </div>
                   <div class="translation-text text-sm text-gray-600 italic mb-3">

@@ -211,12 +211,13 @@ export default function AiChat() {
                   <div className={`max-w-md ${
                     message.sender === "ME" ? "bg-blue-600 text-white" : "bg-white border"
                   } rounded-2xl p-3 shadow-sm relative group`}>
-                    <div className="text-lg font-medium mb-1" dir="rtl">
+                    <div className="text-lg font-medium mb-1" dir="rtl" style={{lineHeight: '2', fontFamily: 'Arial, sans-serif'}}>
                       {(tashkeelEnabled ? message.arabic : message.arabic.replace(/[\u064B-\u065F\u0670\u0640]/g, '')).split(' ').map((word, wordIndex) => (
                         <span
                           key={wordIndex}
-                          className="clickable-word cursor-pointer hover:bg-purple-100 px-1 rounded"
+                          className="clickable-word cursor-pointer hover:bg-purple-100 px-1 rounded transition-colors"
                           onClick={(e) => handleWordClick(word, e)}
+                          style={{display: 'inline-block', margin: '0 2px'}}
                         >
                           {word}
                         </span>
