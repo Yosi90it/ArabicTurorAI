@@ -3,10 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTashkeel } from "@/contexts/TashkeelContext";
-import { Send, Bot, User, Volume2, Loader2 } from "lucide-react";
+import { Send, Bot, User, Volume2, Loader2, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useFlashcards } from "@/contexts/FlashcardContext";
 import { useToast } from "@/hooks/use-toast";
+import { analyzeArabicWord, type WordAnalysis } from "@/lib/openai";
+import WordModal from "@/components/WordModal";
 import OpenAI from "openai";
 
 interface Message {
@@ -35,6 +37,15 @@ export default function AiChat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedWord, setSelectedWord] = useState<{
+    word: string;
+    translation: string;
+    grammar: string;
+    position: { x: number; y: number };
+    examples?: string[];
+    pronunciation?: string;
+  } | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -109,6 +120,67 @@ export default function AiChat() {
 
   const handleSuggestionClick = (suggestion: string) => {
     setInput(suggestion);
+  };
+
+  const handleWordClick = async (word: string, event: React.MouseEvent) => {
+    const rect = (event.target as HTMLElement).getBoundingClientRect();
+    
+    setSelectedWord({
+      word: word,
+      translation: "Analyzing...",
+      grammar: "Getting grammar information...",
+      position: { x: rect.left + rect.width / 2, y: rect.top }
+    });
+    
+    setIsAnalyzing(true);
+    
+    try {
+      const analysis = await analyzeArabicWord(word);
+      
+      setSelectedWord({
+        word: analysis.word,
+        translation: analysis.translation,
+        grammar: analysis.grammar,
+        position: { x: rect.left + rect.width / 2, y: rect.top },
+        examples: analysis.examples,
+        pronunciation: analysis.pronunciation
+      });
+    } catch (error) {
+      console.error('Error analyzing word:', error);
+      setSelectedWord({
+        word: word,
+        translation: "Translation service unavailable",
+        grammar: "Grammar analysis unavailable",
+        position: { x: rect.left + rect.width / 2, y: rect.top }
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  const playAudio = (text: string) => {
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'ar-SA';
+      speechSynthesis.speak(utterance);
+    }
+  };
+
+  const addWholePhrase = (arabic: string, translation: string) => {
+    addFlashcard(arabic, translation, "Phrase");
+    toast({
+      title: "Phrase added to flashcards",
+      description: `"${arabic}" has been added to your collection.`,
+    });
+  };
+
+  const handleAddToFlashcards = (word: string, translation: string, grammar: string) => {
+    addFlashcard(word, translation, grammar);
+    toast({
+      title: "Word added to flashcards",
+      description: `"${word}" has been added to your collection.`,
+    });
+    setSelectedWord(null);
   };
 
   return (

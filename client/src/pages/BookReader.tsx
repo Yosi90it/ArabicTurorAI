@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Search, Volume2, ChevronLeft, ChevronRight, BookOpen, Loader2 } from "lucide-react";
+import { Search, Volume2, ChevronLeft, ChevronRight, BookOpen, Loader2, Plus } from "lucide-react";
 import { useTashkeel } from "@/contexts/TashkeelContext";
 import { useContent } from "@/contexts/ContentContext";
 import WordModal from "@/components/WordModal";
