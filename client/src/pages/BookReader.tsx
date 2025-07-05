@@ -27,21 +27,46 @@ function BookContent({ content, tashkeelEnabled, onWordClick }: BookContentProps
         // Process content for tashkeel
         const withTashkeel = tashkeelEnabled ? content : content.replace(/[\u064B-\u065F\u0670\u0640]/g, '');
         
-        // Split content into lines/paragraphs
-        const lines = withTashkeel.split(/\n/).filter(line => line.trim());
+        // Create a temporary DOM element to properly parse HTML
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = withTashkeel;
+        
+        // Extract all text content while preserving structure
+        const extractTextLines = (element: Element): string[] => {
+          const lines: string[] = [];
+          const walker = document.createTreeWalker(
+            element,
+            NodeFilter.SHOW_TEXT,
+            null
+          );
+          
+          let node;
+          while (node = walker.nextNode()) {
+            const text = node.textContent?.trim();
+            if (text && /[\u0600-\u06FF]/.test(text)) {
+              lines.push(text);
+            }
+          }
+          
+          return lines;
+        };
+        
+        const textLines = extractTextLines(tempDiv);
         
         let result = '';
-        for (const line of lines) {
-          const trimmedLine = line.trim();
-          if (trimmedLine && /[\u0600-\u06FF]/.test(trimmedLine)) {
+        for (const line of textLines) {
+          if (line && /[\u0600-\u06FF]/.test(line)) {
             try {
-              const analysis = await analyzeArabicWord(trimmedLine);
+              const analysis = await analyzeArabicWord(line);
               
-              // Create words with clickable spans
-              const words = trimmedLine.split(/(\s+)/);
-              const wordsHtml = words.map(word => {
-                if (word.trim() && /[\u0600-\u06FF]/.test(word)) {
-                  return `<span class="clickable-word cursor-pointer hover:bg-blue-100 px-1 rounded transition-colors" data-word="${word.trim()}">${word}</span>`;
+              // Create words with clickable spans - ensure no word is missed
+              const words = line.split(/(\s+|[^\u0600-\u06FF\s]+)/);
+              const wordsHtml = words.map((word, index) => {
+                const cleanWord = word.trim();
+                if (cleanWord && /[\u0600-\u06FF]/.test(cleanWord)) {
+                  // Remove any punctuation for the data-word attribute
+                  const wordForData = cleanWord.replace(/[۔،؍؎؏ؘؙؚؐؑؒؓؔؕؖؗ؛؜؝؞؟ؠ]/g, '');
+                  return `<span class="clickable-word cursor-pointer hover:bg-blue-100 px-1 rounded transition-colors" data-word="${wordForData}">${word}</span>`;
                 }
                 return word;
               }).join('');
@@ -58,10 +83,12 @@ function BookContent({ content, tashkeelEnabled, onWordClick }: BookContentProps
               `;
             } catch (error) {
               // Fallback for failed translations
-              const words = trimmedLine.split(/(\s+)/);
-              const wordsHtml = words.map(word => {
-                if (word.trim() && /[\u0600-\u06FF]/.test(word)) {
-                  return `<span class="clickable-word cursor-pointer hover:bg-blue-100 px-1 rounded transition-colors" data-word="${word.trim()}">${word}</span>`;
+              const words = line.split(/(\s+|[^\u0600-\u06FF\s]+)/);
+              const wordsHtml = words.map((word, index) => {
+                const cleanWord = word.trim();
+                if (cleanWord && /[\u0600-\u06FF]/.test(cleanWord)) {
+                  const wordForData = cleanWord.replace(/[۔،؍؎؏ؘؙؚؐؑؒؓؔؕؖؗ؛؜؝؞؟ؠ]/g, '');
+                  return `<span class="clickable-word cursor-pointer hover:bg-blue-100 px-1 rounded transition-colors" data-word="${wordForData}">${word}</span>`;
                 }
                 return word;
               }).join('');
@@ -77,9 +104,6 @@ function BookContent({ content, tashkeelEnabled, onWordClick }: BookContentProps
                 </div>
               `;
             }
-          } else {
-            // Non-Arabic lines (like HTML or empty lines)
-            result += `<div class="mb-4">${trimmedLine}</div>`;
           }
         }
         
@@ -206,9 +230,14 @@ export default function BookReader() {
 
   // Handle click events on the content area
   const handleContentClick = async (event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    
     const target = event.target as HTMLElement;
+    console.log('Click target:', target, 'Classes:', target.className, 'Data-word:', target.getAttribute('data-word'));
+    
     if (target.classList.contains('clickable-word')) {
-      const word = target.getAttribute('data-word') || target.textContent || '';
+      const word = target.getAttribute('data-word') || target.textContent?.trim() || '';
       const rect = target.getBoundingClientRect();
       
       console.log('Clicked word:', word); // Debug log
