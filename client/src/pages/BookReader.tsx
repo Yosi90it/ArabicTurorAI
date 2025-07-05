@@ -144,12 +144,43 @@ export default function BookReader() {
     }
   };
 
+  // Create enhanced content processing function
+  const makeWordsClickable = (content: string): string => {
+    const processedContent = tashkeelEnabled ? content : content.replace(/[\u064B-\u065F\u0670\u0640]/g, '');
+    const sentences = processedContent.split(/[.!?۔]+/).filter(s => s.trim());
+    
+    return sentences.map(sentence => {
+      const trimmedSentence = sentence.trim();
+      if (!trimmedSentence) return '';
+      
+      const words = trimmedSentence.split(/(\s+)/);
+      const wordsHtml = words.map(word => {
+        if (word.trim() && /[\u0600-\u06FF]/.test(word)) {
+          return `<span class="clickable-word cursor-pointer hover:bg-purple-100 px-1 rounded transition-colors" data-word="${word.trim()}">${word}</span>`;
+        }
+        return word;
+      }).join('');
+      
+      return `
+        <div class="sentence-block mb-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl border border-purple-100">
+          <div class="arabic-text text-xl leading-relaxed mb-3" dir="rtl">
+            ${wordsHtml}
+          </div>
+          <div class="translation-text text-sm text-gray-600 italic" data-sentence="${trimmedSentence}">
+            <span class="loading-translation">Getting translation...</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+  };
+
   // Load sentence translations after content is rendered
   useEffect(() => {
     const loadTranslations = async () => {
       const translationElements = document.querySelectorAll('.loading-translation');
       
-      for (const element of translationElements) {
+      for (let i = 0; i < translationElements.length; i++) {
+        const element = translationElements[i];
         const sentenceDiv = element.closest('.sentence-block');
         const sentence = sentenceDiv?.querySelector('.translation-text')?.getAttribute('data-sentence');
         
@@ -165,7 +196,6 @@ export default function BookReader() {
     };
 
     if (selectedBook && currentBookPages[currentPage]) {
-      // Small delay to ensure DOM is updated
       setTimeout(loadTranslations, 100);
     }
   }, [selectedBook, currentPage, tashkeelEnabled]);
