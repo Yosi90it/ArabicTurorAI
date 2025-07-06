@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { FlashcardProvider } from "@/contexts/FlashcardContext";
 import { TashkeelProvider } from "@/contexts/TashkeelContext";
+import { WordByWordProvider } from "@/contexts/WordByWordContext";
 import { ContentProvider } from "@/contexts/ContentContext";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";

@@ -11,6 +11,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
 import { useTashkeel } from "@/contexts/TashkeelContext";
+import { useWordByWord } from "@/contexts/WordByWordContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -54,6 +55,7 @@ interface SidebarProps {
 export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
   const [location] = useLocation();
   const { tashkeelEnabled, setTashkeelEnabled } = useTashkeel();
+  const { wordByWordEnabled, setWordByWordEnabled } = useWordByWord();
   const { isAdmin, isAuthenticated } = useAuth();
   const { strings } = useLanguage();
 

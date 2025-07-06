@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTashkeel } from "@/contexts/TashkeelContext";
+import { useWordByWord } from "@/contexts/WordByWordContext";
 import { Send, Bot, User, Volume2, Loader2, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useFlashcards } from "@/contexts/FlashcardContext";
@@ -26,6 +27,7 @@ const openai = new OpenAI({
 
 export default function AiChat() {
   const { tashkeelEnabled } = useTashkeel();
+  const { wordByWordEnabled } = useWordByWord();
   const { addFlashcard } = useFlashcards();
   const { toast } = useToast();
   
@@ -213,17 +215,29 @@ export default function AiChat() {
                   } rounded-2xl p-3 shadow-sm relative group`}>
                     <div className="text-lg font-medium mb-1" dir="rtl" style={{lineHeight: '2', fontFamily: 'Arial, sans-serif'}}>
                       {message.sender === "AI" ? (
-                        // AI messages: clickable words
-                        (tashkeelEnabled ? message.arabic : message.arabic.replace(/[\u064B-\u065F\u0670\u0640]/g, '')).split(' ').map((word, wordIndex) => (
-                          <span
-                            key={wordIndex}
-                            className="clickable-word cursor-pointer hover:bg-purple-100 px-1 rounded transition-colors"
-                            onClick={(e) => handleWordClick(word, e)}
-                            style={{display: 'inline-block', margin: '0 2px'}}
-                          >
-                            {word}
-                          </span>
-                        ))
+                        // AI messages: clickable words with optional word-by-word translation
+                        <div>
+                          {(tashkeelEnabled ? message.arabic : message.arabic.replace(/[\u064B-\u065F\u0670\u0640]/g, '')).split(' ').map((word, wordIndex) => (
+                            <span
+                              key={wordIndex}
+                              className="word-container"
+                              style={{display: 'inline-block', margin: '0 2px', textAlign: 'center', verticalAlign: 'top'}}
+                            >
+                              <span
+                                className="clickable-word cursor-pointer hover:bg-purple-100 px-1 rounded transition-colors"
+                                onClick={(e) => handleWordClick(word, e)}
+                                style={{display: 'block'}}
+                              >
+                                {word}
+                              </span>
+                              {wordByWordEnabled && (
+                                <span className="word-translation text-xs text-blue-600 block mt-1" style={{fontSize: '10px', lineHeight: '1.2'}}>
+                                  Loading...
+                                </span>
+                              )}
+                            </span>
+                          ))}
+                        </div>
                       ) : (
                         // User messages: plain text, not clickable
                         tashkeelEnabled ? message.arabic : message.arabic.replace(/[\u064B-\u065F\u0670\u0640]/g, '')
