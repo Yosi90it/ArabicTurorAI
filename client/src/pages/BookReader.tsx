@@ -75,7 +75,7 @@ function BookContent({ content, tashkeelEnabled, onWordClick }: BookContentProps
               result += `
                 <div class="line-block mb-4">
                   <div class="arabic-text text-xl leading-relaxed mb-2" dir="rtl" style="line-height: 2.5; font-family: 'Arial', sans-serif; word-spacing: 0.3em;">
-                    ${wordsHtml.join('')}
+                    ${wordsHtml}
                   </div>
                   <div class="translation-text text-sm text-gray-600 italic mb-3">
                     ${analysis.translation}
