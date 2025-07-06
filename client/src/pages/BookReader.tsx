@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Search, Volume2, ChevronLeft, ChevronRight, BookOpen, Loader2, Plus } from "lucide-react";
+import { Search, Volume2, ChevronLeft, ChevronRight, BookOpen, Loader2, Plus, ToggleLeft, ToggleRight } from "lucide-react";
 import { useTashkeel } from "@/contexts/TashkeelContext";
 import { useWordByWord } from "@/contexts/WordByWordContext";
 import { useContent } from "@/contexts/ContentContext";
@@ -186,7 +186,7 @@ export default function BookReader() {
   const { addFlashcard } = useFlashcards();
   const { toast } = useToast();
   const { tashkeelEnabled } = useTashkeel();
-  const { wordByWordEnabled } = useWordByWord();
+  const { wordByWordEnabled, setWordByWordEnabled } = useWordByWord();
   const [selectedBook, setSelectedBook] = useState(books.length > 0 ? books[0] : null);
   const [currentPage, setCurrentPage] = useState(0);
   const [selectedWord, setSelectedWord] = useState<{
