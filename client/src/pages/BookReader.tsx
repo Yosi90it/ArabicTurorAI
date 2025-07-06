@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Search, Volume2, ChevronLeft, ChevronRight, BookOpen, Loader2, Plus } from "lucide-react";
 import { useTashkeel } from "@/contexts/TashkeelContext";
+import { useWordByWord } from "@/contexts/WordByWordContext";
 import { useContent } from "@/contexts/ContentContext";
 import WordModal from "@/components/WordModal";
 import { useFlashcards } from "@/contexts/FlashcardContext";
@@ -13,10 +14,11 @@ import { analyzeArabicWord, type WordAnalysis } from "@/lib/openai";
 interface BookContentProps {
   content: string;
   tashkeelEnabled: boolean;
+  wordByWordEnabled: boolean;
   onWordClick: (event: React.MouseEvent) => void;
 }
 
-function BookContent({ content, tashkeelEnabled, onWordClick }: BookContentProps) {
+function BookContent({ content, tashkeelEnabled, wordByWordEnabled, onWordClick }: BookContentProps) {
   const [processedContent, setProcessedContent] = useState<string>('');
   const [isTranslating, setIsTranslating] = useState(false);
 
@@ -183,6 +185,8 @@ export default function BookReader() {
   const { books } = useContent();
   const { addFlashcard } = useFlashcards();
   const { toast } = useToast();
+  const { tashkeelEnabled } = useTashkeel();
+  const { wordByWordEnabled } = useWordByWord();
   const [selectedBook, setSelectedBook] = useState(books.length > 0 ? books[0] : null);
   const [currentPage, setCurrentPage] = useState(0);
   const [selectedWord, setSelectedWord] = useState<{
@@ -194,7 +198,6 @@ export default function BookReader() {
     pronunciation?: string;
   } | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const { tashkeelEnabled } = useTashkeel();
 
   // Update selected book when books change
   useEffect(() => {
