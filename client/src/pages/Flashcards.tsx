@@ -20,6 +20,14 @@ interface Category {
   progress: number;
 }
 
+interface Story {
+  title: string;
+  arabicText: string;
+  translation: string;
+  usedWords: string[];
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+}
+
 const flashcards: FlashcardData[] = [
   { 
     id: 1, 

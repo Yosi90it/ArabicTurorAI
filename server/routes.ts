@@ -108,6 +108,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // OpenAI Story Generation endpoint
+  app.post("/api/openai/generate-story", async (req: Request, res: Response) => {
+    try {
+      const { prompt } = req.body;
+      
+      if (!prompt) {
+        return res.status(400).json({ error: "Prompt is required" });
+      }
+
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+          messages: [
+            {
+              role: "system",
+              content: "Du bist ein erfahrener Arabischlehrer, der personalisierte Geschichten erstellt, um Vokabeln zu festigen. Antworte immer im angegebenen JSON-Format."
+            },
+            {
+              role: "user",
+              content: prompt
+            }
+          ],
+          response_format: { type: "json_object" },
+          max_tokens: 1000,
+          temperature: 0.7
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`OpenAI API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const storyContent = JSON.parse(data.choices[0].message.content);
+      
+      res.json(storyContent);
+    } catch (error) {
+      console.error("Error generating story:", error);
+      res.status(500).json({ error: "Failed to generate story" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

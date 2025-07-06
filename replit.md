@@ -133,6 +133,15 @@ The application follows a monorepo structure with clear separation between clien
 ✓ **Trial Status Integration**: Synchronized trial state between AuthContext and TrialContext
 ✓ **Session Persistence**: Proper token storage and restoration on app reload
 
+### July 6, 2025 - AI Story Generator Integration
+✓ **Flashcards Tab Enhancement**: Added second tab "Geschichten-Generator" within Flashcards page
+✓ **Personalized Story Creation**: AI generates custom Arabic stories using user's learned flashcard vocabulary
+✓ **Difficulty Levels**: Three levels (Anfänger, Mittelstufe, Fortgeschritten) with appropriate complexity
+✓ **Word Selection Control**: Choose how many vocabulary words to include (5-20 words)
+✓ **Interactive Story Text**: Generated stories have clickable words for analysis and audio playback
+✓ **OpenAI API Integration**: Backend endpoint for story generation using GPT-4o model
+✓ **Vocabulary Reinforcement**: Stories highlight which learned words were used
+
 ### Architecture Enhancements
 - Added `/pages/LandingPage.tsx` as comprehensive marketing homepage
 - Implemented route-based layout control for full-screen landing experience
