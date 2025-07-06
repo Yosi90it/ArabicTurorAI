@@ -59,18 +59,43 @@ function BookContent({ content, tashkeelEnabled, onWordClick }: BookContentProps
             try {
               const analysis = await analyzeArabicWord(line);
               
-              // Create words with clickable spans - ensure no word is missed
+              // Create words with clickable spans and word-by-word translations
               const words = line.split(/(\s+|[^\u0600-\u06FF\s]+)/);
-              const wordsHtml = words.map((word, index) => {
+              const wordsWithTranslations = [];
+              
+              for (const word of words) {
                 const cleanWord = word.trim();
                 if (cleanWord && /[\u0600-\u06FF]/.test(cleanWord)) {
                   // Apply tashkeel toggle to individual words
                   const displayWord = tashkeelEnabled ? word : word.replace(/[\u064B-\u065F\u0670\u0640]/g, '');
                   const wordForData = cleanWord.replace(/[۔،؍؎؏ؘؙؚؐؑؒؓؔؕؖؗ؛؜؝؞؟ؠ]/g, '').replace(/[\u064B-\u065F\u0670\u0640]/g, '');
-                  return `<span class="clickable-word cursor-pointer hover:bg-blue-100 px-1 rounded transition-colors" data-word="${wordForData}" style="display: inline-block; margin: 0 1px;">${displayWord}</span>`;
+                  
+                  let wordTranslation = '';
+                  if (wordByWordEnabled) {
+                    try {
+                      const wordAnalysis = await analyzeArabicWord(wordForData);
+                      wordTranslation = wordAnalysis.translation;
+                    } catch (error) {
+                      wordTranslation = 'N/A';
+                    }
+                  }
+                  
+                  wordsWithTranslations.push(`
+                    <span class="word-container" style="display: inline-block; margin: 0 4px; text-align: center; vertical-align: top; min-width: 50px;">
+                      <span class="clickable-word cursor-pointer hover:bg-blue-100 px-1 rounded transition-colors" data-word="${wordForData}" style="display: block; font-size: 18px; line-height: 1.4; color: #1a1a1a; font-weight: 500;">${displayWord}</span>
+                      ${wordByWordEnabled ? `<span class="word-translation" style="display: block; font-size: 11px; line-height: 1.2; color: #888; margin-top: 2px; font-weight: normal;">${wordTranslation}</span>` : ''}
+                    </span>
+                  `);
+                } else if (word.match(/\s+/)) {
+                  // For spaces - add minimal spacing
+                  wordsWithTranslations.push(' ');
+                } else if (word.trim()) {
+                  // For punctuation
+                  wordsWithTranslations.push(`<span style="margin: 0 2px;">${word}</span>`);
                 }
-                return word;
-              }).join('');
+              }
+              
+              const wordsHtml = wordsWithTranslations.join('');
               
               result += `
                 <div class="line-block mb-6">
@@ -85,16 +110,29 @@ function BookContent({ content, tashkeelEnabled, onWordClick }: BookContentProps
             } catch (error) {
               // Fallback for failed translations
               const words = line.split(/(\s+|[^\u0600-\u06FF\s]+)/);
-              const wordsHtml = words.map((word, index) => {
+              const wordsWithTranslations = [];
+              
+              for (const word of words) {
                 const cleanWord = word.trim();
                 if (cleanWord && /[\u0600-\u06FF]/.test(cleanWord)) {
                   // Apply tashkeel toggle to individual words
                   const displayWord = tashkeelEnabled ? word : word.replace(/[\u064B-\u065F\u0670\u0640]/g, '');
                   const wordForData = cleanWord.replace(/[۔،؍؎؏ؘؙؚؐؑؒؓؔؕؖؗ؛؜؝؞؟ؠ]/g, '').replace(/[\u064B-\u065F\u0670\u0640]/g, '');
-                  return `<span class="clickable-word cursor-pointer hover:bg-blue-100 px-1 rounded transition-colors" data-word="${wordForData}" style="display: inline-block; margin: 0 1px;">${displayWord}</span>`;
+                  
+                  wordsWithTranslations.push(`
+                    <span class="word-container" style="display: inline-block; margin: 0 4px; text-align: center; vertical-align: top; min-width: 50px;">
+                      <span class="clickable-word cursor-pointer hover:bg-blue-100 px-1 rounded transition-colors" data-word="${wordForData}" style="display: block; font-size: 18px; line-height: 1.4; color: #1a1a1a; font-weight: 500;">${displayWord}</span>
+                      ${wordByWordEnabled ? `<span class="word-translation" style="display: block; font-size: 11px; line-height: 1.2; color: #888; margin-top: 2px; font-weight: normal;">N/A</span>` : ''}
+                    </span>
+                  `);
+                } else if (word.match(/\s+/)) {
+                  wordsWithTranslations.push(' ');
+                } else if (word.trim()) {
+                  wordsWithTranslations.push(`<span style="margin: 0 2px;">${word}</span>`);
                 }
-                return word;
-              }).join('');
+              }
+              
+              const wordsHtml = wordsWithTranslations.join('');
               
               result += `
                 <div class="line-block mb-6">
