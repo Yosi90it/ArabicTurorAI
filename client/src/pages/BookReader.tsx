@@ -73,12 +73,12 @@ function BookContent({ content, tashkeelEnabled, onWordClick }: BookContentProps
               }).join('');
               
               result += `
-                <div class="line-block mb-4">
-                  <div class="arabic-text text-xl leading-relaxed mb-2" dir="rtl" style="line-height: 2.5; font-family: 'Arial', sans-serif; word-spacing: 0.3em;">
+                <div class="line-block mb-6">
+                  <div class="arabic-text-container" dir="rtl" style="line-height: 1.8; font-family: 'Arial', sans-serif; margin-bottom: 16px;">
                     ${wordsHtml}
                   </div>
-                  <div class="translation-text text-sm text-gray-600 italic mb-3">
-                    ${analysis.translation}
+                  <div class="translation-text text-sm text-gray-600 italic mb-3" style="border-top: 1px solid #e5e5e5; padding-top: 8px;">
+                    <strong>Full Translation:</strong> ${analysis.translation}
                   </div>
                 </div>
               `;
@@ -97,12 +97,12 @@ function BookContent({ content, tashkeelEnabled, onWordClick }: BookContentProps
               }).join('');
               
               result += `
-                <div class="line-block mb-4">
-                  <div class="arabic-text text-xl leading-relaxed mb-2" dir="rtl" style="line-height: 2.5; font-family: 'Arial', sans-serif; word-spacing: 0.3em;">
+                <div class="line-block mb-6">
+                  <div class="arabic-text-container" dir="rtl" style="line-height: 1.8; font-family: 'Arial', sans-serif; margin-bottom: 16px;">
                     ${wordsHtml}
                   </div>
-                  <div class="translation-text text-sm text-gray-600 italic mb-3">
-                    Translation not available
+                  <div class="translation-text text-sm text-gray-600 italic mb-3" style="border-top: 1px solid #e5e5e5; padding-top: 8px;">
+                    <strong>Full Translation:</strong> Translation not available
                   </div>
                 </div>
               `;
