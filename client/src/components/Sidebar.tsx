@@ -6,8 +6,7 @@ import {
   Video, 
   Languages, 
   Calendar,
-  Settings,
-  Crown
+  Settings
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
@@ -40,11 +39,6 @@ const navigationItems = [
     icon: Languages,
     label: "Alphabet Trainer",
     route: "/alphabet-trainer"
-  },
-  {
-    icon: Crown,
-    label: "Subscription",
-    route: "/subscription"
   },
   {
     icon: Calendar,

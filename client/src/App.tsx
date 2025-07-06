@@ -15,7 +15,7 @@ import Flashcards from "@/pages/Flashcards";
 import BookReader from "@/pages/BookReader";
 import VideoTrainer from "@/pages/VideoTrainer";
 import AlphabetTrainer from "@/pages/AlphabetTrainer";
-import Subscription from "@/pages/Subscription";
+
 import WeeklyPlan from "@/pages/WeeklyPlan";
 import AdminPanel from "@/pages/AdminPanel";
 import AdminLogin from "@/pages/AdminLogin";
