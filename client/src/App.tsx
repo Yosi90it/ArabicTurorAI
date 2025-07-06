@@ -89,7 +89,7 @@ function Router() {
             <Route path="/book-reader" component={BookReader} />
             <Route path="/video-trainer" component={VideoTrainer} />
             <Route path="/alphabet-trainer" component={AlphabetTrainer} />
-            <Route path="/subscription" component={Subscription} />
+  
             <Route path="/weekly-plan" component={WeeklyPlan} />
             <Route path="/admin-panel" component={ProtectedAdminRoute} />
             <Route component={NotFound} />
