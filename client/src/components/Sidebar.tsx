@@ -119,17 +119,7 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
               className="data-[state=checked]:bg-active-purple"
             />
           </div>
-          <div className="flex items-center justify-between">
-            <div>
-              <span className="text-sm font-medium">Word by Word</span>
-              <p className="text-xs text-hover-lavender">Show translations</p>
-            </div>
-            <Switch
-              checked={wordByWordEnabled}
-              onCheckedChange={setWordByWordEnabled}
-              className="data-[state=checked]:bg-active-purple"
-            />
-          </div>
+
         </div>
       </div>
 

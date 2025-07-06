@@ -520,6 +520,21 @@ export default function BookReader() {
                   <Volume2 className="w-4 h-4 mr-2" />
                   Listen
                 </Button>
+                
+                {/* Word by Word Toggle */}
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-gray-700">Word by Word</span>
+                  <button
+                    onClick={() => setWordByWordEnabled(!wordByWordEnabled)}
+                    className="flex items-center"
+                  >
+                    {wordByWordEnabled ? (
+                      <ToggleRight className="w-5 h-5 text-blue-600" />
+                    ) : (
+                      <ToggleLeft className="w-5 h-5 text-gray-400" />
+                    )}
+                  </button>
+                </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -534,6 +549,7 @@ export default function BookReader() {
                         <BookContent 
                           content={currentBookPages[currentPage]} 
                           tashkeelEnabled={tashkeelEnabled}
+                          wordByWordEnabled={wordByWordEnabled}
                           onWordClick={handleContentClick}
                         />
                       )}
