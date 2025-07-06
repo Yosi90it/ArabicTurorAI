@@ -110,11 +110,13 @@ function App() {
             <ContentProvider>
               <FlashcardProvider>
                 <TashkeelProvider>
-                  <TooltipProvider>
-                    <GlobalHeader />
-                    <Toaster />
-                    <Router />
-                  </TooltipProvider>
+                  <WordByWordProvider>
+                    <TooltipProvider>
+                      <GlobalHeader />
+                      <Toaster />
+                      <Router />
+                    </TooltipProvider>
+                  </WordByWordProvider>
                 </TashkeelProvider>
               </FlashcardProvider>
             </ContentProvider>

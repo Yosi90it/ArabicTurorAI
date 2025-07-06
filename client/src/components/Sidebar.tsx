@@ -109,7 +109,7 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
       {/* Tashkeel Toggle */}
       <div className="p-4 border-t border-white/20">
         <div className="bg-white/10 rounded-2xl p-4 mb-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-4">
             <div>
               <span className="text-sm font-medium">Tashkeel</span>
               <p className="text-xs text-hover-lavender">Arabic diacritics</p>
@@ -117,6 +117,18 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
             <Switch 
               checked={tashkeelEnabled}
               onCheckedChange={setTashkeelEnabled}
+              className="data-[state=checked]:bg-active-purple"
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-sm font-medium">Word by Word</span>
+              <p className="text-xs text-hover-lavender">Show translations</p>
+            </div>
+            <Switch
+              checked={wordByWordEnabled}
+              onCheckedChange={setWordByWordEnabled}
+              className="data-[state=checked]:bg-active-purple"
             />
           </div>
         </div>
