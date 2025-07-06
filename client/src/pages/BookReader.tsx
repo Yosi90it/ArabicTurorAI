@@ -240,14 +240,17 @@ export default function BookReader() {
     console.log('Click target:', target, 'Classes:', target.className, 'Data-word:', target.getAttribute('data-word'));
     
     if (target.classList.contains('clickable-word')) {
-      const word = target.getAttribute('data-word') || target.textContent?.trim() || '';
+      // Get original word with tashkeel from textContent for flashcard storage
+      const originalWord = target.textContent?.trim() || '';
+      // Get cleaned word from data attribute for analysis
+      const cleanedWord = target.getAttribute('data-word') || '';
       const rect = target.getBoundingClientRect();
       
-      console.log('Clicked word:', word); // Debug log
+      console.log('Clicked word - Original:', originalWord, 'Clean:', cleanedWord); // Debug log
       
-      // Show loading state
+      // Show loading state with original word
       setSelectedWord({
-        word: word,
+        word: originalWord, // Store original word with tashkeel
         translation: "Analyzing...",
         grammar: "Getting grammar information...",
         position: { x: rect.left + rect.width / 2, y: rect.top }
@@ -256,11 +259,11 @@ export default function BookReader() {
       setIsAnalyzing(true);
       
       try {
-        // Get word analysis from OpenAI
-        const analysis = await analyzeArabicWord(word);
+        // Get word analysis from OpenAI using cleaned word
+        const analysis = await analyzeArabicWord(cleanedWord);
         
         setSelectedWord({
-          word: analysis.word,
+          word: originalWord, // Keep original word with tashkeel for flashcard
           translation: analysis.translation,
           grammar: analysis.grammar,
           position: { x: rect.left + rect.width / 2, y: rect.top },
@@ -270,7 +273,7 @@ export default function BookReader() {
       } catch (error) {
         console.error('Error analyzing word:', error);
         setSelectedWord({
-          word: word,
+          word: originalWord, // Keep original word with tashkeel
           translation: "Translation service unavailable",
           grammar: "Grammar analysis unavailable",
           position: { x: rect.left + rect.width / 2, y: rect.top }
