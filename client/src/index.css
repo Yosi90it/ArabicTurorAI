@@ -60,8 +60,8 @@
   }
 
   body {
-    @apply font-sans antialiased bg-soft-gray text-foreground;
-    background-color: var(--soft-gray);
+    @apply font-sans antialiased bg-white text-foreground;
+    background-color: white;
   }
 }
 

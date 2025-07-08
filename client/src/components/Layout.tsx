@@ -9,7 +9,7 @@ export default function Layout({ children }: LayoutProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
-    <div className="flex h-screen bg-gray-100 relative">
+    <div className="flex h-screen bg-white relative">
       {/* Mobile Hamburger Button */}
       <div className="sm:hidden absolute top-4 left-4 z-30">
         <button
