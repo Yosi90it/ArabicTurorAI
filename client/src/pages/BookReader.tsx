@@ -44,7 +44,7 @@ function BookContent({ content, tashkeelEnabled, wordByWordEnabled, onWordClick 
       ));
     }
     
-    return <ClickableText text={processedContent} className="leading-relaxed" />;
+    return <ClickableText text={processedContent} className="leading-relaxed text-xl" />;
   };
 
   return (
