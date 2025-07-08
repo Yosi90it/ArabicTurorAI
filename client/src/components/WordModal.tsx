@@ -28,64 +28,59 @@ export default function WordModal({
   return (
     <div className="fixed inset-0 z-50" onClick={onClose}>
       <Card 
-        className="absolute bg-white shadow-xl border-0 rounded-2xl overflow-hidden"
+        className="absolute bg-white shadow-xl border-0 rounded-xl overflow-hidden"
         style={{
-          left: `${Math.max(10, Math.min(position.x, window.innerWidth - 300))}px`,
-          top: `${Math.max(10, position.y + 20)}px`,
-          minWidth: '280px',
-          maxWidth: '320px'
+          left: `${Math.max(10, Math.min(position.x, window.innerWidth - 240))}px`,
+          top: `${Math.max(10, Math.min(position.y + 20, window.innerHeight - 300))}px`,
+          width: '220px'
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <CardContent className="p-4">
-          <div className="flex justify-between items-start mb-3">
-            <div className="text-lg font-bold text-primary-purple">{word}</div>
+        <CardContent className="p-3">
+          <div className="flex justify-between items-start mb-2">
+            <div className="text-base font-bold text-primary-purple">{word}</div>
             <Button 
               variant="ghost" 
               size="sm" 
               onClick={onClose}
-              className="p-1 h-6 w-6"
+              className="p-0.5 h-5 w-5"
             >
-              <X className="h-4 w-4" />
+              <X className="h-3 w-3" />
             </Button>
           </div>
           
-          <div className="space-y-3">
-            <div>
-              <h4 className="font-semibold text-purple-700 mb-1">Translation</h4>
-              <p className="text-gray-700">{translation}</p>
-            </div>
+          <div className="space-y-1.5">
+            <p className="text-xs text-gray-600">
+              <strong>Translation:</strong> {translation}
+            </p>
+            <p className="text-xs text-gray-600">
+              <strong>Grammar:</strong> {grammar}
+            </p>
             
             {pronunciation && (
-              <div>
-                <h4 className="font-semibold text-purple-700 mb-1">Pronunciation</h4>
-                <p className="text-gray-600 text-sm font-mono">{pronunciation}</p>
-              </div>
+              <p className="text-xs text-gray-600">
+                <strong>Pronunciation:</strong> {pronunciation}
+              </p>
             )}
             
-            <div>
-              <h4 className="font-semibold text-purple-700 mb-1">Grammar</h4>
-              <p className="text-gray-600 text-sm">{grammar}</p>
-            </div>
-
             {examples && examples.length > 0 && (
-              <div>
-                <h4 className="font-semibold text-purple-700 mb-1">Examples</h4>
-                <div className="space-y-1">
+              <div className="text-xs text-gray-600">
+                <strong>Examples:</strong>
+                <ul className="mt-1 space-y-0.5">
                   {examples.slice(0, 2).map((example, index) => (
-                    <p key={index} className="text-gray-600 text-sm italic">"{example}"</p>
+                    <li key={index} className="text-xs">• {example}</li>
                   ))}
-                </div>
+                </ul>
               </div>
             )}
           </div>
           
           <Button 
             onClick={() => onAddToFlashcards(word, translation, grammar)}
-            className="w-full mt-3 bg-primary-purple hover:bg-active-purple text-white rounded-xl text-sm"
+            className="w-full mt-3 bg-purple-600 hover:bg-purple-700 text-white text-xs"
             size="sm"
           >
-            <Plus className="h-4 w-4 mr-1" />
+            <Plus className="h-3 w-3 mr-1" />
             Add to Flashcards
           </Button>
         </CardContent>
