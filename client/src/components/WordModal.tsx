@@ -30,10 +30,10 @@ export default function WordModal({
       <Card 
         className="absolute bg-white shadow-xl border-0 rounded-2xl overflow-hidden"
         style={{
-          left: `${position.x}px`,
-          top: `${position.y}px`,
-          transform: 'translate(-50%, -100%)',
-          minWidth: '200px'
+          left: `${Math.max(10, Math.min(position.x, window.innerWidth - 300))}px`,
+          top: `${Math.max(10, position.y + 20)}px`,
+          minWidth: '280px',
+          maxWidth: '320px'
         }}
         onClick={(e) => e.stopPropagation()}
       >
