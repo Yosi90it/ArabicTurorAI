@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import WordModal from "./WordModal";
-import WordTooltip from "./WordTooltip";
+
 import { getWordInfo } from "@/data/arabicDictionary";
 import { useFlashcards } from "@/contexts/FlashcardContext";
 import { useToast } from "@/hooks/use-toast";
@@ -17,11 +17,6 @@ export default function ClickableText({ text, className = "" }: ClickableTextPro
     word: string;
     translation: string;
     grammar: string;
-    position: { x: number; y: number };
-  } | null>(null);
-  
-  const [hoveredWord, setHoveredWord] = useState<{
-    word: string;
     position: { x: number; y: number };
   } | null>(null);
   
@@ -57,23 +52,7 @@ export default function ClickableText({ text, className = "" }: ClickableTextPro
     }
   };
 
-  const handleWordHover = (word: string, event: React.MouseEvent) => {
-    const rect = (event.target as HTMLElement).getBoundingClientRect();
-    setHoveredWord({
-      word: word,
-      position: {
-        x: rect.left + rect.width / 2,
-        y: rect.top
-      }
-    });
-  };
 
-  const handleWordLeave = () => {
-    // Add small delay to prevent tooltip flickering
-    setTimeout(() => {
-      setHoveredWord(null);
-    }, 100);
-  };
 
   const handleAddClick = (word: string, event: React.MouseEvent) => {
     event.preventDefault();
@@ -113,8 +92,6 @@ export default function ClickableText({ text, className = "" }: ClickableTextPro
               <span
                 className="cursor-pointer hover:bg-yellow-100 hover:rounded px-1 py-0.5 transition-colors"
                 onClick={(e) => handleWordClick(cleanWord, e)}
-                onMouseEnter={(e) => handleWordHover(cleanWord, e)}
-                onMouseLeave={handleWordLeave}
               >
                 {cleanWord}
               </span>
@@ -143,14 +120,7 @@ export default function ClickableText({ text, className = "" }: ClickableTextPro
         />
       )}
       
-      {hoveredWord && (
-        <WordTooltip
-          word={hoveredWord.word}
-          position={hoveredWord.position}
-          onClose={() => setHoveredWord(null)}
-          isVisible={!!hoveredWord}
-        />
-      )}
+
     </div>
   );
 }
