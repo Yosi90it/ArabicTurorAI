@@ -1,45 +1,53 @@
-import weaviate from "weaviate-client";
+// weaviate-import.js
 import fs from "fs";
 
-const WEAVIATE_URL = process.env.WEAVIATE_URL;
-const WEAVIATE_APIKEY = process.env.WEAVIATE_APIKEY;
+// URL und API-Key aus deinen Replit-Secrets
+const WEAVIATE_URL    = process.env.WEAVIATE_URL;    // z.B. "https://...weaviate.cloud"
+const WEAVIATE_APIKEY = process.env.WEAVIATE_APIKEY; // dein API-Key
 
-console.log("Connecting to:", WEAVIATE_URL);
-
-const client = weaviate.client({
-  scheme: "https",
-  host: WEAVIATE_URL.replace(/^https?:\/\//, ""),
-  apiKey: new weaviate.ApiKey(WEAVIATE_APIKEY),
-});
-
-// Lese Deine Vokabelliste
-const raw    = fs.readFileSync("vocab.md", "utf-8").trim();
-const blocks = raw.split("\n\n");
-
-async function importData() {
-  console.log(`Starting import of ${blocks.length} vocabulary entries...`);
-  
-  for (const block of blocks) {
-    const [arabic, german] = block.split("\n");
-    if (arabic && german) {
-      try {
-        const response = await client.data.creator()
-          .withClassName("Vocabulary")
-          .withProperties({ 
-            arabic: arabic.trim(), 
-            german: german.trim() 
-          })
-          .do();
-        console.log(`✓ ${arabic} → ${german}`);
-      } catch (error) {
-        console.error(`✗ Failed to import ${arabic}:`, error.message);
-      }
-    }
-  }
-  console.log("✅ Import complete");
+if (!WEAVIATE_URL || !WEAVIATE_APIKEY) {
+  console.error("❌ Bitte WEAVIATE_URL und WEAVIATE_APIKEY als Secrets setzen.");
+  process.exit(1);
 }
 
-importData().catch(err => {
-  console.error("Import fehlgeschlagen:", err);
+console.log(`→ Importiere in: ${WEAVIATE_URL}`);
+
+async function importCustomVocabulary() {
+  // Lies deine vocab.md ein
+  const raw = fs.readFileSync("vocab.md", "utf-8").trim();
+  const blocks = raw.split("\n\n"); // jedes Wort-Paar
+
+  let ok = 0, fail = 0;
+
+  for (const block of blocks) {
+    const [arabic, german] = block.split("\n");
+    const body = {
+      class: "Vocabulary",
+      properties: { arabic, german }
+    };
+
+    try {
+      const res = await fetch(`${WEAVIATE_URL}/v1/objects`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${WEAVIATE_APIKEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+      });
+      if (!res.ok) throw new Error(await res.text());
+      console.log(`✓ ${arabic} → ${german}`);
+      ok++;
+    } catch (e) {
+      console.error(`✗ ${arabic}: ${e.message}`);
+      fail++;
+    }
+  }
+
+  console.log(`\n✅ Import fertig: ${ok} erfolgreich, ${fail} fehlgeschlagen.`);
+}
+
+importCustomVocabulary().catch(err => {
+  console.error("❌ Unerwarteter Fehler:", err);
   process.exit(1);
 });

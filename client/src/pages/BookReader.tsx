@@ -58,21 +58,22 @@ function BookContent({ content, tashkeelEnabled, wordByWordEnabled, onWordClick 
   );
 }
 
-// Weaviate translation function via API
-async function translateWithWeaviate(word: string): Promise<{word: string, translation: string, grammar: string, examples: string[], pronunciation: string}> {
-  const response = await fetch('/api/weaviate/translate', {
+// Direct Weaviate translation function
+async function fetchTranslation(arabicWord: string): Promise<string> {
+  const res = await fetch('/api/weaviate/translate', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ word }),
+    body: JSON.stringify({ word: arabicWord })
   });
   
-  if (!response.ok) {
-    throw new Error('Failed to translate word');
+  if (!res.ok) {
+    throw new Error('Failed to fetch translation');
   }
   
-  return response.json();
+  const data = await res.json();
+  return data.translation || "–";
 }
 
 export default function BookReader() {
@@ -88,10 +89,7 @@ export default function BookReader() {
     translation: string;
     grammar: string;
     position: { x: number; y: number };
-    examples?: string[];
-    pronunciation?: string;
   } | null>(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   // Split content into pages
   const currentBookPages = selectedBook 
@@ -112,41 +110,45 @@ export default function BookReader() {
     if (target.classList.contains('clickable-word')) {
       const word = target.getAttribute('data-word');
       if (word) {
-        setIsAnalyzing(true);
-        try {
-          // Try Weaviate first, fallback to dictionary
-          let result;
-          try {
-            result = await translateWithWeaviate(word);
-          } catch (weaviateError) {
-            console.log('Weaviate not available, using fallback dictionary');
-            const fallbackWord = getWordInfo(word);
-            result = {
-              word: word,
-              translation: fallbackWord?.translation || "Translation not found",
-              grammar: fallbackWord?.grammar || "noun",
-              examples: [],
-              pronunciation: ""
-            };
+        const cleanedWord = word.replace(/[،؟!.:]/g, ''); // Remove punctuation
+        const rect = target.getBoundingClientRect();
+        
+        // Set initial loading state
+        setSelectedWord({
+          word: cleanedWord,
+          translation: "Lädt…",
+          grammar: "noun",
+          position: { 
+            x: rect.left + rect.width / 2, 
+            y: rect.top 
           }
+        });
+        
+        try {
+          // Fetch translation from Weaviate
+          const translation = await fetchTranslation(cleanedWord);
           
-          const rect = target.getBoundingClientRect();
+          // Update with actual translation
           setSelectedWord({
-            ...result,
+            word: cleanedWord,
+            translation: translation,
+            grammar: "noun",
             position: { 
               x: rect.left + rect.width / 2, 
               y: rect.top 
             }
           });
         } catch (error) {
-          console.error('Error translating word:', error);
-          toast({
-            title: "Error",
-            description: "Failed to find word translation",
-            variant: "destructive"
+          console.error('Error fetching translation:', error);
+          setSelectedWord({
+            word: cleanedWord,
+            translation: "–",
+            grammar: "noun",
+            position: { 
+              x: rect.left + rect.width / 2, 
+              y: rect.top 
+            }
           });
-        } finally {
-          setIsAnalyzing(false);
         }
       }
     }
@@ -311,9 +313,6 @@ export default function BookReader() {
           position={selectedWord.position}
           onClose={() => setSelectedWord(null)}
           onAddToFlashcards={handleAddToFlashcards}
-          examples={selectedWord.examples}
-          pronunciation={selectedWord.pronunciation}
-          isAnalyzing={isAnalyzing}
         />
       )}
     </div>
