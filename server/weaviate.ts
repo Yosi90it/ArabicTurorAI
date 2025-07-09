@@ -1,49 +1,70 @@
-import weaviate from "weaviate-client";
+const WEAVIATE_URL = process.env.WEAVIATE_URL;
+const WEAVIATE_APIKEY = process.env.WEAVIATE_APIKEY;
 
-let weaviateClient: any = null;
+// Function to make authenticated requests to Weaviate
+async function weaviateRequest(endpoint: string, method = 'GET', body: any = null) {
+  if (!WEAVIATE_URL || !WEAVIATE_APIKEY) {
+    throw new Error("Weaviate credentials not configured");
+  }
+
+  const url = `${WEAVIATE_URL}${endpoint}`;
+  const options: RequestInit = {
+    method,
+    headers: {
+      'Authorization': `Bearer ${WEAVIATE_APIKEY}`,
+      'Content-Type': 'application/json'
+    }
+  };
+  
+  if (body) {
+    options.body = JSON.stringify(body);
+  }
+  
+  const response = await fetch(url, options);
+  
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Weaviate request failed: ${response.status} - ${errorText}`);
+  }
+  
+  return response.json();
+}
 
 export function initWeaviateClient() {
-  if (!weaviateClient) {
-    const WEAVIATE_URL = process.env.WEAVIATE_URL;
-    const WEAVIATE_APIKEY = process.env.WEAVIATE_APIKEY;
-    
-    if (WEAVIATE_URL && WEAVIATE_APIKEY) {
-      try {
-        weaviateClient = weaviate.client({
-          scheme: "https",
-          host: WEAVIATE_URL.replace(/^https?:\/\//, ""),
-          apiKey: new weaviate.ApiKey(WEAVIATE_APIKEY),
-        });
-        console.log("Weaviate client initialized successfully");
-      } catch (error) {
-        console.error("Failed to initialize Weaviate client:", error);
-      }
-    } else {
-      console.warn("Weaviate credentials not found in environment variables");
-    }
+  if (WEAVIATE_URL && WEAVIATE_APIKEY) {
+    console.log("Weaviate client configured successfully");
+    return true;
+  } else {
+    console.warn("Weaviate credentials not found in environment variables");
+    return false;
   }
-  return weaviateClient;
 }
 
 export async function searchWeaviateVocabulary(arabicWord: string): Promise<string> {
-  const client = initWeaviateClient();
-  if (!client) {
-    throw new Error("Weaviate client not available");
-  }
-
   try {
-    const result = await client.graphql
-      .get()
-      .withClassName("Vocabulary")
-      .withFields("german")
-      .withWhere({
-        path: ["arabic"],
-        operator: "Equal",
-        valueString: arabicWord
-      })
-      .do();
+    // Use GraphQL query to search for exact match
+    const query = {
+      query: `{
+        Get {
+          Vocabulary(where: {
+            path: ["arabic"],
+            operator: Equal,
+            valueString: "${arabicWord}"
+          }) {
+            german
+          }
+        }
+      }`
+    };
+
+    const result = await weaviateRequest('/v1/graphql', 'POST', query);
     
-    return result.data.Get.Vocabulary?.[0]?.german || "Translation not found";
+    const vocabularyEntries = result.data?.Get?.Vocabulary;
+    if (vocabularyEntries && vocabularyEntries.length > 0) {
+      return vocabularyEntries[0].german;
+    }
+    
+    return "Translation not found";
   } catch (error) {
     console.error("Weaviate query error:", error);
     throw new Error("Failed to query Weaviate");
