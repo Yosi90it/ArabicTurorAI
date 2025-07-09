@@ -109,6 +109,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // OpenAI Story Generation endpoint
+  app.post("/api/weaviate/translate", async (req: Request, res: Response) => {
+    try {
+      const { word } = req.body;
+      
+      if (!word) {
+        return res.status(400).json({ error: "Word is required" });
+      }
+
+      const { searchWeaviateVocabulary } = await import("./weaviate.js");
+      const translation = await searchWeaviateVocabulary(word);
+      
+      res.json({ 
+        word, 
+        translation,
+        grammar: "noun", // Default since Weaviate only has translation
+        examples: [],
+        pronunciation: ""
+      });
+    } catch (error) {
+      console.error("Weaviate translation error:", error);
+      res.status(500).json({ error: "Failed to translate word" });
+    }
+  });
+
   app.post("/api/openai/generate-story", async (req: Request, res: Response) => {
     try {
       const { prompt } = req.body;

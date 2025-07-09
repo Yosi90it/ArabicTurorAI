@@ -1,0 +1,115 @@
+You are the Replit AI assistant.  
+I need you to fully integrate a Weaviate-basiertes Vokabel-System in my Arabic-Reader-Webapp. Bitte erledige automatisch und vollständig die folgenden Schritte:
+
+1. **Weaviate Schema anlegen**  
+   - Erstelle per Weaviate-Dashboard → Schema → Create class eine Klasse  
+     **Class Name:** `Vocabulary`  
+     **Properties:**  
+       - `arabic` (text)  
+       - `german` (text)
+
+2. **Secrets in Replit setzen**  
+   - Lege in Replit unter **Secrets** (Environment Variables) an:  
+     ```
+     WEAVIATE_URL    = wmd9hdhkqzs57xjvlfni8a.c0.europe-west3.gcp.weaviate.cloud
+     WEAVIATE_APIKEY = <dein_weaviate_api_key>
+     ```
+
+3. **Weaviate-Client installieren**  
+   - Führe im Terminal aus:  
+     ```bash
+     npm install weaviate-client
+     ```
+
+4. **Import-Skript erstellen**  
+   - Erstelle im Projekt-Root die Datei `weaviate-import.js` mit folgendem Inhalt:
+     ```js
+     import weaviate from "weaviate-client";
+     import fs from "fs";
+
+     const WEAVIATE_URL    = process.env.WEAVIATE_URL;
+     const WEAVIATE_APIKEY = process.env.WEAVIATE_APIKEY;
+
+     const url = new URL(
+       WEAVIATE_URL.startsWith("http") ? WEAVIATE_URL : `https://${WEAVIATE_URL}`
+     );
+     const client = weaviate.client({
+       scheme: url.protocol.replace(":", ""),
+       host:   url.host,
+       apiKey: new weaviate.ApiKey(WEAVIATE_APIKEY),
+     });
+
+     const raw = fs.readFileSync("vocab.md", "utf-8").trim();
+     const blocks = raw.split("\n\n");
+
+     async function importData() {
+       for (const block of blocks) {
+         const [arabic, german] = block.split("\n");
+         await client.data
+           .creator()
+           .withClassName("Vocabulary")
+           .withProperties({ arabic, german })
+           .do();
+         console.log(`+ ${arabic} → ${german}`);
+       }
+       console.log("✅ Alle Vokabeln importiert");
+     }
+
+     importData().catch(err => {
+       console.error("Import fehlgeschlagen:", err);
+       process.exit(1);
+     });
+     ```
+
+5. **Vokabelliste generieren**  
+   - Sorge dafür, dass `vocab.md` im Root liegt im Format:  
+     ```
+     عربي  
+     Deutsch  
+
+     بيت  
+     Haus  
+
+     كتاب  
+     Buch  
+     ```
+   - Falls nötig: Python- oder Node-Script anpassen und ausführen, um `vocab.md` zu erzeugen.
+
+6. **Daten importieren**  
+   - Im Replit-Terminal:
+     ```bash
+     node weaviate-import.js
+     ```
+
+7. **BookReader.tsx anpassen**  
+   - Installiere und importiere den Weaviate-Client in `BookReader.tsx`:
+     ```ts
+     import weaviate from "weaviate-client";
+
+     const weaviateClient = weaviate.client({
+       scheme: "https",
+       host:   process.env.WEAVIATE_URL.replace(/^https?:\/\//, ""),
+       apiKey: new weaviate.ApiKey(process.env.WEAVIATE_APIKEY),
+     });
+     ```
+   - Ersetze im Klick-Handler `analyzeArabicWord` durch eine Weaviate-Abfrage:
+     ```ts
+     const result = await weaviateClient.graphql
+       .get()
+       .withClassName("Vocabulary")
+       .withFields("german")
+       .withWhere({
+         path: ["arabic"],
+         operator: "Equal",
+         valueString: clickedWord
+       })
+       .do();
+     const translation = result.data.Get.Vocabulary?.[0]?.german || "–";
+     ```
+   - Zeige `translation` im bestehenden `WordModal` an.
+   - Entferne alle bisherigen OpenAI-Calls für die German-Übersetzung.
+
+8. **Output**  
+   - Gib mir danach den **vollständigen**, lauffähigen Code von `BookReader.tsx`, damit ich nur noch kopieren muss.
+
+Output **nur** die geänderte/n Datei/en (keinen zusätzlichen Text).  

@@ -9,7 +9,7 @@ import { useFlashcards } from "@/contexts/FlashcardContext";
 import { useToast } from "@/hooks/use-toast";
 import ClickableText from "@/components/ClickableText";
 import WordModal from "@/components/WordModal";
-import { analyzeArabicWord, type WordAnalysis } from "@/lib/openai";
+import { getWordInfo } from "@/data/arabicDictionary";
 
 interface BookContentProps {
   content: string;
@@ -58,6 +58,23 @@ function BookContent({ content, tashkeelEnabled, wordByWordEnabled, onWordClick 
   );
 }
 
+// Weaviate translation function via API
+async function translateWithWeaviate(word: string): Promise<{word: string, translation: string, grammar: string, examples: string[], pronunciation: string}> {
+  const response = await fetch('/api/weaviate/translate', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ word }),
+  });
+  
+  if (!response.ok) {
+    throw new Error('Failed to translate word');
+  }
+  
+  return response.json();
+}
+
 export default function BookReader() {
   const { books } = useContent();
   const { addFlashcard } = useFlashcards();
@@ -97,24 +114,35 @@ export default function BookReader() {
       if (word) {
         setIsAnalyzing(true);
         try {
-          const analysis = await analyzeArabicWord(word);
+          // Try Weaviate first, fallback to dictionary
+          let result;
+          try {
+            result = await translateWithWeaviate(word);
+          } catch (weaviateError) {
+            console.log('Weaviate not available, using fallback dictionary');
+            const fallbackWord = getWordInfo(word);
+            result = {
+              word: word,
+              translation: fallbackWord?.translation || "Translation not found",
+              grammar: fallbackWord?.grammar || "noun",
+              examples: [],
+              pronunciation: ""
+            };
+          }
+          
           const rect = target.getBoundingClientRect();
           setSelectedWord({
-            word: analysis.word,
-            translation: analysis.translation,
-            grammar: analysis.grammar,
+            ...result,
             position: { 
               x: rect.left + rect.width / 2, 
               y: rect.top 
-            },
-            examples: analysis.examples,
-            pronunciation: analysis.pronunciation
+            }
           });
         } catch (error) {
-          console.error('Error analyzing word:', error);
+          console.error('Error translating word:', error);
           toast({
             title: "Error",
-            description: "Failed to analyze word",
+            description: "Failed to find word translation",
             variant: "destructive"
           });
         } finally {
