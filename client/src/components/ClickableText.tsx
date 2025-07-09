@@ -7,6 +7,23 @@ import { getWordInfo } from "@/data/arabicDictionary";
 import { useFlashcards } from "@/contexts/FlashcardContext";
 import { useToast } from "@/hooks/use-toast";
 
+// Weaviate translation function
+async function translateWithWeaviate(word: string): Promise<{word: string, translation: string, grammar: string, examples: string[], pronunciation: string}> {
+  const response = await fetch('/api/weaviate/translate', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ word }),
+  });
+  
+  if (!response.ok) {
+    throw new Error('Failed to translate word');
+  }
+  
+  return response.json();
+}
+
 interface ClickableTextProps {
   text: string;
   className?: string;
@@ -18,37 +35,53 @@ export default function ClickableText({ text, className = "" }: ClickableTextPro
     translation: string;
     grammar: string;
     position: { x: number; y: number };
+    examples?: string[];
+    pronunciation?: string;
   } | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   
   const { addFlashcard } = useFlashcards();
   const { toast } = useToast();
 
-  const handleWordClick = (word: string, event: React.MouseEvent) => {
+  const handleWordClick = async (word: string, event: React.MouseEvent) => {
     event.preventDefault();
     event.stopPropagation();
     
-    const wordInfo = getWordInfo(word);
-    if (wordInfo) {
+    setIsAnalyzing(true);
+    try {
+      // Try Weaviate first, fallback to dictionary
+      let result;
+      try {
+        result = await translateWithWeaviate(word);
+      } catch (weaviateError) {
+        console.log('Weaviate not available, using fallback dictionary');
+        const fallbackWord = getWordInfo(word);
+        result = {
+          word: word,
+          translation: fallbackWord?.translation || "Translation not found",
+          grammar: fallbackWord?.grammar || "noun",
+          examples: [],
+          pronunciation: ""
+        };
+      }
+      
       const rect = (event.target as HTMLElement).getBoundingClientRect();
       setSelectedWord({
-        word: wordInfo.arabic,
-        translation: wordInfo.translation,
-        grammar: wordInfo.grammar,
+        ...result,
         position: {
           x: rect.left + rect.width / 2,
           y: rect.top
         }
       });
-    } else {
-      setSelectedWord({
-        word: word,
-        translation: "Translation not available",
-        grammar: "Grammar info not available",
-        position: {
-          x: (event.target as HTMLElement).getBoundingClientRect().left,
-          y: (event.target as HTMLElement).getBoundingClientRect().top
-        }
+    } catch (error) {
+      console.error('Error translating word:', error);
+      toast({
+        title: "Error",
+        description: "Failed to find word translation",
+        variant: "destructive"
       });
+    } finally {
+      setIsAnalyzing(false);
     }
   };
 
@@ -90,7 +123,8 @@ export default function ClickableText({ text, className = "" }: ClickableTextPro
           <span key={index} className="inline-block ml-1">
             <span className="relative group">
               <span
-                className="cursor-pointer hover:bg-yellow-100 hover:rounded px-1 py-0.5 transition-colors"
+                className="cursor-pointer hover:bg-yellow-100 hover:rounded px-1 py-0.5 transition-colors clickable-word"
+                data-word={cleanWord}
                 onClick={(e) => handleWordClick(cleanWord, e)}
               >
                 {cleanWord}
@@ -117,6 +151,9 @@ export default function ClickableText({ text, className = "" }: ClickableTextPro
           position={selectedWord.position}
           onClose={closeModal}
           onAddToFlashcards={handleAddToFlashcards}
+          examples={selectedWord.examples}
+          pronunciation={selectedWord.pronunciation}
+          isAnalyzing={isAnalyzing}
         />
       )}
       
