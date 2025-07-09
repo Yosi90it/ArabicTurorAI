@@ -40,33 +40,84 @@ export function initWeaviateClient() {
   }
 }
 
+// Arabic text normalization utility
+function normalizeArabic(text: string): string {
+  if (!text) return '';
+  
+  // Remove all diacritics (tashkeel)
+  let normalized = text.replace(/[\u064B-\u065F\u0670\u0640]/g, '');
+  
+  // Normalize different forms of the same letter
+  normalized = normalized
+    .replace(/[أإآ]/g, 'ا')  // Different alif forms to regular alif
+    .replace(/[ؤ]/g, 'و')   // Hamza on waw to regular waw
+    .replace(/[ئ]/g, 'ي')   // Hamza on ya to regular ya
+    .replace(/[ة]/g, 'ه')   // Ta marbuta to ha
+    .replace(/[ى]/g, 'ي');  // Alif maksura to ya
+  
+  // Remove extra spaces and trim
+  normalized = normalized.replace(/\s+/g, ' ').trim();
+  
+  return normalized;
+}
+
 export async function searchWeaviateVocabulary(arabicWord: string): Promise<string> {
   try {
-    // Use GraphQL query to search for exact match
-    const query = {
+    const normalizedWord = normalizeArabic(arabicWord);
+    console.log('Searching for:', arabicWord, '→ normalized:', normalizedWord);
+    
+    // First try exact match on normalized text
+    const exactQuery = {
       query: `{
         Get {
           Vocabulary(where: {
-            path: ["arabic"],
+            path: ["arabic_normalized"],
             operator: Equal,
-            valueString: "${arabicWord}"
+            valueString: "${normalizedWord}"
           }) {
             german
+            context
+            arabic
           }
         }
       }`
     };
-
-    const result = await weaviateRequest('/v1/graphql', 'POST', query);
     
-    const vocabularyEntries = result.data?.Get?.Vocabulary;
-    if (vocabularyEntries && vocabularyEntries.length > 0) {
-      return vocabularyEntries[0].german;
+    let result = await weaviateRequest('/v1/graphql', 'POST', exactQuery);
+    let vocabularyEntries = result.data?.Get?.Vocabulary || [];
+    
+    // If no exact match, try partial matches
+    if (vocabularyEntries.length === 0) {
+      const partialQuery = {
+        query: `{
+          Get {
+            Vocabulary(where: {
+              path: ["arabic_normalized"],
+              operator: Like,
+              valueString: "*${normalizedWord}*"
+            }) {
+              german
+              context
+              arabic
+            }
+          }
+        }`
+      };
+      
+      result = await weaviateRequest('/v1/graphql', 'POST', partialQuery);
+      vocabularyEntries = result.data?.Get?.Vocabulary || [];
     }
     
-    return "Translation not found";
+    if (vocabularyEntries.length > 0) {
+      const match = vocabularyEntries[0];
+      console.log('Found translation:', match.german, 'for:', match.arabic);
+      return match.german;
+    }
+    
+    console.log('No translation found for normalized:', normalizedWord);
+    return 'Translation not found';
   } catch (error) {
-    console.error("Weaviate query error:", error);
-    throw new Error("Failed to query Weaviate");
+    console.error('Weaviate search error:', error);
+    return 'Translation not found';
   }
 }
