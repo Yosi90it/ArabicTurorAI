@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Search, Volume2, ChevronLeft, ChevronRight, BookOpen, Loader2, Plus, ToggleLeft, ToggleRight } from "lucide-react";
 import { useTashkeel } from "@/contexts/TashkeelContext";
-import { useWordByWord } from "@/contexts/WordByWordContext";
 import { useContent } from "@/contexts/ContentContext";
 import { useFlashcards } from "@/contexts/FlashcardContext";
 import { useToast } from "@/hooks/use-toast";
@@ -15,12 +14,11 @@ import { getWordInfo } from "@/data/arabicDictionary";
 interface BookContentProps {
   content: string;
   tashkeelEnabled: boolean;
-  wordByWordEnabled: boolean;
   interlinearEnabled: boolean;
   onWordClick: (event: React.MouseEvent) => Promise<void>;
 }
 
-function BookContent({ content, tashkeelEnabled, wordByWordEnabled, interlinearEnabled, onWordClick }: BookContentProps) {
+function BookContent({ content, tashkeelEnabled, interlinearEnabled, onWordClick }: BookContentProps) {
   const processContent = () => {
     if (!content) return "";
     
@@ -36,20 +34,6 @@ function BookContent({ content, tashkeelEnabled, wordByWordEnabled, interlinearE
     if (interlinearEnabled) {
       console.log("Interlinear mode enabled, content:", processedContent?.substring(0, 100));
       return <InterlinearText text={processedContent} className="leading-relaxed" />;
-    }
-    
-    // Handle word-by-word translation
-    if (wordByWordEnabled) {
-      const words = processedContent.split(/\s+/).filter(Boolean);
-      return words.map((word, index) => (
-        <span key={index} className="inline-block">
-          <ClickableText 
-            text={word} 
-            className="hover:bg-purple-100 px-1 rounded transition-colors cursor-pointer"
-          />
-          {index < words.length - 1 && " "}
-        </span>
-      ));
     }
     
     return <ClickableText text={processedContent} className="leading-relaxed text-xl" />;
@@ -89,7 +73,6 @@ export default function BookReader() {
   const { addFlashcard } = useFlashcards();
   const { toast } = useToast();
   const { tashkeelEnabled } = useTashkeel();
-  const { wordByWordEnabled, setWordByWordEnabled } = useWordByWord();
   const [interlinearEnabled, setInterlinearEnabled] = useState(false);
   const [selectedBook, setSelectedBook] = useState(books.length > 0 ? books[0] : null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -289,21 +272,7 @@ export default function BookReader() {
                   </div>
                   
                   {/* Word by Word Toggle */}
-                  {!interlinearEnabled && (
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-gray-700">Word by Word</span>
-                      <button
-                        onClick={() => setWordByWordEnabled(!wordByWordEnabled)}
-                        className="flex items-center"
-                      >
-                        {wordByWordEnabled ? (
-                          <ToggleRight className="w-5 h-5 text-blue-600" />
-                        ) : (
-                          <ToggleLeft className="w-5 h-5 text-gray-400" />
-                        )}
-                      </button>
-                    </div>
-                  )}
+
                 </div>
               </div>
             </CardHeader>
@@ -319,7 +288,6 @@ export default function BookReader() {
                         <BookContent 
                           content={currentBookPages[currentPage]} 
                           tashkeelEnabled={tashkeelEnabled}
-                          wordByWordEnabled={wordByWordEnabled}
                           interlinearEnabled={interlinearEnabled}
                           onWordClick={handleContentClick}
                         />
