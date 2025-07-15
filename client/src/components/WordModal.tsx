@@ -55,24 +55,142 @@ export default function WordModal({
   pronunciation,
   isAnalyzing = false
 }: WordModalProps) {
-  const [showConjugations, setShowConjugations] = useState(false);
-  const [conjugations, setConjugations] = useState<VerbConjugation[]>([]);
   const [loadingConjugations, setLoadingConjugations] = useState(false);
 
   const handleShowConjugations = async () => {
-    if (showConjugations) {
-      setShowConjugations(false);
-      return;
-    }
-    
     setLoadingConjugations(true);
-    setShowConjugations(true);
     
     try {
       const conjugationData = await generateConjugations(word);
-      setConjugations(conjugationData);
+      
+      // Erstelle neues Fenster für Konjugationen
+      const newWindow = window.open('', '_blank', 'width=500,height=600,scrollbars=yes,resizable=yes');
+      
+      if (newWindow) {
+        newWindow.document.write(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Konjugationen: ${word}</title>
+            <style>
+              body { 
+                font-family: Arial, sans-serif; 
+                padding: 20px; 
+                background: #f9f9f9;
+                direction: rtl;
+              }
+              .header { 
+                text-align: center; 
+                margin-bottom: 30px; 
+                padding: 20px;
+                background: white;
+                border-radius: 10px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+              }
+              .arabic-word { 
+                font-size: 32px; 
+                font-weight: bold; 
+                color: #6B46C1;
+                margin-bottom: 10px;
+              }
+              .translation { 
+                font-size: 18px; 
+                color: #666;
+                margin-bottom: 5px;
+              }
+              .grammar { 
+                font-size: 14px; 
+                color: #888;
+              }
+              .conjugations { 
+                background: white;
+                border-radius: 10px;
+                padding: 20px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+              }
+              .conjugation-row { 
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 15px;
+                padding: 10px;
+                background: #f5f5f5;
+                border-radius: 5px;
+              }
+              .person { 
+                font-weight: bold; 
+                color: #333;
+                width: 100px;
+              }
+              .forms { 
+                flex: 1;
+                text-align: left;
+              }
+              .form { 
+                margin-bottom: 5px;
+                font-size: 16px;
+              }
+              .singular { 
+                color: #2563EB;
+                font-size: 18px;
+              }
+              .plural { 
+                color: #059669;
+                font-size: 18px;
+              }
+              .close-btn {
+                position: fixed;
+                top: 10px;
+                right: 10px;
+                background: #EF4444;
+                color: white;
+                border: none;
+                border-radius: 50%;
+                width: 30px;
+                height: 30px;
+                cursor: pointer;
+                font-size: 16px;
+              }
+              .close-btn:hover {
+                background: #DC2626;
+              }
+            </style>
+          </head>
+          <body>
+            <button class="close-btn" onclick="window.close()">×</button>
+            <div class="header">
+              <div class="arabic-word">${word}</div>
+              <div class="translation">Übersetzung: ${translation}</div>
+              <div class="grammar">Grammatik: ${grammar}</div>
+            </div>
+            
+            <div class="conjugations">
+              <h2 style="text-align: center; margin-bottom: 20px; color: #333;">Verbkonjugationen</h2>
+              ${conjugationData.map(conj => `
+                <div class="conjugation-row">
+                  <div class="person">${conj.person}</div>
+                  <div class="forms">
+                    <div class="form">
+                      <strong>Singular:</strong> <span class="singular">${conj.singular}</span>
+                    </div>
+                    <div class="form">
+                      <strong>Plural:</strong> <span class="plural">${conj.plural}</span>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px; color: #666;">
+              <p>Schließen Sie dieses Fenster, um zur Hauptanwendung zurückzukehren.</p>
+            </div>
+          </body>
+          </html>
+        `);
+        newWindow.document.close();
+      }
     } catch (error) {
       console.error('Failed to load conjugations:', error);
+      alert('Fehler beim Laden der Konjugationen. Bitte versuchen Sie es erneut.');
     } finally {
       setLoadingConjugations(false);
     }
@@ -86,9 +204,9 @@ export default function WordModal({
       <Card 
         className="absolute bg-white shadow-xl border-0 rounded-xl overflow-hidden"
         style={{
-          left: `${Math.max(10, Math.min(position.x, window.innerWidth - (showConjugations ? 350 : 240)))}px`,
-          top: `${Math.max(10, Math.min(position.y + 20, window.innerHeight - (showConjugations ? 400 : 300)))}px`,
-          width: showConjugations ? '340px' : '220px'
+          left: `${Math.max(10, Math.min(position.x - 110, window.innerWidth - 240))}px`,
+          top: `${Math.max(10, Math.min(position.y - 50, window.innerHeight - 300))}px`,
+          width: '220px'
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -150,40 +268,17 @@ export default function WordModal({
                 disabled={loadingConjugations}
               >
                 <Book className="h-3 w-3 mr-1" />
-                {showConjugations ? 'Hide' : 'Conjugate'}
+                {loadingConjugations ? 'Laden...' : 'Conjugate'}
               </Button>
             )}
           </div>
-          
-          {showConjugations && (
-            <div className="mt-3 border-t pt-3">
-              <h4 className="text-xs font-semibold mb-2">Konjugationen:</h4>
-              {loadingConjugations ? (
-                <div className="text-xs text-gray-500">Lade Konjugationen...</div>
-              ) : conjugations.length > 0 ? (
-                <div className="space-y-1">
-                  {conjugations.map((conj, index) => (
-                    <div key={index} className="text-xs">
-                      <span className="font-medium">{conj.person}:</span>
-                      <div className="ml-2">
-                        <div>Singular: {conj.singular}</div>
-                        <div>Plural: {conj.plural}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-xs text-gray-500">Keine Konjugationen verfügbar</div>
-              )}
-            </div>
-          )}
         </CardContent>
         
         {/* Arrow pointing to clicked word */}
         <div 
-          className="absolute w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-white"
+          className="absolute w-0 h-0 border-l-6 border-r-6 border-b-6 border-l-transparent border-r-transparent border-b-white"
           style={{
-            bottom: '-8px',
+            top: '-6px',
             left: '50%',
             transform: 'translateX(-50%)'
           }}
