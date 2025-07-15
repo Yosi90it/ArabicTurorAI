@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
+import WordModal from "./WordModal";
+import { useFlashcards } from "@/contexts/FlashcardContext";
+import { useToast } from "@/hooks/use-toast";
 
 interface InterlinearTextProps {
   text: string;
@@ -10,10 +13,13 @@ interface WordTranslation {
   arabic: string;
   german: string;
   loading: boolean;
+  grammar?: string;
+  examples?: string[];
+  pronunciation?: string;
 }
 
-// Weaviate translation function
-async function translateWord(word: string): Promise<string> {
+// Weaviate translation function with full details
+async function translateWord(word: string): Promise<{translation: string, grammar: string, examples: string[], pronunciation: string}> {
   try {
     const response = await fetch('/api/weaviate/translate', {
       method: 'POST',
@@ -28,10 +34,20 @@ async function translateWord(word: string): Promise<string> {
     }
     
     const data = await response.json();
-    return data.translation || "–";
+    return {
+      translation: data.translation || "–",
+      grammar: data.grammar || "noun",
+      examples: data.examples || [],
+      pronunciation: data.pronunciation || ""
+    };
   } catch (error) {
     console.error('Translation error:', error);
-    return "–";
+    return {
+      translation: "–",
+      grammar: "noun",
+      examples: [],
+      pronunciation: ""
+    };
   }
 }
 
@@ -43,6 +59,17 @@ function cleanArabicWord(word: string): string {
 export default function InterlinearText({ text, className = "" }: InterlinearTextProps) {
   const [wordTranslations, setWordTranslations] = useState<WordTranslation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedWord, setSelectedWord] = useState<{
+    word: string;
+    translation: string;
+    grammar: string;
+    position: { x: number; y: number };
+    examples?: string[];
+    pronunciation?: string;
+  } | null>(null);
+
+  const { addFlashcard } = useFlashcards();
+  const { toast } = useToast();
 
   console.log("InterlinearText rendered with text:", text?.substring(0, 100));
 
@@ -74,14 +101,28 @@ export default function InterlinearText({ text, className = "" }: InterlinearTex
 
         try {
           console.log(`Translating word ${i + 1}/${words.length}: ${cleanedWord}`);
-          const translation = await translateWord(cleanedWord);
-          results.push({ index: i, german: translation, loading: false });
+          const translationData = await translateWord(cleanedWord);
+          results.push({ 
+            index: i, 
+            german: translationData.translation, 
+            loading: false,
+            grammar: translationData.grammar,
+            examples: translationData.examples,
+            pronunciation: translationData.pronunciation
+          });
           
           // Update individual word immediately
           setWordTranslations(prev => 
             prev.map((wordData, index) => 
               index === i 
-                ? { ...wordData, german: translation, loading: false }
+                ? { 
+                    ...wordData, 
+                    german: translationData.translation, 
+                    loading: false,
+                    grammar: translationData.grammar,
+                    examples: translationData.examples,
+                    pronunciation: translationData.pronunciation
+                  }
                 : wordData
             )
           );
@@ -113,29 +154,55 @@ export default function InterlinearText({ text, className = "" }: InterlinearTex
     return null;
   }
 
+  const handleWordClick = (wordData: WordTranslation, event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    if (wordData.loading || !wordData.german || wordData.german === "–") return;
+    
+    const rect = (event.target as HTMLElement).getBoundingClientRect();
+    setSelectedWord({
+      word: wordData.arabic,
+      translation: wordData.german,
+      grammar: wordData.grammar || "noun",
+      examples: wordData.examples || [],
+      pronunciation: wordData.pronunciation || "",
+      position: {
+        x: rect.left + rect.width / 2,
+        y: rect.top
+      }
+    });
+  };
+
+  const handleAddToFlashcards = (word: string, translation: string, grammar: string) => {
+    addFlashcard(word, translation, grammar);
+    toast({
+      title: "Zu Flashcards hinzugefügt",
+      description: `"${word}" wurde zu Ihren Flashcards hinzugefügt.`
+    });
+    setSelectedWord(null);
+  };
+
   return (
     <div className={`interlinear-container ${className}`} dir="rtl">
-      <div className="text-sm text-gray-600 mb-4">
-        Debug: {wordTranslations.length} Wörter gefunden, Laden: {isLoading.toString()}
-      </div>
-      
-      <div className="flex flex-wrap gap-x-6 gap-y-8 justify-end items-start">
+      <div className="flex flex-wrap gap-x-2 gap-y-4 justify-end items-start">
         {wordTranslations.map((wordData, index) => (
           <div 
             key={index} 
-            className="flex flex-col items-center min-w-fit max-w-[120px] bg-gray-50 p-2 rounded"
+            className="flex flex-col items-center min-w-fit cursor-pointer hover:bg-blue-50 p-1 rounded transition-colors"
+            onClick={(e) => handleWordClick(wordData, e)}
           >
             {/* Arabic word */}
-            <div className="text-2xl font-arabic text-gray-900 dark:text-white leading-tight mb-2 text-center">
+            <div className="text-xl font-arabic text-gray-900 dark:text-white leading-tight mb-1 text-center">
               {wordData.arabic}
             </div>
             
             {/* German translation */}
-            <div className="text-xs text-purple-600 dark:text-purple-400 leading-tight text-center min-h-[20px] flex items-center border-t border-gray-300 pt-1 w-full justify-center">
+            <div className="text-xs text-blue-600 dark:text-blue-400 leading-tight text-center min-h-[16px] flex items-center border-t border-gray-200 pt-1 w-full justify-center">
               {wordData.loading ? (
                 <Loader2 className="h-3 w-3 animate-spin" />
               ) : (
-                <span className="font-semibold bg-purple-100 px-2 py-1 rounded text-center break-words">
+                <span className="font-medium text-center break-words max-w-[80px]">
                   {wordData.german || "..."}
                 </span>
               )}
@@ -145,7 +212,7 @@ export default function InterlinearText({ text, className = "" }: InterlinearTex
       </div>
       
       {isLoading && (
-        <div className="flex items-center justify-center mt-6 text-sm text-gray-500">
+        <div className="flex items-center justify-center mt-4 text-sm text-gray-500">
           <Loader2 className="h-4 w-4 animate-spin mr-2" />
           Übersetzungen werden geladen... ({wordTranslations.filter(w => !w.loading).length}/{wordTranslations.length})
         </div>
@@ -153,8 +220,22 @@ export default function InterlinearText({ text, className = "" }: InterlinearTex
       
       {wordTranslations.length === 0 && (
         <div className="text-center text-red-500 p-4">
-          Keine Wörter zum Übersetzen gefunden. Text: "{text?.substring(0, 50)}..."
+          Keine Wörter zum Übersetzen gefunden.
         </div>
+      )}
+
+      {/* Word Modal */}
+      {selectedWord && (
+        <WordModal
+          word={selectedWord.word}
+          translation={selectedWord.translation}
+          grammar={selectedWord.grammar}
+          position={selectedWord.position}
+          onClose={() => setSelectedWord(null)}
+          onAddToFlashcards={handleAddToFlashcards}
+          examples={selectedWord.examples}
+          pronunciation={selectedWord.pronunciation}
+        />
       )}
     </div>
   );
