@@ -8,6 +8,7 @@ import { useContent } from "@/contexts/ContentContext";
 import { useFlashcards } from "@/contexts/FlashcardContext";
 import { useToast } from "@/hooks/use-toast";
 import ClickableText from "@/components/ClickableText";
+import InterlinearText from "@/components/InterlinearText";
 import WordModal from "@/components/WordModal";
 import { getWordInfo } from "@/data/arabicDictionary";
 
@@ -15,10 +16,11 @@ interface BookContentProps {
   content: string;
   tashkeelEnabled: boolean;
   wordByWordEnabled: boolean;
+  interlinearEnabled: boolean;
   onWordClick: (event: React.MouseEvent) => Promise<void>;
 }
 
-function BookContent({ content, tashkeelEnabled, wordByWordEnabled, onWordClick }: BookContentProps) {
+function BookContent({ content, tashkeelEnabled, wordByWordEnabled, interlinearEnabled, onWordClick }: BookContentProps) {
   const processContent = () => {
     if (!content) return "";
     
@@ -28,6 +30,11 @@ function BookContent({ content, tashkeelEnabled, wordByWordEnabled, onWordClick 
     // Remove tashkeel if disabled
     if (!tashkeelEnabled) {
       processedContent = processedContent.replace(/[\u064B-\u065F\u0670\u0640]/g, '');
+    }
+    
+    // Handle interlinear mode - show translations under each word
+    if (interlinearEnabled) {
+      return <InterlinearText text={processedContent} className="leading-relaxed" />;
     }
     
     // Handle word-by-word translation
@@ -51,7 +58,7 @@ function BookContent({ content, tashkeelEnabled, wordByWordEnabled, onWordClick 
     <div 
       className="text-xl leading-relaxed font-arabic" 
       dir="rtl"
-      onClick={onWordClick}
+      onClick={interlinearEnabled ? undefined : onWordClick}
     >
       {processContent()}
     </div>
@@ -82,6 +89,7 @@ export default function BookReader() {
   const { toast } = useToast();
   const { tashkeelEnabled } = useTashkeel();
   const { wordByWordEnabled, setWordByWordEnabled } = useWordByWord();
+  const [interlinearEnabled, setInterlinearEnabled] = useState(false);
   const [selectedBook, setSelectedBook] = useState(books.length > 0 ? books[0] : null);
   const [currentPage, setCurrentPage] = useState(0);
   const [selectedWord, setSelectedWord] = useState<{
@@ -258,20 +266,43 @@ export default function BookReader() {
                     Listen
                   </Button>
                   
-                  {/* Word by Word Toggle */}
+                  {/* Interlinear Toggle */}
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-700">Word by Word</span>
+                    <span className="text-sm font-medium text-gray-700">Interlinear</span>
                     <button
-                      onClick={() => setWordByWordEnabled(!wordByWordEnabled)}
+                      onClick={() => {
+                        setInterlinearEnabled(!interlinearEnabled);
+                        if (!interlinearEnabled) {
+                          setWordByWordEnabled(false);
+                        }
+                      }}
                       className="flex items-center"
+                      title="Zeigt deutsche Übersetzungen unter jedem arabischen Wort"
                     >
-                      {wordByWordEnabled ? (
-                        <ToggleRight className="w-5 h-5 text-blue-600" />
+                      {interlinearEnabled ? (
+                        <ToggleRight className="w-5 h-5 text-purple-600" />
                       ) : (
                         <ToggleLeft className="w-5 h-5 text-gray-400" />
                       )}
                     </button>
                   </div>
+                  
+                  {/* Word by Word Toggle */}
+                  {!interlinearEnabled && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-gray-700">Word by Word</span>
+                      <button
+                        onClick={() => setWordByWordEnabled(!wordByWordEnabled)}
+                        className="flex items-center"
+                      >
+                        {wordByWordEnabled ? (
+                          <ToggleRight className="w-5 h-5 text-blue-600" />
+                        ) : (
+                          <ToggleLeft className="w-5 h-5 text-gray-400" />
+                        )}
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             </CardHeader>
@@ -288,6 +319,7 @@ export default function BookReader() {
                           content={currentBookPages[currentPage]} 
                           tashkeelEnabled={tashkeelEnabled}
                           wordByWordEnabled={wordByWordEnabled}
+                          interlinearEnabled={interlinearEnabled}
                           onWordClick={handleContentClick}
                         />
                       )}
