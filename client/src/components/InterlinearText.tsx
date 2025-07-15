@@ -44,6 +44,8 @@ export default function InterlinearText({ text, className = "" }: InterlinearTex
   const [wordTranslations, setWordTranslations] = useState<WordTranslation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  console.log("InterlinearText rendered with text:", text?.substring(0, 100));
+
   useEffect(() => {
     if (!text) return;
 
@@ -57,71 +59,51 @@ export default function InterlinearText({ text, className = "" }: InterlinearTex
     setWordTranslations(initialTranslations);
     setIsLoading(true);
 
-    // Translate all words in parallel
+    // Translate words sequentially to avoid overwhelming the API
     const translateAllWords = async () => {
-      const translationPromises = words.map(async (word, index) => {
+      const results = [];
+      
+      for (let i = 0; i < words.length; i++) {
+        const word = words[i];
         const cleanedWord = cleanArabicWord(word);
-        if (!cleanedWord) {
-          return { index, german: "–", loading: false };
-        }
-
-        try {
-          const translation = await translateWord(cleanedWord);
-          return { index, german: translation, loading: false };
-        } catch (error) {
-          return { index, german: "–", loading: false };
-        }
-      });
-
-      // Process translations as they complete
-      Promise.allSettled(translationPromises).then(results => {
-        const updates: { [key: number]: { german: string; loading: boolean } } = {};
         
-        results.forEach((result, index) => {
-          if (result.status === 'fulfilled') {
-            updates[result.value.index] = {
-              german: result.value.german,
-              loading: false
-            };
-          } else {
-            updates[index] = {
-              german: "–",
-              loading: false
-            };
-          }
-        });
+        if (!cleanedWord) {
+          results.push({ index: i, german: "–", loading: false });
+          continue;
+        }
 
-        setWordTranslations(prev => 
-          prev.map((word, index) => ({
-            ...word,
-            german: updates[index]?.german || word.german,
-            loading: updates[index]?.loading ?? word.loading
-          }))
-        );
-        setIsLoading(false);
-      });
-
-      // Update translations individually as they complete for better UX
-      translationPromises.forEach(async (promise, index) => {
         try {
-          const result = await promise;
+          console.log(`Translating word ${i + 1}/${words.length}: ${cleanedWord}`);
+          const translation = await translateWord(cleanedWord);
+          results.push({ index: i, german: translation, loading: false });
+          
+          // Update individual word immediately
           setWordTranslations(prev => 
-            prev.map((word, i) => 
-              i === result.index 
-                ? { ...word, german: result.german, loading: false }
-                : word
+            prev.map((wordData, index) => 
+              index === i 
+                ? { ...wordData, german: translation, loading: false }
+                : wordData
             )
           );
+          
+          // Small delay to prevent API rate limiting
+          await new Promise(resolve => setTimeout(resolve, 100));
         } catch (error) {
+          console.error(`Failed to translate ${cleanedWord}:`, error);
+          results.push({ index: i, german: "–", loading: false });
+          
           setWordTranslations(prev => 
-            prev.map((word, i) => 
-              i === index 
-                ? { ...word, german: "–", loading: false }
-                : word
+            prev.map((wordData, index) => 
+              index === i 
+                ? { ...wordData, german: "–", loading: false }
+                : wordData
             )
           );
         }
-      });
+      }
+      
+      setIsLoading(false);
+      console.log(`Completed translating ${words.length} words`);
     };
 
     translateAllWords();
@@ -133,11 +115,15 @@ export default function InterlinearText({ text, className = "" }: InterlinearTex
 
   return (
     <div className={`interlinear-container ${className}`} dir="rtl">
+      <div className="text-sm text-gray-600 mb-4">
+        Debug: {wordTranslations.length} Wörter gefunden, Laden: {isLoading.toString()}
+      </div>
+      
       <div className="flex flex-wrap gap-x-6 gap-y-8 justify-end items-start">
         {wordTranslations.map((wordData, index) => (
           <div 
             key={index} 
-            className="flex flex-col items-center min-w-fit max-w-[120px]"
+            className="flex flex-col items-center min-w-fit max-w-[120px] bg-gray-50 p-2 rounded"
           >
             {/* Arabic word */}
             <div className="text-2xl font-arabic text-gray-900 dark:text-white leading-tight mb-2 text-center">
@@ -145,12 +131,12 @@ export default function InterlinearText({ text, className = "" }: InterlinearTex
             </div>
             
             {/* German translation */}
-            <div className="text-xs text-purple-600 dark:text-purple-400 leading-tight text-center min-h-[16px] flex items-center border-t border-gray-300 pt-1 w-full justify-center">
+            <div className="text-xs text-purple-600 dark:text-purple-400 leading-tight text-center min-h-[20px] flex items-center border-t border-gray-300 pt-1 w-full justify-center">
               {wordData.loading ? (
                 <Loader2 className="h-3 w-3 animate-spin" />
               ) : (
-                <span className="font-semibold bg-purple-50 px-2 py-1 rounded text-center break-words">
-                  {wordData.german}
+                <span className="font-semibold bg-purple-100 px-2 py-1 rounded text-center break-words">
+                  {wordData.german || "..."}
                 </span>
               )}
             </div>
@@ -161,7 +147,13 @@ export default function InterlinearText({ text, className = "" }: InterlinearTex
       {isLoading && (
         <div className="flex items-center justify-center mt-6 text-sm text-gray-500">
           <Loader2 className="h-4 w-4 animate-spin mr-2" />
-          Übersetzungen werden geladen...
+          Übersetzungen werden geladen... ({wordTranslations.filter(w => !w.loading).length}/{wordTranslations.length})
+        </div>
+      )}
+      
+      {wordTranslations.length === 0 && (
+        <div className="text-center text-red-500 p-4">
+          Keine Wörter zum Übersetzen gefunden. Text: "{text?.substring(0, 50)}..."
         </div>
       )}
     </div>

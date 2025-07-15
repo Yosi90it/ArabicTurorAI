@@ -34,6 +34,7 @@ function BookContent({ content, tashkeelEnabled, wordByWordEnabled, interlinearE
     
     // Handle interlinear mode - show translations under each word
     if (interlinearEnabled) {
+      console.log("Interlinear mode enabled, content:", processedContent?.substring(0, 100));
       return <InterlinearText text={processedContent} className="leading-relaxed" />;
     }
     
