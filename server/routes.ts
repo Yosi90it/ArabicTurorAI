@@ -133,6 +133,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // OpenAI Verb Conjugation endpoint
+  app.post("/api/openai/conjugate-verb", async (req: Request, res: Response) => {
+    try {
+      const { verb } = req.body;
+      
+      if (!verb) {
+        return res.status(400).json({ error: "Verb is required" });
+      }
+
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+          messages: [
+            {
+              role: "system",
+              content: "Du bist ein Experte für arabische Grammatik. Erstelle vollständige Verbkonjugationen für das gegebene arabische Verb im Präsens, Perfekt und Imperfekt. Antworte im JSON-Format mit deutschen Übersetzungen."
+            },
+            {
+              role: "user",
+              content: `Konjugiere das arabische Verb "${verb}" und gib alle Personen (1., 2., 3. Person) in Singular und Plural an. Format: {"conjugations": [{"person": "1. Person", "singular": "أنا + [verb]", "plural": "نحن + [verb]"}, ...]}`
+            }
+          ],
+          response_format: { type: "json_object" },
+          max_tokens: 800,
+          temperature: 0.3
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`OpenAI API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const result = JSON.parse(data.choices[0].message.content);
+      
+      res.json(result);
+    } catch (error) {
+      console.error("Conjugation error:", error);
+      res.status(500).json({ error: "Failed to conjugate verb" });
+    }
+  });
+
   app.post("/api/openai/generate-story", async (req: Request, res: Response) => {
     try {
       const { prompt } = req.body;
