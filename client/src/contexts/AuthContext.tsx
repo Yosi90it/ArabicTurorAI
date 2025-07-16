@@ -36,6 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Check if user is already logged in on app start
   useEffect(() => {
     const adminStatus = localStorage.getItem('adminLoggedIn');
+    console.log('AuthContext - adminStatus from localStorage:', adminStatus);
     if (adminStatus === 'true') {
       setIsAdmin(true);
     }
@@ -87,18 +88,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const adminLogin = (password: string): boolean => {
     const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD || 'admin123secure';
+    console.log('Admin login attempt with password:', password);
     
     if (password === adminPassword) {
       setIsAdmin(true);
       localStorage.setItem('adminLoggedIn', 'true');
+      console.log('Admin login successful');
       return true;
     }
+    console.log('Admin login failed');
     return false;
   };
 
   const adminLogout = () => {
     setIsAdmin(false);
     localStorage.removeItem('adminLoggedIn');
+    console.log('Admin logged out');
   };
 
   const login = async (email: string, password: string): Promise<boolean> => {

@@ -58,6 +58,9 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
   const { isAdmin, isAuthenticated } = useAuth();
   const { strings } = useLanguage();
 
+  // Debug: Log admin status
+  console.log('Sidebar - isAdmin:', isAdmin);
+
   const isActive = (route: string) => {
     if (route === "/ai-chat" && location === "/") return true;
     return location === route;
