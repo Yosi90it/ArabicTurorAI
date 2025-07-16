@@ -254,12 +254,7 @@ export default function BookReader() {
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-medium text-gray-700">Interlinear</span>
                     <button
-                      onClick={() => {
-                        setInterlinearEnabled(!interlinearEnabled);
-                        if (!interlinearEnabled) {
-                          setWordByWordEnabled(false);
-                        }
-                      }}
+                      onClick={() => setInterlinearEnabled(!interlinearEnabled)}
                       className="flex items-center"
                       title="Zeigt deutsche Übersetzungen unter jedem arabischen Wort"
                     >
