@@ -174,22 +174,7 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
         </div>
       </div>
 
-      {/* Progress Section */}
-      <div className="p-4 border-t border-white/20">
-        <div className="bg-white/10 rounded-2xl p-4">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-medium">Progress</span>
-            <span className="text-xs text-hover-lavender">25%</span>
-          </div>
-          <div className="w-full bg-white/20 rounded-full h-2 mb-2">
-            <div 
-              className="progress-gradient h-2 rounded-full transition-all duration-300" 
-              style={{ width: "25%" }}
-            ></div>
-          </div>
-          <p className="text-xs text-hover-lavender">Beginner – Level A1</p>
-        </div>
-      </div>
+
     </aside>
   );
 }
