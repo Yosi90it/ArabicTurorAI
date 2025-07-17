@@ -109,21 +109,21 @@ function App() {
       <LanguageProvider>
         <TrialProvider>
           <AuthProvider>
-            <ContentProvider>
-              <FlashcardProvider>
-                <TashkeelProvider>
-                  <WordByWordProvider>
-                    <SimpleGamificationProvider>
+            <SimpleGamificationProvider>
+              <ContentProvider>
+                <FlashcardProvider>
+                  <TashkeelProvider>
+                    <WordByWordProvider>
                       <TooltipProvider>
                       <GlobalHeader />
                       <Toaster />
                       <Router />
                       </TooltipProvider>
-                    </SimpleGamificationProvider>
-                  </WordByWordProvider>
-                </TashkeelProvider>
-              </FlashcardProvider>
-            </ContentProvider>
+                    </WordByWordProvider>
+                  </TashkeelProvider>
+                </FlashcardProvider>
+              </ContentProvider>
+            </SimpleGamificationProvider>
           </AuthProvider>
         </TrialProvider>
       </LanguageProvider>
