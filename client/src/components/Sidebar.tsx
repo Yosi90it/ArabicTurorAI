@@ -6,7 +6,8 @@ import {
   Video, 
   Languages, 
   Calendar,
-  Settings
+  Settings,
+  Trophy
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
@@ -14,6 +15,7 @@ import { useTashkeel } from "@/contexts/TashkeelContext";
 
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useGamification } from "@/contexts/GamificationContext";
 
 const navigationItems = [
   {
@@ -45,6 +47,11 @@ const navigationItems = [
     icon: Calendar,
     label: "7-Day Plan",
     route: "/weekly-plan"
+  },
+  {
+    icon: Trophy,
+    label: "Erfolge",
+    route: "/gamification"
   }
 ];
 
@@ -57,9 +64,9 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
   const { tashkeelEnabled, setTashkeelEnabled } = useTashkeel();
   const { isAdmin, isAuthenticated } = useAuth();
   const { strings } = useLanguage();
+  const { stats, getCurrentLevelProgress, getNextLevelPoints } = useGamification();
 
-  // Debug: Log admin status
-  console.log('Sidebar - isAdmin:', isAdmin);
+
 
   const isActive = (route: string) => {
     if (route === "/ai-chat" && location === "/") return true;
@@ -107,6 +114,30 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
           </Link>
         )}
       </nav>
+
+      {/* Gamification Widget */}
+      {isAuthenticated && (
+        <div className="p-4 border-t border-white/20">
+          <div className="bg-white/10 rounded-2xl p-4 mb-4">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <span className="text-sm font-medium">Level {stats.level}</span>
+                <p className="text-xs text-hover-lavender">{stats.totalPoints} Punkte</p>
+              </div>
+              <div className="text-right">
+                <span className="text-xs text-hover-lavender">🔥 {stats.currentStreak}</span>
+              </div>
+            </div>
+            <Progress 
+              value={getCurrentLevelProgress()} 
+              className="h-2 bg-white/20"
+            />
+            <p className="text-xs text-hover-lavender mt-1">
+              {getNextLevelPoints() - stats.totalPoints} bis Level {stats.level + 1}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Tashkeel Toggle */}
       <div className="p-4 border-t border-white/20">

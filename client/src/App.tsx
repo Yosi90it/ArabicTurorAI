@@ -10,13 +10,14 @@ import { ContentProvider } from "@/contexts/ContentContext";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { TrialProvider } from "@/contexts/TrialContext";
+import { GamificationProvider } from "@/contexts/GamificationContext";
 import Layout from "@/components/Layout";
 import AiChat from "@/pages/AiChat";
 import Flashcards from "@/pages/Flashcards";
 import BookReader from "@/pages/BookReader";
 import VideoTrainer from "@/pages/VideoTrainer";
 import AlphabetTrainer from "@/pages/AlphabetTrainer";
-
+import Gamification from "@/pages/Gamification";
 import WeeklyPlan from "@/pages/WeeklyPlan";
 import AdminPanel from "@/pages/AdminPanel";
 import AdminLogin from "@/pages/AdminLogin";
@@ -92,6 +93,7 @@ function Router() {
             <Route path="/alphabet-trainer" component={AlphabetTrainer} />
   
             <Route path="/weekly-plan" component={WeeklyPlan} />
+            <Route path="/gamification" component={Gamification} />
             <Route path="/admin-panel" component={ProtectedAdminRoute} />
             <Route component={NotFound} />
           </Switch>
@@ -111,11 +113,13 @@ function App() {
               <FlashcardProvider>
                 <TashkeelProvider>
                   <WordByWordProvider>
-                    <TooltipProvider>
+                    <GamificationProvider>
+                      <TooltipProvider>
                       <GlobalHeader />
                       <Toaster />
                       <Router />
-                    </TooltipProvider>
+                      </TooltipProvider>
+                    </GamificationProvider>
                   </WordByWordProvider>
                 </TashkeelProvider>
               </FlashcardProvider>
