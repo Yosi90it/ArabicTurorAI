@@ -23,6 +23,18 @@ interface UserStats {
   chatMessages: number;
   dailyGoalMet: boolean;
   lastActivityDate: string;
+  // Weekly goals
+  weeklyWordGoal: number;
+  weeklyWordsLearned: number;
+  weekStartDate: string;
+  // Monthly goals
+  monthlyReadingGoal: number; // verses/chapters
+  monthlyReadingProgress: number;
+  monthStartDate: string;
+  // Rewards
+  rewardPoints: number;
+  hasActiveDiscount: boolean;
+  discountExpiryDate?: string;
 }
 
 interface GamificationContextType {
@@ -31,10 +43,19 @@ interface GamificationContextType {
   recentPoints: number[];
   addPoints: (points: number, reason: string) => void;
   completeAchievement: (achievementId: string) => void;
-  updateProgress: (type: 'word' | 'book' | 'video' | 'chat') => void;
+  updateProgress: (type: 'word' | 'book' | 'video' | 'chat' | 'reading') => void;
   checkDailyGoal: () => void;
   getNextLevelPoints: () => number;
   getCurrentLevelProgress: () => number;
+  setWeeklyWordGoal: (goal: number) => void;
+  setMonthlyReadingGoal: (goal: number) => void;
+  checkWeeklyGoal: () => void;
+  checkMonthlyGoal: () => void;
+  claimReward: () => void;
+  getWeeklyProgress: () => number;
+  getMonthlyProgress: () => number;
+  getTimeUntilWeekReset: () => string;
+  getTimeUntilMonthReset: () => string;
 }
 
 const GamificationContext = createContext<GamificationContextType | undefined>(undefined);
@@ -146,7 +167,15 @@ export function GamificationProvider({ children }: { children: ReactNode }) {
     videosWatched: 0,
     chatMessages: 0,
     dailyGoalMet: false,
-    lastActivityDate: ''
+    lastActivityDate: '',
+    weeklyWordGoal: 10,
+    weeklyWordsLearned: 0,
+    weekStartDate: new Date().toISOString(),
+    monthlyReadingGoal: 20,
+    monthlyReadingProgress: 0,
+    monthStartDate: new Date().toISOString(),
+    rewardPoints: 0,
+    hasActiveDiscount: false
   });
   const [achievements, setAchievements] = useState<Achievement[]>(INITIAL_ACHIEVEMENTS);
   const [recentPoints, setRecentPoints] = useState<number[]>([]);
@@ -254,14 +283,17 @@ export function GamificationProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const updateProgress = (type: 'word' | 'book' | 'video' | 'chat') => {
+  const updateProgress = (type: 'word' | 'book' | 'video' | 'chat' | 'reading') => {
     setStats(prev => {
       const newStats = { ...prev };
       
       switch (type) {
         case 'word':
           newStats.wordsLearned += 1;
+          newStats.weeklyWordsLearned += 1;
           addPoints(5, 'Neues Wort gelernt');
+          
+          // Weekly goal will be checked after function definition
           
           // Check achievements
           if (newStats.wordsLearned === 1) {
@@ -296,6 +328,13 @@ export function GamificationProvider({ children }: { children: ReactNode }) {
           if (newStats.chatMessages === 100) {
             setTimeout(() => completeAchievement('chat_master'), 100);
           }
+          break;
+          
+        case 'reading':
+          newStats.monthlyReadingProgress += 1;
+          addPoints(15, 'Verse/Kapitel gelesen');
+          
+          // Monthly goal will be checked after function definition
           break;
       }
       
@@ -397,7 +436,16 @@ export function GamificationProvider({ children }: { children: ReactNode }) {
     updateProgress,
     checkDailyGoal,
     getNextLevelPoints,
-    getCurrentLevelProgress
+    getCurrentLevelProgress,
+    setWeeklyWordGoal,
+    setMonthlyReadingGoal,
+    checkWeeklyGoal,
+    checkMonthlyGoal,
+    claimReward,
+    getWeeklyProgress,
+    getMonthlyProgress,
+    getTimeUntilWeekReset,
+    getTimeUntilMonthReset
   };
 
   return (

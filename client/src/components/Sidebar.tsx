@@ -15,7 +15,7 @@ import { useTashkeel } from "@/contexts/TashkeelContext";
 
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useGamification } from "@/contexts/GamificationContext";
+import { useSimpleGamification } from "@/contexts/SimpleGamificationContext";
 
 const navigationItems = [
   {
@@ -64,7 +64,7 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
   const { tashkeelEnabled, setTashkeelEnabled } = useTashkeel();
   const { isAdmin, isAuthenticated } = useAuth();
   const { strings } = useLanguage();
-  const { stats, getCurrentLevelProgress, getNextLevelPoints } = useGamification();
+  const { stats, getCurrentLevelProgress, getNextLevelPoints } = useSimpleGamification();
 
 
 
@@ -135,6 +135,23 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
             <p className="text-xs text-hover-lavender mt-1">
               {getNextLevelPoints() - stats.totalPoints} bis Level {stats.level + 1}
             </p>
+            
+            {/* Weekly Goal Mini Display */}
+            <div className="mt-3 pt-3 border-t border-white/20">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-medium">Wöchentliches Ziel</span>
+                <span className="text-xs text-hover-lavender">
+                  {stats.weeklyWordsLearned || 0}/{stats.weeklyWordGoal || 10}
+                </span>
+              </div>
+              <Progress 
+                value={Math.min(((stats.weeklyWordsLearned || 0) / (stats.weeklyWordGoal || 10)) * 100, 100)} 
+                className="h-1 bg-white/20"
+              />
+              {(stats.weeklyWordsLearned || 0) >= (stats.weeklyWordGoal || 10) && (
+                <p className="text-xs text-green-400 mt-1">🎯 Ziel erreicht!</p>
+              )}
+            </div>
           </div>
         </div>
       )}

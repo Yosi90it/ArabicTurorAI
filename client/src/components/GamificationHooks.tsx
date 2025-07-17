@@ -1,9 +1,9 @@
-import { useGamification } from '@/contexts/GamificationContext';
+import { useSimpleGamification } from '@/contexts/SimpleGamificationContext';
 import { useToast } from '@/hooks/use-toast';
 
 // Custom hook for integrating gamification into existing components
 export function useGamificationActions() {
-  const { updateProgress, addPoints } = useGamification();
+  const { updateProgress } = useSimpleGamification();
   const { toast } = useToast();
 
   const onWordAdded = () => {

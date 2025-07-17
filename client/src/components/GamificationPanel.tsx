@@ -15,16 +15,20 @@ import {
   MessageCircle,
   Video
 } from 'lucide-react';
-import { useGamification } from '@/contexts/GamificationContext';
+import { useSimpleGamification } from '@/contexts/SimpleGamificationContext';
 
 export default function GamificationPanel() {
   const { 
     stats, 
     achievements, 
-    recentPoints, 
-    getNextLevelPoints, 
-    getCurrentLevelProgress 
-  } = useGamification();
+    getCurrentLevelProgress, 
+    getNextLevelPoints,
+    setWeeklyWordGoal,
+    setMonthlyReadingGoal,
+    getWeeklyProgress,
+    getMonthlyProgress,
+    claimReward
+  } = useSimpleGamification();
   const [activeTab, setActiveTab] = useState<'overview' | 'achievements'>('overview');
 
   const unlockedAchievements = achievements.filter(a => a.unlockedAt);
