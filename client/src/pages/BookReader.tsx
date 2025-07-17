@@ -236,12 +236,6 @@ export default function BookReader() {
                         onClick={() => {
                           const newPage = Math.min(totalPages - 1, currentPage + 1);
                           setCurrentPage(newPage);
-                          // Award points for reading a new page
-                          updateProgress('reading');
-                          toast({
-                            title: "Seite gelesen! +15 Punkte",
-                            description: "Großartig! Du machst Fortschritte beim Lesen.",
-                          });
                         }}
                         disabled={currentPage === totalPages - 1}
                       >
