@@ -2,6 +2,8 @@ import { X, Plus, Book } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useState } from "react";
+import { useSimpleGamification } from "@/contexts/SimpleGamificationContext";
+import { useToast } from "@/hooks/use-toast";
 
 interface VerbConjugation {
   person: string;

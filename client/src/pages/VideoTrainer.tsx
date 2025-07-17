@@ -5,11 +5,16 @@ import { Play } from "lucide-react";
 import ClickableText from "@/components/ClickableText";
 import { useTashkeel } from "@/contexts/TashkeelContext";
 import { useContent } from "@/contexts/ContentContext";
+import { useSimpleGamification } from "@/contexts/SimpleGamificationContext";
+import { useToast } from "@/hooks/use-toast";
 
 export default function VideoTrainer() {
   const { videos } = useContent();
   const [selectedVideo, setSelectedVideo] = useState(videos[0]);
   const { tashkeelEnabled } = useTashkeel();
+  const { updateProgress } = useSimpleGamification();
+  const { toast } = useToast();
+  const [videoWatched, setVideoWatched] = useState(false);
 
   // Video transcript with and without tashkeel
   const transcriptWithTashkeel = "مَرْحَباً بِكُمْ فِي دَرْسِ النُّطْقِ العَرَبِيِّ. سَنَتَعَلَّمُ اليَوْمَ الحُرُوفَ الأَسَاسِيَّةَ";
@@ -30,12 +35,25 @@ export default function VideoTrainer() {
               <iframe
                 width="100%"
                 height="100%"
-                src={`https://www.youtube.com/embed/${selectedVideo.videoId}`}
+                src={`https://www.youtube.com/embed/${selectedVideo.videoId}?enablejsapi=1`}
                 title={selectedVideo.title}
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
                 className="rounded-2xl"
+                onLoad={() => {
+                  // Simple timeout to simulate video watching completion
+                  setTimeout(() => {
+                    if (!videoWatched) {
+                      setVideoWatched(true);
+                      updateProgress('video');
+                      toast({
+                        title: "Video abgeschlossen! +75 Punkte",
+                        description: "Fantastisch! Du hast ein Video vollständig angesehen.",
+                      });
+                    }
+                  }, 30000); // 30 seconds to simulate watching
+                }}
               ></iframe>
             </div>
             
@@ -43,6 +61,29 @@ export default function VideoTrainer() {
               <div>
                 <h3 className="text-lg font-semibold">{selectedVideo.title}</h3>
                 <p className="text-sm text-gray-600">Level: {selectedVideo.level}</p>
+              </div>
+              <div className="text-right">
+                {videoWatched && (
+                  <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
+                    ✓ Abgeschlossen
+                  </div>
+                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mt-2"
+                  onClick={() => {
+                    updateProgress('video');
+                    setVideoWatched(true);
+                    toast({
+                      title: "Video als abgeschlossen markiert! +75 Punkte",
+                      description: "Toll! Du hast das Video beendet.",
+                    });
+                  }}
+                  disabled={videoWatched}
+                >
+                  Video abschließen
+                </Button>
               </div>
             </div>
 

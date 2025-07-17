@@ -10,6 +10,7 @@ import { useFlashcards } from "@/contexts/FlashcardContext";
 import { useToast } from "@/hooks/use-toast";
 import { analyzeArabicWord, type WordAnalysis } from "@/lib/openai";
 import WordModal from "@/components/WordModal";
+import { useSimpleGamification } from "@/contexts/SimpleGamificationContext";
 import OpenAI from "openai";
 
 interface Message {
@@ -30,6 +31,7 @@ export default function AiChat() {
   const { wordByWordEnabled } = useWordByWord();
   const { addFlashcard } = useFlashcards();
   const { toast } = useToast();
+  const { updateProgress } = useSimpleGamification();
   
   // Define messages with both tashkeel and without
   const getDisplayText = (withTashkeel: string, withoutTashkeel: string) => {
@@ -98,6 +100,13 @@ export default function AiChat() {
       };
       
       setMessages(prev => [...prev, aiResponse]);
+      
+      // Award points for sending a chat message
+      updateProgress('chat');
+      toast({
+        title: "Chat-Nachricht gesendet! +10 Punkte",
+        description: "Du lernst aktiv durch Gespräche!",
+      });
     } catch (error) {
       console.error("OpenAI API error:", error);
       const errorResponse: Message = {

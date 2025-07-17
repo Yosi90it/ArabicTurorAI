@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import ClickableText from "@/components/ClickableText";
 import WordModal from "@/components/WordModal";
 import { analyzeArabicWord, type WordAnalysis } from "@/lib/openai";
+import { useSimpleGamification } from "@/contexts/SimpleGamificationContext";
 
 interface FlashcardData {
   id: number;
@@ -44,6 +45,7 @@ export default function Flashcards() {
   const { tashkeelEnabled } = useTashkeel();
   const { wordByWordEnabled } = useWordByWord();
   const { toast } = useToast();
+  const { updateProgress } = useSimpleGamification();
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
   const [score, setScore] = useState({ correct: 0, total: 0 });
@@ -119,6 +121,15 @@ export default function Flashcards() {
         correct: prev.correct + (correct ? 1 : 0),
         total: prev.total + 1
       }));
+      
+      // Award points for correct answers
+      if (correct) {
+        updateProgress('word');
+        toast({
+          title: "Richtig! +5 Punkte",
+          description: "Weiter so! Du hast eine Flashcard richtig beantwortet.",
+        });
+      }
     }
     setTimeout(nextCard, 1000);
   };

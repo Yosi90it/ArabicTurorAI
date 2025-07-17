@@ -10,6 +10,7 @@ import ClickableText from "@/components/ClickableText";
 import InterlinearText from "@/components/InterlinearText";
 import WordModal from "@/components/WordModal";
 import { getWordInfo } from "@/data/arabicDictionary";
+import { useSimpleGamification } from "@/contexts/SimpleGamificationContext";
 
 interface BookContentProps {
   content: string;
@@ -73,6 +74,7 @@ export default function BookReader() {
   const { addFlashcard } = useFlashcards();
   const { toast } = useToast();
   const { tashkeelEnabled } = useTashkeel();
+  const { updateProgress } = useSimpleGamification();
   const [interlinearEnabled, setInterlinearEnabled] = useState(false);
   const [selectedBook, setSelectedBook] = useState(books.length > 0 ? books[0] : null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -217,7 +219,10 @@ export default function BookReader() {
                       <Button 
                         variant="outline" 
                         size="sm"
-                        onClick={() => setCurrentPage(Math.max(0, currentPage - 1))}
+                        onClick={() => {
+                          const newPage = Math.max(0, currentPage - 1);
+                          setCurrentPage(newPage);
+                        }}
                         disabled={currentPage === 0}
                       >
                         <ChevronLeft className="w-4 h-4" />
@@ -228,7 +233,16 @@ export default function BookReader() {
                       <Button 
                         variant="outline" 
                         size="sm"
-                        onClick={() => setCurrentPage(Math.min(totalPages - 1, currentPage + 1))}
+                        onClick={() => {
+                          const newPage = Math.min(totalPages - 1, currentPage + 1);
+                          setCurrentPage(newPage);
+                          // Award points for reading a new page
+                          updateProgress('reading');
+                          toast({
+                            title: "Seite gelesen! +15 Punkte",
+                            description: "Großartig! Du machst Fortschritte beim Lesen.",
+                          });
+                        }}
                         disabled={currentPage === totalPages - 1}
                       >
                         <ChevronRight className="w-4 h-4" />
