@@ -1,4 +1,6 @@
 import { createContext, useContext, useState, ReactNode } from "react";
+import { useSimpleGamification } from "./SimpleGamificationContext";
+import { useToast } from "@/hooks/use-toast";
 
 interface FlashcardEntry {
   id: number;
@@ -18,18 +20,37 @@ const FlashcardContext = createContext<FlashcardContextType | undefined>(undefin
 
 export function FlashcardProvider({ children }: { children: ReactNode }) {
   const [userFlashcards, setUserFlashcards] = useState<FlashcardEntry[]>([]);
+  const { updateProgress } = useSimpleGamification();
+  const { toast } = useToast();
 
   const addFlashcard = (word: string, translation: string, grammar: string) => {
-    const newCard: FlashcardEntry = {
-      id: Date.now(),
-      arabic: word,
-      translation: translation,
-      category: "User Added",
-      grammar: grammar,
-      sentence: `هذا مثال على استخدام كلمة **${word}** في جملة.`
-    };
+    // Check if word already exists
+    const wordExists = userFlashcards.some(card => card.arabic === word);
     
-    setUserFlashcards(prev => [...prev, newCard]);
+    if (!wordExists) {
+      const newCard: FlashcardEntry = {
+        id: Date.now(),
+        arabic: word,
+        translation: translation,
+        category: "User Added",
+        grammar: grammar,
+        sentence: `هذا مثال على استخدام كلمة **${word}** في جملة.`
+      };
+      
+      setUserFlashcards(prev => [...prev, newCard]);
+      
+      // Award points for adding a new word
+      updateProgress('word', { word });
+      toast({
+        title: "Neues Wort hinzugefügt! +5 Punkte",
+        description: `"${word}" wurde zu deinen Flashcards hinzugefügt.`,
+      });
+    } else {
+      toast({
+        title: "Wort bereits vorhanden",
+        description: `"${word}" ist bereits in deinen Flashcards.`,
+      });
+    }
   };
 
   return (

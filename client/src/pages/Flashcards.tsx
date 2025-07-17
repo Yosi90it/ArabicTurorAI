@@ -124,7 +124,7 @@ export default function Flashcards() {
       
       // Award points for correct answers
       if (correct) {
-        updateProgress('word');
+        updateProgress('word', { word: currentCard.arabic });
         toast({
           title: "Richtig! +5 Punkte",
           description: "Weiter so! Du hast eine Flashcard richtig beantwortet.",

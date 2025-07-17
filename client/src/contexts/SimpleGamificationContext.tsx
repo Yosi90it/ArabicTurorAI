@@ -36,6 +36,8 @@ interface UserStats {
   rewardPoints: number;
   hasActiveDiscount: boolean;
   discountExpiryDate?: string;
+  // Learned words tracking
+  learnedWords: string[];
 }
 
 interface SimpleGamificationContextType {
@@ -44,7 +46,7 @@ interface SimpleGamificationContextType {
   recentPoints: number[];
   addPoints: (points: number, reason: string) => void;
   completeAchievement: (achievementId: string) => void;
-  updateProgress: (type: 'word' | 'book' | 'video' | 'chat' | 'reading') => void;
+  updateProgress: (type: 'word' | 'book' | 'video' | 'chat' | 'reading', data?: any) => void;
   checkDailyGoal: () => void;
   getNextLevelPoints: () => number;
   getCurrentLevelProgress: () => number;
@@ -125,7 +127,8 @@ export function SimpleGamificationProvider({ children }: { children: ReactNode }
     monthlyReadingProgress: 0,
     monthStartDate: new Date().toISOString(),
     rewardPoints: 0,
-    hasActiveDiscount: false
+    hasActiveDiscount: false,
+    learnedWords: []
   });
 
   const [achievements, setAchievements] = useState<Achievement[]>(defaultAchievements);
@@ -187,30 +190,35 @@ export function SimpleGamificationProvider({ children }: { children: ReactNode }
     );
   };
 
-  const updateProgress = (type: 'word' | 'book' | 'video' | 'chat' | 'reading') => {
+  const updateProgress = (type: 'word' | 'book' | 'video' | 'chat' | 'reading', data?: any) => {
     setStats(prev => {
       const newStats = { ...prev };
       
       switch (type) {
         case 'word':
-          newStats.wordsLearned += 1;
-          newStats.weeklyWordsLearned += 1;
-          addPoints(5, 'Neues Wort gelernt');
-          
-          // Check achievements
-          if (newStats.wordsLearned === 1) {
-            setTimeout(() => completeAchievement('first_word'), 100);
-          } else if (newStats.wordsLearned === 50) {
-            setTimeout(() => completeAchievement('vocab_explorer'), 100);
-          } else if (newStats.wordsLearned === 200) {
-            setTimeout(() => completeAchievement('vocab_master'), 100);
-          }
-          
-          // Check weekly goal
-          if (newStats.weeklyWordsLearned >= newStats.weeklyWordGoal) {
-            const bonus = newStats.weeklyWordGoal * 10;
-            addPoints(bonus, `Wochenziel erreicht! ${newStats.weeklyWordGoal} Wörter`);
-            newStats.rewardPoints += 50;
+          // Only award points if this is a new word
+          const wordToLearn = data?.word || '';
+          if (wordToLearn && !newStats.learnedWords.includes(wordToLearn)) {
+            newStats.learnedWords.push(wordToLearn);
+            newStats.wordsLearned += 1;
+            newStats.weeklyWordsLearned += 1;
+            addPoints(5, 'Neues Wort gelernt');
+            
+            // Check achievements
+            if (newStats.wordsLearned === 1) {
+              setTimeout(() => completeAchievement('first_word'), 100);
+            } else if (newStats.wordsLearned === 50) {
+              setTimeout(() => completeAchievement('vocab_explorer'), 100);
+            } else if (newStats.wordsLearned === 200) {
+              setTimeout(() => completeAchievement('vocab_master'), 100);
+            }
+            
+            // Check weekly goal
+            if (newStats.weeklyWordsLearned >= newStats.weeklyWordGoal) {
+              const bonus = newStats.weeklyWordGoal * 10;
+              addPoints(bonus, `Wochenziel erreicht! ${newStats.weeklyWordGoal} Wörter`);
+              newStats.rewardPoints += 50;
+            }
           }
           break;
           
