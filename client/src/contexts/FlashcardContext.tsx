@@ -45,12 +45,8 @@ export function FlashcardProvider({ children }: { children: ReactNode }) {
         title: "Neues Wort hinzugefügt! +5 Punkte",
         description: `"${word}" wurde zu deinen Flashcards hinzugefügt.`,
       });
-    } else {
-      toast({
-        title: "Wort bereits vorhanden",
-        description: `"${word}" ist bereits in deinen Flashcards.`,
-      });
     }
+    // No notification for duplicate words - silently ignore
   };
 
   return (
