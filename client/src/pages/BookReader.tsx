@@ -23,21 +23,71 @@ function BookContent({ content, tashkeelEnabled, interlinearEnabled, onWordClick
   const processContent = () => {
     if (!content) return "";
     
-    // Remove HTML tags but keep the content
-    let processedContent = content.replace(/<[^>]*>/g, ' ').trim();
+    // For interlinear mode, we need plain text
+    if (interlinearEnabled) {
+      let processedContent = content.replace(/<[^>]*>/g, ' ').trim();
+      if (!tashkeelEnabled) {
+        processedContent = processedContent.replace(/[\u064B-\u065F\u0670\u0640]/g, '');
+      }
+      console.log("Interlinear mode enabled, content:", processedContent?.substring(0, 100));
+      return <InterlinearText text={processedContent} className="leading-relaxed" />;
+    }
+    
+    // For normal mode, render HTML with structure
+    let processedContent = content;
     
     // Remove tashkeel if disabled
     if (!tashkeelEnabled) {
       processedContent = processedContent.replace(/[\u064B-\u065F\u0670\u0640]/g, '');
     }
     
-    // Handle interlinear mode - show translations under each word
-    if (interlinearEnabled) {
-      console.log("Interlinear mode enabled, content:", processedContent?.substring(0, 100));
-      return <InterlinearText text={processedContent} className="leading-relaxed" />;
-    }
+    // Parse HTML and make Arabic text clickable
+    const parseHtmlToClickable = (htmlContent: string) => {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(htmlContent, 'text/html');
+      
+      const processNode = (node: Node): React.ReactNode => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          const text = node.textContent || '';
+          if (text.trim()) {
+            return <ClickableText key={Math.random()} text={text} className="leading-relaxed" />;
+          }
+          return null;
+        }
+        
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          const element = node as Element;
+          const tagName = element.tagName.toLowerCase();
+          
+          const children = Array.from(element.childNodes).map(processNode).filter(Boolean);
+          
+          switch (tagName) {
+            case 'h1':
+              return <h1 key={Math.random()} className="text-3xl font-bold mb-6 text-purple-800">{children}</h1>;
+            case 'h2':
+              return <h2 key={Math.random()} className="text-2xl font-semibold mb-4 text-purple-700 mt-8">{children}</h2>;
+            case 'h3':
+              return <h3 key={Math.random()} className="text-xl font-medium mb-3 text-purple-600 mt-6">{children}</h3>;
+            case 'p':
+              return <p key={Math.random()} className="mb-4 text-lg">{children}</p>;
+            case 'div':
+              const style = element.getAttribute('style') || '';
+              const className = style.includes('text-align: center') ? 'text-center mb-6' : 'mb-4';
+              return <div key={Math.random()} className={className}>{children}</div>;
+            case 'strong':
+              return <strong key={Math.random()} className="font-bold text-purple-800">{children}</strong>;
+            default:
+              return <span key={Math.random()}>{children}</span>;
+          }
+        }
+        
+        return null;
+      };
+      
+      return Array.from(doc.body.childNodes).map(processNode).filter(Boolean);
+    };
     
-    return <ClickableText text={processedContent} className="leading-relaxed text-xl" />;
+    return parseHtmlToClickable(processedContent);
   };
 
   return (
