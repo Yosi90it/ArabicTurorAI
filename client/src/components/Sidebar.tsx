@@ -7,7 +7,8 @@ import {
   Languages, 
   Calendar,
   Settings,
-  Trophy
+  Trophy,
+  FileText
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
@@ -47,6 +48,11 @@ const navigationItems = [
     icon: Calendar,
     label: "7-Day Plan",
     route: "/weekly-plan"
+  },
+  {
+    icon: FileText,
+    label: "PDF Converter",
+    route: "/pdf-converter"
   },
   {
     icon: Trophy,

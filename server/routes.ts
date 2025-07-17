@@ -3,8 +3,24 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertUserSchema, loginUserSchema } from "@shared/schema";
 import jwt from 'jsonwebtoken';
+import multer from 'multer';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+
+// Configure multer for file uploads
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 50 * 1024 * 1024, // 50MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === 'application/pdf') {
+      cb(null, true);
+    } else {
+      cb(new Error('Only PDF files are allowed'), false);
+    }
+  }
+});
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
@@ -223,6 +239,78 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error generating story:", error);
       res.status(500).json({ error: "Failed to generate story" });
+    }
+  });
+
+  // PDF to EPUB conversion proxy endpoint
+  app.post("/api/pdf-convert", upload.single('file'), async (req: Request, res: Response) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "No PDF file uploaded" });
+      }
+
+      // Create FormData for Python service
+      const FormData = require('form-data');
+      const formData = new FormData();
+      
+      // Add file buffer
+      formData.append('file', req.file.buffer, {
+        filename: req.file.originalname,
+        contentType: 'application/pdf'
+      });
+      
+      formData.append('start_page', req.body.start_page || '30');
+      formData.append('end_page', req.body.end_page || '180');
+
+      const response = await fetch('http://localhost:5001/convert', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          ...formData.getHeaders()
+        }
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`PDF conversion service error: ${response.status} - ${errorText}`);
+      }
+
+      const result = await response.json();
+      
+      // Update download URL to use our proxy
+      if (result.download_url) {
+        const filename = result.download_url.split('/').pop();
+        result.download_url = `/api/pdf-download/${filename}`;
+      }
+      
+      res.json(result);
+    } catch (error) {
+      console.error("PDF conversion error:", error);
+      res.status(500).json({ 
+        error: "PDF conversion failed", 
+        message: error instanceof Error ? error.message : "Unknown error" 
+      });
+    }
+  });
+
+  // Download EPUB file proxy
+  app.get("/api/pdf-download/:filename", async (req: Request, res: Response) => {
+    try {
+      const { filename } = req.params;
+      const response = await fetch(`http://localhost:5001/download/${filename}`);
+      
+      if (!response.ok) {
+        throw new Error(`Download service error: ${response.status}`);
+      }
+
+      // Forward the file
+      const buffer = await response.arrayBuffer();
+      res.setHeader('Content-Type', 'application/epub+zip');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.send(Buffer.from(buffer));
+    } catch (error) {
+      console.error("Download error:", error);
+      res.status(500).json({ error: "Download failed" });
     }
   });
 
