@@ -49,11 +49,7 @@ const navigationItems = [
     label: "7-Day Plan",
     route: "/weekly-plan"
   },
-  {
-    icon: FileText,
-    label: "PDF Converter",
-    route: "/pdf-converter"
-  },
+
   {
     icon: Trophy,
     label: "Erfolge",

@@ -19,7 +19,7 @@ import VideoTrainer from "@/pages/VideoTrainer";
 import AlphabetTrainer from "@/pages/AlphabetTrainer";
 import SimpleGoalTracker from "@/components/SimpleGoalTracker";
 import WeeklyPlan from "@/pages/WeeklyPlan";
-import PdfConverterSimple from "@/pages/PdfConverterSimple";
+
 import AdminPanel from "@/pages/AdminPanel";
 import AdminLogin from "@/pages/AdminLogin";
 import LandingPage from "@/pages/LandingPage";
@@ -92,7 +92,7 @@ function Router() {
             <Route path="/book-reader" component={BookReader} />
             <Route path="/video-trainer" component={VideoTrainer} />
             <Route path="/alphabet-trainer" component={AlphabetTrainer} />
-            <Route path="/pdf-converter" component={PdfConverterSimple} />
+
   
             <Route path="/weekly-plan" component={WeeklyPlan} />
             <Route path="/gamification" component={SimpleGoalTracker} />
