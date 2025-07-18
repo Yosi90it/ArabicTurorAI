@@ -130,6 +130,7 @@ export default function BookReader() {
   const [interlinearEnabled, setInterlinearEnabled] = useState(false);
   const [selectedBook, setSelectedBook] = useState(books.length > 0 ? books[0] : null);
   const [currentPage, setCurrentPage] = useState(0);
+  const [wordsPerPage, setWordsPerPage] = useState(100); // Default 100 words per page
   const [selectedWord, setSelectedWord] = useState<{
     word: string;
     translation: string;
@@ -137,9 +138,29 @@ export default function BookReader() {
     position: { x: number; y: number };
   } | null>(null);
 
-  // Split content into pages
+  // Split content into pages based on word count
   const currentBookPages = selectedBook 
-    ? selectedBook.content.split("<!-- pagebreak -->").map(p => p.trim()).filter(p => p.length > 0)
+    ? (() => {
+        // First try to split by existing pagebreaks
+        const existingPages = selectedBook.content.split("<!-- pagebreak -->").map(p => p.trim()).filter(p => p.length > 0);
+        
+        // If we have existing pagebreaks, use them
+        if (existingPages.length > 1) {
+          return existingPages;
+        }
+        
+        // Otherwise, split by word count
+        const content = selectedBook.content.replace(/<[^>]*>/g, ' ').trim();
+        const words = content.split(/\s+/);
+        const pages = [];
+        
+        for (let i = 0; i < words.length; i += wordsPerPage) {
+          const pageWords = words.slice(i, i + wordsPerPage);
+          pages.push(pageWords.join(' '));
+        }
+        
+        return pages;
+      })()
     : [];
   
   const totalPages = currentBookPages.length;
@@ -326,7 +347,26 @@ export default function BookReader() {
                     </button>
                   </div>
                   
-                  {/* Word by Word Toggle */}
+                  {/* Page Size Control */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-gray-700">
+                      {strings.language === 'de' ? 'Wörter/Seite:' : 'Words/Page:'}
+                    </span>
+                    <select
+                      value={wordsPerPage}
+                      onChange={(e) => {
+                        setWordsPerPage(Number(e.target.value));
+                        setCurrentPage(0); // Reset to first page when changing page size
+                      }}
+                      className="text-sm border rounded px-2 py-1"
+                    >
+                      <option value={50}>50</option>
+                      <option value={100}>100</option>
+                      <option value={150}>150</option>
+                      <option value={200}>200</option>
+                      <option value={300}>300</option>
+                    </select>
+                  </div>
 
                 </div>
               </div>
