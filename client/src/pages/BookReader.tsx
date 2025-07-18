@@ -130,7 +130,7 @@ export default function BookReader() {
   const [interlinearEnabled, setInterlinearEnabled] = useState(false);
   const [selectedBook, setSelectedBook] = useState(books.length > 0 ? books[0] : null);
   const [currentPage, setCurrentPage] = useState(0);
-  const wordsPerPage = 100; // Fixed at 100 words per page
+  const wordsPerPage = 100; // Content is already split into ~100 word pages
   const [selectedWord, setSelectedWord] = useState<{
     word: string;
     translation: string;
