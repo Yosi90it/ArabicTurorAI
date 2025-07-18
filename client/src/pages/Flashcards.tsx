@@ -71,22 +71,22 @@ export default function Flashcards() {
     { 
       id: 1, 
       arabic: "بيت", 
-      translation: "House", 
-      category: "Home & Family",
+      translation: strings.language === 'de' ? "Haus" : "House", 
+      category: strings.homeFamily,
       sentence: "أنا أسكن في **بيت** كبير مع عائلتي."
     },
     { 
       id: 2, 
       arabic: "طعام", 
-      translation: "Food", 
-      category: "Food & Drink",
+      translation: strings.language === 'de' ? "Essen" : "Food", 
+      category: strings.foodDrink,
       sentence: "أحب **الطعام** العربي كثيراً."
     },
     { 
       id: 3, 
       arabic: "سيارة", 
-      translation: "Car", 
-      category: "Transportation",
+      translation: strings.language === 'de' ? "Auto" : "Car", 
+      category: strings.language === 'de' ? "Transport" : "Transportation",
       sentence: "سأشتري **سيارة** جديدة الشهر القادم."
     }
   ];
@@ -126,8 +126,10 @@ export default function Flashcards() {
       if (correct) {
         updateProgress('word', { word: currentCard.arabic });
         toast({
-          title: "Richtig! +5 Punkte",
-          description: "Weiter so! Du hast eine Flashcard richtig beantwortet.",
+          title: `${strings.correct}! +5 ${strings.points}`,
+          description: strings.language === 'de' 
+            ? "Weiter so! Du hast eine Flashcard richtig beantwortet."
+            : "Great job! You answered a flashcard correctly.",
         });
       }
     }
@@ -257,9 +259,12 @@ Antworte im JSON-Format:
   return (
     <div className="container mx-auto p-6 max-w-4xl">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Flashcards</h1>
+        <h1 className="text-3xl font-bold mb-2">{strings.flashcards}</h1>
         <p className="text-gray-600">
-          Üben Sie Ihre gesammelten arabischen Vokabeln und erstellen Sie personalisierte Geschichten
+          {strings.language === 'de' 
+            ? "Üben Sie Ihre gesammelten arabischen Vokabeln und erstellen Sie personalisierte Geschichten"
+            : "Practice your collected Arabic vocabulary and create personalized stories"
+          }
         </p>
       </div>
 
@@ -267,11 +272,11 @@ Antworte im JSON-Format:
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="flashcards" className="flex items-center gap-2">
             <BookOpen className="w-4 h-4" />
-            Flashcards ({allFlashcards.length})
+{strings.flashcards} ({allFlashcards.length})
           </TabsTrigger>
           <TabsTrigger value="stories" className="flex items-center gap-2">
             <Sparkles className="w-4 h-4" />
-            Geschichten-Generator
+{strings.storyGenerator}
           </TabsTrigger>
         </TabsList>
 
@@ -283,17 +288,17 @@ Antworte im JSON-Format:
                 variant={studyMode === 'review' ? 'default' : 'outline'}
                 onClick={() => setStudyMode('review')}
               >
-                Review Mode
+{strings.reviewMode}
               </Button>
               <Button 
                 variant={studyMode === 'test' ? 'default' : 'outline'}
                 onClick={() => setStudyMode('test')}
               >
-                Test Mode
+{strings.testMode}
               </Button>
               <Button variant="outline" onClick={resetProgress}>
                 <RotateCcw className="w-4 h-4 mr-2" />
-                Reset
+{strings.restart}
               </Button>
             </div>
           </div>
@@ -302,11 +307,11 @@ Antworte im JSON-Format:
           <div className="mb-6">
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm font-medium">
-                Progress: {currentCardIndex + 1} / {allFlashcards.length}
+{strings.progress}: {currentCardIndex + 1} / {allFlashcards.length}
               </span>
               {studyMode === 'test' && score.total > 0 && (
                 <span className="text-sm font-medium">
-                  Score: {score.correct} / {score.total} ({Math.round((score.correct / score.total) * 100)}%)
+{strings.score}: {score.correct} / {score.total} ({Math.round((score.correct / score.total) * 100)}%)
                 </span>
               )}
             </div>
@@ -328,9 +333,11 @@ Antworte im JSON-Format:
                       className="mb-4"
                     >
                       <Volume2 className="w-4 h-4 mr-2" />
-                      Play Audio
+{strings.language === 'de' ? "Audio abspielen" : "Play Audio"}
                     </Button>
-                    <div className="text-gray-500">Click to reveal answer</div>
+                    <div className="text-gray-500">
+                      {strings.language === 'de' ? "Klicken für Antwort" : "Click to reveal answer"}
+                    </div>
                   </>
                 ) : (
                   <>

@@ -6,6 +6,7 @@ import WordModal from "./WordModal";
 import { getWordInfo } from "@/data/arabicDictionary";
 import { useFlashcards } from "@/contexts/FlashcardContext";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 // Weaviate translation function
 async function translateWithWeaviate(word: string): Promise<{word: string, translation: string, grammar: string, examples: string[], pronunciation: string}> {
