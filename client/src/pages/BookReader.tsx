@@ -11,6 +11,7 @@ import InterlinearText from "@/components/InterlinearText";
 import WordModal from "@/components/WordModal";
 import { getWordInfo } from "@/data/arabicDictionary";
 import { useSimpleGamification } from "@/contexts/SimpleGamificationContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface BookContentProps {
   content: string;
@@ -125,6 +126,7 @@ export default function BookReader() {
   const { toast } = useToast();
   const { tashkeelEnabled } = useTashkeel();
   const { updateProgress } = useSimpleGamification();
+  const { strings } = useLanguage();
   const [interlinearEnabled, setInterlinearEnabled] = useState(false);
   const [selectedBook, setSelectedBook] = useState(books.length > 0 ? books[0] : null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -210,8 +212,8 @@ export default function BookReader() {
   const handleAddToFlashcards = (word: string, translation: string, grammar: string) => {
     addFlashcard(word, translation, grammar);
     toast({
-      title: "Added to Flashcards",
-      description: `"${word}" has been added to your flashcards.`
+      title: strings.addedToFlashcards,
+      description: `"${word}" ${strings.wordAdded}`
     });
     setSelectedWord(null);
   };
@@ -222,12 +224,12 @@ export default function BookReader() {
         {/* Book Library */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">My Library</CardTitle>
+            <CardTitle className="text-base">{strings.myLibrary}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             {books.length === 0 ? (
               <p className="text-center py-4 text-gray-500 text-sm">
-                No books available. Upload books in Admin Panel.
+{strings.noBooksAvailable}
               </p>
             ) : (
               books.map((book) => (
@@ -278,7 +280,7 @@ export default function BookReader() {
                         <ChevronLeft className="w-4 h-4" />
                       </Button>
                       <span className="text-sm text-gray-600 px-2">
-                        Page {currentPage + 1} of {totalPages}
+{strings.page} {currentPage + 1} {strings.of} {totalPages}
                       </span>
                       <Button 
                         variant="outline" 
@@ -310,11 +312,11 @@ export default function BookReader() {
                   
                   {/* Interlinear Toggle */}
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-700">Interlinear</span>
+                    <span className="text-sm font-medium text-gray-700">{strings.wordByWordTranslation}</span>
                     <button
                       onClick={() => setInterlinearEnabled(!interlinearEnabled)}
                       className="flex items-center"
-                      title="Zeigt deutsche Übersetzungen unter jedem arabischen Wort"
+                      title={strings.wordByWordTranslation}
                     >
                       {interlinearEnabled ? (
                         <ToggleRight className="w-5 h-5 text-purple-600" />
@@ -350,7 +352,7 @@ export default function BookReader() {
                 </div>
               ) : (
                 <div className="text-center py-12">
-                  <p className="text-gray-500">Please select a book from your library to start reading.</p>
+                  <p className="text-gray-500">{strings.selectBook}</p>
                 </div>
               )}
             </CardContent>

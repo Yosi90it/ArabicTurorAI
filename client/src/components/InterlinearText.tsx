@@ -3,6 +3,7 @@ import { Loader2 } from "lucide-react";
 import WordModal from "./WordModal";
 import { useFlashcards } from "@/contexts/FlashcardContext";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface InterlinearTextProps {
   text: string;
@@ -70,6 +71,7 @@ export default function InterlinearText({ text, className = "" }: InterlinearTex
 
   const { addFlashcard } = useFlashcards();
   const { toast } = useToast();
+  const { strings } = useLanguage();
 
   console.log("InterlinearText rendered with text:", text?.substring(0, 100));
 

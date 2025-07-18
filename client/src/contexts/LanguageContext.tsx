@@ -67,7 +67,27 @@ const translations = {
     testimonials: "Testimonials",
     pricing: "Pricing",
     about: "About",
-    contact: "Contact"
+    contact: "Contact",
+    
+    // BookReader
+    myLibrary: "My Library",
+    selectBook: "Please select a book from your library to start reading",
+    noBooksAvailable: "No books available. Upload books in Admin Panel.",
+    page: "Page",
+    of: "of",
+    wordByWordTranslation: "Word by Word Translation",
+    tashkeelDiacritics: "Tashkeel (Diacritics)",
+    addedToFlashcards: "Added to Flashcards",
+    wordAdded: "was added to your flashcards",
+    
+    // Common UI
+    loading: "Loading...",
+    close: "Close",
+    save: "Save",
+    cancel: "Cancel",
+    delete: "Delete",
+    edit: "Edit",
+    add: "Add"
   },
   de: {
     // Landing Page
@@ -127,7 +147,27 @@ const translations = {
     testimonials: "Bewertungen", 
     pricing: "Preise",
     about: "Über uns",
-    contact: "Kontakt"
+    contact: "Kontakt",
+    
+    // BookReader
+    myLibrary: "Meine Bibliothek",
+    selectBook: "Bitte wählen Sie ein Buch aus Ihrer Bibliothek zum Lesen aus",
+    noBooksAvailable: "Keine Bücher verfügbar. Bücher im Admin-Panel hochladen.",
+    page: "Seite",
+    of: "von",
+    wordByWordTranslation: "Wort-für-Wort-Übersetzung",
+    tashkeelDiacritics: "Tashkeel (Diakritika)",
+    addedToFlashcards: "Zu Karteikarten hinzugefügt",
+    wordAdded: "wurde zu Ihren Karteikarten hinzugefügt",
+    
+    // Common UI
+    loading: "Laden...",
+    close: "Schließen",
+    save: "Speichern", 
+    cancel: "Abbrechen",
+    delete: "Löschen",
+    edit: "Bearbeiten",
+    add: "Hinzufügen"
   }
 };
 

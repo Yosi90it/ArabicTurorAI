@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 import { useSimpleGamification } from "./SimpleGamificationContext";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "./LanguageContext";
 
 interface FlashcardEntry {
   id: number;
@@ -22,6 +23,7 @@ export function FlashcardProvider({ children }: { children: ReactNode }) {
   const [userFlashcards, setUserFlashcards] = useState<FlashcardEntry[]>([]);
   const { updateProgress } = useSimpleGamification();
   const { toast } = useToast();
+  const { strings } = useLanguage();
 
   const addFlashcard = (word: string, translation: string, grammar: string) => {
     // Check if word already exists
@@ -42,8 +44,8 @@ export function FlashcardProvider({ children }: { children: ReactNode }) {
       // Award points for adding a new word
       updateProgress('word', { word });
       toast({
-        title: "Neues Wort hinzugefügt! +5 Punkte",
-        description: `"${word}" wurde zu deinen Flashcards hinzugefügt.`,
+        title: strings.addedToFlashcards,
+        description: `"${word}" ${strings.wordAdded}`,
       });
     }
     // No notification for duplicate words - silently ignore
