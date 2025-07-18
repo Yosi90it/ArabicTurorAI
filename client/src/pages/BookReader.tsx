@@ -130,7 +130,7 @@ export default function BookReader() {
   const [interlinearEnabled, setInterlinearEnabled] = useState(false);
   const [selectedBook, setSelectedBook] = useState(books.length > 0 ? books[0] : null);
   const [currentPage, setCurrentPage] = useState(0);
-  const [wordsPerPage, setWordsPerPage] = useState(100); // Default 100 words per page
+  const wordsPerPage = 100; // Fixed at 100 words per page
   const [selectedWord, setSelectedWord] = useState<{
     word: string;
     translation: string;
@@ -347,26 +347,7 @@ export default function BookReader() {
                     </button>
                   </div>
                   
-                  {/* Page Size Control */}
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-700">
-                      {strings.language === 'de' ? 'Wörter/Seite:' : 'Words/Page:'}
-                    </span>
-                    <select
-                      value={wordsPerPage}
-                      onChange={(e) => {
-                        setWordsPerPage(Number(e.target.value));
-                        setCurrentPage(0); // Reset to first page when changing page size
-                      }}
-                      className="text-sm border rounded px-2 py-1"
-                    >
-                      <option value={50}>50</option>
-                      <option value={100}>100</option>
-                      <option value={150}>150</option>
-                      <option value={200}>200</option>
-                      <option value={300}>300</option>
-                    </select>
-                  </div>
+
 
                 </div>
               </div>
