@@ -42,6 +42,7 @@ export default function ClickableText({ text, className = "" }: ClickableTextPro
   
   const { addFlashcard } = useFlashcards();
   const { toast } = useToast();
+  const { strings } = useLanguage();
 
   const handleWordClick = async (word: string, event: React.MouseEvent) => {
     event.preventDefault();
@@ -58,7 +59,7 @@ export default function ClickableText({ text, className = "" }: ClickableTextPro
         const fallbackWord = getWordInfo(word);
         result = {
           word: word,
-          translation: fallbackWord?.translation || "Translation not found",
+          translation: fallbackWord?.translation || strings.translationNotFound,
           grammar: fallbackWord?.grammar || "noun",
           examples: [],
           pronunciation: ""
@@ -76,8 +77,8 @@ export default function ClickableText({ text, className = "" }: ClickableTextPro
     } catch (error) {
       console.error('Error translating word:', error);
       toast({
-        title: "Error",
-        description: "Failed to find word translation",
+        title: strings.error,
+        description: strings.failedToTranslate,
         variant: "destructive"
       });
     } finally {
@@ -95,8 +96,8 @@ export default function ClickableText({ text, className = "" }: ClickableTextPro
     if (wordInfo) {
       addFlashcard(wordInfo.arabic, wordInfo.translation, wordInfo.grammar);
       toast({
-        title: "Added to Flashcards",
-        description: `"${wordInfo.arabic}" has been added to your flashcard collection.`,
+        title: strings.addedToFlashcards,
+        description: `"${wordInfo.arabic}" ${strings.addedToFlashcardCollection}`,
       });
     }
   };

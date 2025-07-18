@@ -16,15 +16,15 @@ export default function GlobalHeader() {
     try {
       logout();
       toast({
-        title: "Abgemeldet",
-        description: "Sie wurden erfolgreich abgemeldet."
+        title: strings.loggedOut,
+        description: strings.loggedOutSuccessfully
       });
       setLocation('/');
     } catch (error) {
       console.error('Logout error:', error);
       toast({
-        title: "Fehler", 
-        description: "Beim Abmelden ist ein Fehler aufgetreten.",
+        title: strings.error, 
+        description: strings.logoutError,
         variant: "destructive"
       });
     }
@@ -51,7 +51,7 @@ export default function GlobalHeader() {
       >
         <LogOut className="w-4 h-4 mr-2" />
         <span className="hidden sm:inline">{strings.logout}</span>
-        <span className="sm:hidden">Aus</span>
+        <span className="sm:hidden">{strings.out}</span>
       </Button>
     </div>
   );

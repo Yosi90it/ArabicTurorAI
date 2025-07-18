@@ -87,7 +87,33 @@ const translations = {
     cancel: "Cancel",
     delete: "Delete",
     edit: "Edit",
-    add: "Add"
+    add: "Add",
+    
+    // InterlinearText
+    loadingTranslations: "Loading translations...",
+    translationsLoaded: "translations loaded",
+    
+    // Sidebar
+    learnArabicWithAI: "Learn Arabic with AI",
+    level: "Level",
+    points: "Points",
+    weeklyGoal: "Weekly Goal",
+    toLevel: "to Level",
+    
+    // GlobalHeader
+    loggedOut: "Logged Out",
+    loggedOutSuccessfully: "You have been successfully logged out.",
+    error: "Error",
+    logoutError: "An error occurred during logout.",
+    out: "Out",
+    
+    // ClickableText & WordModal
+    translationNotFound: "Translation not found",
+    failedToTranslate: "Failed to find word translation",
+    addedToFlashcardCollection: "has been added to your flashcard collection.",
+    
+    // SelectLanguage
+    changeLanguageAnytime: "You can change your language preference anytime in the settings."
   },
   de: {
     // Landing Page
@@ -167,7 +193,33 @@ const translations = {
     cancel: "Abbrechen",
     delete: "Löschen",
     edit: "Bearbeiten",
-    add: "Hinzufügen"
+    add: "Hinzufügen",
+    
+    // InterlinearText
+    loadingTranslations: "Übersetzungen werden geladen...",
+    translationsLoaded: "Übersetzungen geladen",
+    
+    // Sidebar
+    learnArabicWithAI: "Arabisch lernen mit KI",
+    level: "Level",
+    points: "Punkte",
+    weeklyGoal: "Wöchentliches Ziel",
+    toLevel: "bis Level",
+    
+    // GlobalHeader
+    loggedOut: "Abgemeldet",
+    loggedOutSuccessfully: "Sie wurden erfolgreich abgemeldet.",
+    error: "Fehler",
+    logoutError: "Beim Abmelden ist ein Fehler aufgetreten.",
+    out: "Aus",
+    
+    // ClickableText & WordModal
+    translationNotFound: "Übersetzung nicht gefunden",
+    failedToTranslate: "Wortübersetzung konnte nicht gefunden werden",
+    addedToFlashcardCollection: "wurde zu Ihrer Karteikarten-Sammlung hinzugefügt.",
+    
+    // SelectLanguage
+    changeLanguageAnytime: "Sie können Ihre Spracheinstellung jederzeit in den Einstellungen ändern."
   }
 };
 

@@ -80,7 +80,7 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
       {/* Logo/Header */}
       <div className="p-6 border-b border-white/20">
         <h1 className="text-2xl font-bold">ArabicAI</h1>
-        <p className="text-hover-lavender text-sm mt-1">Learn Arabic with AI</p>
+        <p className="text-hover-lavender text-sm mt-1">{strings.learnArabicWithAI}</p>
       </div>
 
       {/* Navigation Menu */}
@@ -123,8 +123,8 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
           <div className="bg-white/10 rounded-2xl p-4 mb-4">
             <div className="flex items-center justify-between mb-3">
               <div>
-                <span className="text-sm font-medium">Level {stats.level}</span>
-                <p className="text-xs text-hover-lavender">{stats.totalPoints} Punkte</p>
+                <span className="text-sm font-medium">{strings.level} {stats.level}</span>
+                <p className="text-xs text-hover-lavender">{stats.totalPoints} {strings.points}</p>
               </div>
               <div className="text-right">
                 <span className="text-xs text-hover-lavender">🔥 {stats.currentStreak}</span>
@@ -135,13 +135,13 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
               className="h-2 bg-white/20"
             />
             <p className="text-xs text-hover-lavender mt-1">
-              {getNextLevelPoints() - stats.totalPoints} bis Level {stats.level + 1}
+{getNextLevelPoints() - stats.totalPoints} {strings.toLevel} {stats.level + 1}
             </p>
             
             {/* Weekly Goal Mini Display */}
             <div className="mt-3 pt-3 border-t border-white/20">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-medium">Wöchentliches Ziel</span>
+                <span className="text-xs font-medium">{strings.weeklyGoal}</span>
                 <span className="text-xs text-hover-lavender">
                   {stats.weeklyWordsLearned || 0}/{stats.weeklyWordGoal || 10}
                 </span>

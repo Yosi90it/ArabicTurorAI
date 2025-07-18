@@ -61,7 +61,7 @@ export default function SelectLanguage() {
 
             <div className="mt-6 p-4 bg-purple-50 rounded-xl">
               <p className="text-sm text-purple-700 text-center">
-                You can change your language preference anytime in the settings.
+                {strings.changeLanguageAnytime}
               </p>
             </div>
           </CardContent>

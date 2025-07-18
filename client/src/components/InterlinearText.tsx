@@ -179,8 +179,8 @@ export default function InterlinearText({ text, className = "" }: InterlinearTex
   const handleAddToFlashcards = (word: string, translation: string, grammar: string) => {
     addFlashcard(word, translation, grammar);
     toast({
-      title: "Zu Flashcards hinzugefügt",
-      description: `"${word}" wurde zu Ihren Flashcards hinzugefügt.`
+      title: strings.addedToFlashcards,
+      description: `"${word}" ${strings.wordAdded}`
     });
     setSelectedWord(null);
   };
@@ -216,7 +216,7 @@ export default function InterlinearText({ text, className = "" }: InterlinearTex
       {isLoading && (
         <div className="flex items-center justify-center mt-4 text-sm text-gray-500">
           <Loader2 className="h-4 w-4 animate-spin mr-2" />
-          Übersetzungen werden geladen... ({wordTranslations.filter(w => !w.loading).length}/{wordTranslations.length})
+{strings.loadingTranslations} ({wordTranslations.filter(w => !w.loading).length}/{wordTranslations.length})
         </div>
       )}
       
