@@ -355,11 +355,18 @@ Antworte im JSON-Format:
                         {currentCard.sentence}
                       </div>
                     )}
-                    <div className="text-gray-500">Click to flip back</div>
+                    <div className="text-gray-500">
+                      {strings.language === 'de' ? "Klicken zum Umdrehen" : "Click to flip back"}
+                    </div>
                   </>
                 )
               ) : (
-                <div className="text-gray-500">No flashcards available</div>
+                <div className="text-center py-8">
+                  <div className="text-gray-500 mb-4">{strings.noFlashcardsYet}</div>
+                  <p className="text-sm text-gray-400">
+                    {strings.startLearning}
+                  </p>
+                </div>
               )}
             </CardContent>
           </Card>
@@ -368,24 +375,24 @@ Antworte im JSON-Format:
           {allFlashcards.length > 0 && (
             <div className="flex justify-center space-x-4">
               <Button onClick={previousCard} variant="outline">
-                Previous
+{strings.previousCard}
               </Button>
               
               {studyMode === 'test' && showAnswer && (
                 <>
                   <Button onClick={() => handleAnswer(false)} variant="destructive">
                     <X className="w-4 h-4 mr-2" />
-                    Incorrect
+{strings.incorrect}
                   </Button>
                   <Button onClick={() => handleAnswer(true)} variant="default">
                     <Check className="w-4 h-4 mr-2" />
-                    Correct
+{strings.correct}
                   </Button>
                 </>
               )}
               
               <Button onClick={nextCard}>
-                Next
+{strings.nextCard}
               </Button>
             </div>
           )}
@@ -397,40 +404,52 @@ Antworte im JSON-Format:
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Sparkles className="w-5 h-5" />
-                Personalisierte Geschichte erstellen
+{strings.personalizedStories}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Verfügbare Flashcards:</span>
-                <Badge variant="outline">{allFlashcards.length} Wörter</Badge>
+                <span className="text-sm font-medium">
+                  {strings.language === 'de' ? 'Verfügbare Flashcards:' : 'Available Flashcards:'}
+                </span>
+                <Badge variant="outline">
+                  {allFlashcards.length} {strings.language === 'de' ? 'Wörter' : 'Words'}
+                </Badge>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Schwierigkeitsgrad</label>
+                  <label className="text-sm font-medium mb-2 block">{strings.difficulty}</label>
                   <select 
                     value={selectedDifficulty} 
                     onChange={(e) => setSelectedDifficulty(e.target.value as any)}
                     className="w-full p-2 border rounded-md"
                   >
-                    <option value="beginner">Anfänger</option>
-                    <option value="intermediate">Mittelstufe</option>
-                    <option value="advanced">Fortgeschritten</option>
+                    <option value="beginner">{strings.beginner}</option>
+                    <option value="intermediate">{strings.intermediate}</option>
+                    <option value="advanced">{strings.advanced}</option>
                   </select>
                 </div>
                 
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Anzahl Wörter</label>
+                  <label className="text-sm font-medium mb-2 block">{strings.wordCount}</label>
                   <select 
                     value={selectedWordsCount} 
                     onChange={(e) => setSelectedWordsCount(Number(e.target.value))}
                     className="w-full p-2 border rounded-md"
                   >
-                    <option value={3}>3 Wörter</option>
-                    <option value={5}>5 Wörter</option>
-                    <option value={10}>10 Wörter</option>
-                    <option value={15}>Alle verfügbaren</option>
+                    <option value={3}>
+                      3 {strings.language === 'de' ? 'Wörter' : 'Words'}
+                    </option>
+                    <option value={5}>
+                      5 {strings.language === 'de' ? 'Wörter' : 'Words'}
+                    </option>
+                    <option value={10}>
+                      10 {strings.language === 'de' ? 'Wörter' : 'Words'}
+                    </option>
+                    <option value={15}>
+                      {strings.language === 'de' ? 'Alle verfügbaren' : 'All available'}
+                    </option>
                   </select>
                 </div>
                 
@@ -443,12 +462,12 @@ Antworte im JSON-Format:
                     {isGenerating ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Erstelle...
+{strings.generating}
                       </>
                     ) : (
                       <>
                         <Sparkles className="w-4 h-4 mr-2" />
-                        Geschichte erstellen
+{strings.generateStory}
                       </>
                     )}
                   </Button>
@@ -490,7 +509,9 @@ Antworte im JSON-Format:
                 {/* Arabic Text */}
                 <div className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-semibold text-lg">Arabische Geschichte</h3>
+                    <h3 className="font-semibold text-lg">
+                      {strings.language === 'de' ? 'Arabische Geschichte' : 'Arabic Story'}
+                    </h3>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -513,13 +534,15 @@ Antworte im JSON-Format:
 
                 {/* German Translation */}
                 <div className="p-4 bg-gray-50 rounded-lg border">
-                  <h3 className="font-semibold text-lg mb-3">Deutsche Übersetzung</h3>
+                  <h3 className="font-semibold text-lg mb-3">
+                    {strings.language === 'de' ? 'Deutsche Übersetzung' : 'English Translation'}
+                  </h3>
                   <p className="text-lg leading-relaxed">{currentStory.translation}</p>
                 </div>
 
                 {/* Used Words */}
                 <div className="p-4 bg-green-50 rounded-lg border">
-                  <h3 className="font-semibold text-lg mb-3">Verwendete Vokabeln</h3>
+                  <h3 className="font-semibold text-lg mb-3">{strings.wordsUsed}</h3>
                   <div className="flex flex-wrap gap-2">
                     {currentStory.usedWords.map((word, index) => (
                       <Badge key={index} variant="secondary" className="text-sm">
