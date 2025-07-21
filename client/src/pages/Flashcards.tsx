@@ -93,10 +93,17 @@ export default function Flashcards() {
 
   // Combine user and static flashcards
   const allFlashcards = [...userFlashcards, ...staticFlashcards];
-  const currentCard = allFlashcards[currentCardIndex];
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  
+  // Filter flashcards by category
+  const filteredFlashcards = selectedCategory === 'all' 
+    ? allFlashcards 
+    : allFlashcards.filter(card => card.category === selectedCategory);
+  
+  const currentCard = filteredFlashcards[currentCardIndex];
 
   const nextCard = () => {
-    if (currentCardIndex < allFlashcards.length - 1) {
+    if (currentCardIndex < filteredFlashcards.length - 1) {
       setCurrentCardIndex(currentCardIndex + 1);
       setShowAnswer(false);
     } else {
@@ -110,7 +117,7 @@ export default function Flashcards() {
       setCurrentCardIndex(currentCardIndex - 1);
       setShowAnswer(false);
     } else {
-      setCurrentCardIndex(allFlashcards.length - 1);
+      setCurrentCardIndex(filteredFlashcards.length - 1);
       setShowAnswer(false);
     }
   };
@@ -285,34 +292,31 @@ Antworte im JSON-Format:
           <div className="mb-4">
             <div className="flex flex-wrap gap-2 justify-center">
               <Badge 
-                variant="outline" 
+                variant={selectedCategory === 'all' ? 'default' : 'outline'}
                 className="text-xs px-2 py-1 cursor-pointer hover:bg-purple-100"
-                onClick={() => setCurrentCardIndex(0)}
+                onClick={() => {
+                  setSelectedCategory('all');
+                  setCurrentCardIndex(0);
+                }}
               >
                 {strings.language === 'de' ? 'Alle Kategorien' : 'All Categories'} ({allFlashcards.length})
               </Badge>
               <Badge 
-                variant="outline" 
+                variant={selectedCategory === 'Verben und Konjugationen' ? 'default' : 'outline'}
                 className="text-xs px-2 py-1 cursor-pointer hover:bg-green-100"
                 onClick={() => {
-                  const verbCards = allFlashcards.filter(card => card.category === "Verben und Konjugationen");
-                  if (verbCards.length > 0) {
-                    const verbIndex = allFlashcards.findIndex(card => card.category === "Verben und Konjugationen");
-                    setCurrentCardIndex(verbIndex);
-                  }
+                  setSelectedCategory('Verben und Konjugationen');
+                  setCurrentCardIndex(0);
                 }}
               >
                 {strings.language === 'de' ? 'Verben & Konjugationen' : 'Verbs & Conjugations'} ({allFlashcards.filter(card => card.category === "Verben und Konjugationen").length})
               </Badge>
               <Badge 
-                variant="outline" 
+                variant={selectedCategory === 'User Added' ? 'default' : 'outline'}
                 className="text-xs px-2 py-1 cursor-pointer hover:bg-blue-100"
                 onClick={() => {
-                  const userCards = allFlashcards.filter(card => card.category === "User Added");
-                  if (userCards.length > 0) {
-                    const userIndex = allFlashcards.findIndex(card => card.category === "User Added");
-                    setCurrentCardIndex(userIndex);
-                  }
+                  setSelectedCategory('User Added');
+                  setCurrentCardIndex(0);
                 }}
               >
                 {strings.language === 'de' ? 'Hinzugefügte Wörter' : 'Added Words'} ({allFlashcards.filter(card => card.category === "User Added").length})
@@ -346,7 +350,7 @@ Antworte im JSON-Format:
           <div className="mb-6">
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm font-medium">
-{strings.progress}: {currentCardIndex + 1} / {allFlashcards.length}
+{strings.progress}: {currentCardIndex + 1} / {filteredFlashcards.length}
               </span>
               {studyMode === 'test' && score.total > 0 && (
                 <span className="text-sm font-medium">
@@ -354,13 +358,13 @@ Antworte im JSON-Format:
                 </span>
               )}
             </div>
-            <Progress value={((currentCardIndex + 1) / allFlashcards.length) * 100} className="w-full" />
+            <Progress value={filteredFlashcards.length > 0 ? ((currentCardIndex + 1) / filteredFlashcards.length) * 100 : 0} className="w-full" />
           </div>
 
           {/* Flashcard */}
           <Card className="mb-6 min-h-[300px] cursor-pointer" onClick={() => setShowAnswer(!showAnswer)}>
             <CardContent className="flex flex-col items-center justify-center h-full p-8">
-              {allFlashcards.length > 0 ? (
+              {filteredFlashcards.length > 0 ? (
                 !showAnswer ? (
                   <>
                     <div className="text-4xl font-bold mb-4 text-center" dir="rtl">
@@ -440,7 +444,7 @@ Antworte im JSON-Format:
           </Card>
 
           {/* Navigation and Test Buttons */}
-          {allFlashcards.length > 0 && (
+          {filteredFlashcards.length > 0 && (
             <div className="flex justify-center space-x-4">
               <Button onClick={previousCard} variant="outline">
 {strings.previousCard}

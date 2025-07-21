@@ -104,7 +104,7 @@ export default function WordModal({
         className="fixed z-50 w-96 max-w-md bg-white border-2 border-purple-200 shadow-xl"
         style={{
           left: Math.min(position.x, window.innerWidth - 400),
-          top: Math.min(position.y, window.innerHeight - 400),
+          top: Math.max(20, Math.min(position.y - 100, window.innerHeight - 500)),
         }}
       >
         <CardContent className="p-4">
