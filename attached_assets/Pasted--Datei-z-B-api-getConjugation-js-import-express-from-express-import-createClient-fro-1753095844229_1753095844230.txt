@@ -1,0 +1,125 @@
+// 📁 Datei z. B. /api/getConjugation.js
+
+import express from "express";
+import { createClient } from "@supabase/supabase-js";
+import axios from "axios";
+
+const router = express.Router();
+
+// 🔐 Supabase einrichten
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
+);
+
+// 🔤 Prompt-Generator für GPT
+function createPrompt(verb) {
+  return `
+Konjugiere bitte das arabische Verb "${verb}" vollständig im Hocharabischen (Fusha) mit vollständigem Tashkīl (Vokalzeichen).
+
+Erstelle die Konjugationstabelle in drei Zeitformen:
+
+1. Vergangenheit (الماضي)
+2. Gegenwart (المضارع)
+3. Imperativ (الأمر)
+
+In Vergangenheit und Gegenwart sollen alle 14 Formen erscheinen, inkl. Dualformen (أنتما, هما).
+
+Antwort **nur im folgenden JSON-Format** – keine weiteren Kommentare:
+
+{
+  "Vergangenheit": {
+    "أنا": "...",
+    "أنتَ": "...",
+    "أنتِ": "...",
+    "أنتما": "...",
+    "أنتم": "...",
+    "أنتنّ": "...",
+    "هو": "...",
+    "هي": "...",
+    "هما (m)": "...",
+    "هما (f)": "...",
+    "نحن": "...",
+    "هم": "...",
+    "هنّ": "..."
+  },
+  "Gegenwart": {
+    "أنا": "...",
+    "أنتَ": "...",
+    "أنتِ": "...",
+    "أنتما": "...",
+    "أنتم": "...",
+    "أنتنّ": "...",
+    "هو": "...",
+    "هي": "...",
+    "هما (m)": "...",
+    "هما (f)": "...",
+    "نحن": "...",
+    "هم": "...",
+    "هنّ": "..."
+  },
+  "Imperativ": {
+    "أنتَ": "...",
+    "أنتِ": "...",
+    "أنتما": "...",
+    "أنتم": "...",
+    "أنتنّ": "..."
+  }
+}`;
+}
+
+// 🌐 Route für: /api/getConjugation?verb=كَتَبَ
+router.get("/getConjugation", async (req, res) => {
+  const verb = req.query.verb?.trim();
+  if (!verb) return res.status(400).json({ error: "Verb fehlt." });
+
+  // 1. Prüfe Datenbank
+  const { data: existing } = await supabase
+    .from("conjugations")
+    .select("conjugation")
+    .eq("verb", verb)
+    .single();
+
+  if (existing) {
+    return res.json({ source: "cache", data: existing });
+  }
+
+  // 2. Generiere Prompt
+  const prompt = createPrompt(verb);
+
+  try {
+    const gptResponse = await axios.post(
+      "https://api.openai.com/v1/chat/completions",
+      {
+        model: "gpt-4-1106-preview",
+        messages: [
+          { role: "system", content: "Du bist ein arabischer Sprachlehrer." },
+          { role: "user", content: prompt },
+        ],
+        temperature: 0.3,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        },
+      }
+    );
+
+    const content = gptResponse.data.choices[0].message.content;
+    const parsed = JSON.parse(content);
+
+    // 3. Speichere in Supabase
+    await supabase.from("conjugations").insert({
+      verb,
+      conjugation: parsed,
+      created_at: new Date().toISOString(),
+    });
+
+    res.json({ source: "openai", data: { verb, conjugation: parsed } });
+  } catch (err) {
+    console.error("Fehler bei GPT oder JSON:", err);
+    res.status(500).json({ error: "Fehler bei Konjugation oder Parsing." });
+  }
+});
+
+export default router;
