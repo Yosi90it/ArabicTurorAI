@@ -101,10 +101,10 @@ export default function WordModal({
       />
       
       <Card 
-        className="fixed z-50 w-80 max-w-sm bg-white border-2 border-purple-200 shadow-xl"
+        className="fixed z-50 w-96 max-w-md bg-white border-2 border-purple-200 shadow-xl"
         style={{
-          left: Math.min(position.x, window.innerWidth - 320),
-          top: Math.min(position.y, window.innerHeight - 300),
+          left: Math.min(position.x, window.innerWidth - 400),
+          top: Math.min(position.y, window.innerHeight - 400),
         }}
       >
         <CardContent className="p-4">
@@ -152,32 +152,41 @@ export default function WordModal({
           )}
 
           {showConjugations && conjugations.length > 0 && (
-            <div className="mb-3 p-3 bg-gray-50 rounded max-h-60 overflow-y-auto">
-              <h4 className="text-sm font-semibold mb-2">
-                {strings.language === 'de' ? 'Konjugationen:' : 'Conjugations:'}
-              </h4>
-              <div className="space-y-2">
+            <div className="mb-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
+              <div className="flex justify-between items-center mb-3">
+                <h4 className="text-sm font-semibold text-purple-700">
+                  {strings.language === 'de' ? 'Konjugationen:' : 'Conjugations:'}
+                </h4>
+                <Button
+                  onClick={handleSaveConjugations}
+                  size="sm"
+                  className="bg-green-600 hover:bg-green-700 text-white px-3 py-1"
+                >
+                  <Book className="h-3 w-3 mr-1" />
+                  {strings.language === 'de' ? 'Speichern' : 'Save'}
+                </Button>
+              </div>
+              
+              <div className="max-h-48 overflow-y-auto space-y-1">
                 {conjugations.map((conj, index) => (
-                  <div key={index} className="flex justify-between items-center text-xs bg-white p-2 rounded">
-                    <div>
-                      <div className="font-medium text-purple-600" dir="rtl">{conj.person}</div>
-                      <div className="text-gray-500">{conj.tense}</div>
+                  <div key={index} className="flex justify-between items-center text-xs bg-white p-2 rounded border">
+                    <div className="flex-1">
+                      <div className="font-medium text-purple-600 text-sm" dir="rtl">{conj.person}</div>
+                      <div className="text-gray-500 text-xs">{conj.tense}</div>
                     </div>
-                    <div className="text-right">
-                      <div className="font-medium" dir="rtl">{conj.arabic}</div>
-                      <div className="text-gray-600">{conj.german}</div>
+                    <div className="flex-1 text-center">
+                      <div className="font-bold text-base text-gray-800" dir="rtl">{conj.arabic}</div>
+                    </div>
+                    <div className="flex-1 text-right">
+                      <div className="text-gray-700 font-medium">{conj.german}</div>
                     </div>
                   </div>
                 ))}
               </div>
-              <Button
-                onClick={handleSaveConjugations}
-                size="sm"
-                className="w-full mt-2 bg-green-600 hover:bg-green-700"
-              >
-                <Book className="h-3 w-3 mr-1" />
-                {strings.language === 'de' ? 'In Karteikarten speichern' : 'Save to Flashcards'}
-              </Button>
+              
+              <div className="mt-2 text-xs text-center text-gray-500">
+                {conjugations.length} {strings.language === 'de' ? 'Formen gefunden' : 'forms found'}
+              </div>
             </div>
           )}
 
