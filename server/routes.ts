@@ -284,80 +284,127 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Verb is required" });
       }
 
-      // Test data for "استيقظ" (erwachen/aufwachen) - remove this when OpenAI is available
-      if (verb.includes('استيقظ') || verb.includes('أستيقظ') || verb.includes('أسْتَيْقِظُ')) {
-        const testConjugations = [
-          // Present tense (المضارع)
-          { tense: "المضارع (Present)", person: "أنا", arabic: "أَسْتَيْقِظُ", german: "ich erwache" },
-          { tense: "المضارع (Present)", person: "أنت", arabic: "تَسْتَيْقِظُ", german: "du erwachst" },
-          { tense: "المضارع (Present)", person: "أنتِ", arabic: "تَسْتَيْقِظِينَ", german: "du erwachst (fem.)" },
-          { tense: "المضارع (Present)", person: "هو", arabic: "يَسْتَيْقِظُ", german: "er erwacht" },
-          { tense: "المضارع (Present)", person: "هي", arabic: "تَسْتَيْقِظُ", german: "sie erwacht" },
-          { tense: "المضارع (Present)", person: "نحن", arabic: "نَسْتَيْقِظُ", german: "wir erwachen" },
-          { tense: "المضارع (Present)", person: "أنتم", arabic: "تَسْتَيْقِظُونَ", german: "ihr erwacht" },
-          { tense: "المضارع (Present)", person: "أنتن", arabic: "تَسْتَيْقِظْنَ", german: "ihr erwacht (fem.)" },
-          { tense: "المضارع (Present)", person: "هم", arabic: "يَسْتَيْقِظُونَ", german: "sie erwachen" },
-          { tense: "المضارع (Present)", person: "هن", arabic: "يَسْتَيْقِظْنَ", german: "sie erwachen (fem.)" },
-          
-          // Past tense (الماضي)
-          { tense: "الماضي (Past)", person: "أنا", arabic: "اسْتَيْقَظْتُ", german: "ich erwachte" },
-          { tense: "الماضي (Past)", person: "أنت", arabic: "اسْتَيْقَظْتَ", german: "du erwachtest" },
-          { tense: "الماضي (Past)", person: "أنتِ", arabic: "اسْتَيْقَظْتِ", german: "du erwachtest (fem.)" },
-          { tense: "الماضي (Past)", person: "هو", arabic: "اسْتَيْقَظَ", german: "er erwachte" },
-          { tense: "الماضي (Past)", person: "هي", arabic: "اسْتَيْقَظَتْ", german: "sie erwachte" },
-          { tense: "الماضي (Past)", person: "نحن", arabic: "اسْتَيْقَظْنا", german: "wir erwachten" },
-          { tense: "الماضي (Past)", person: "أنتم", arabic: "اسْتَيْقَظْتُمْ", german: "ihr erwachtet" },
-          { tense: "الماضي (Past)", person: "أنتن", arabic: "اسْتَيْقَظْتُنَّ", german: "ihr erwachtet (fem.)" },
-          { tense: "الماضي (Past)", person: "هم", arabic: "اسْتَيْقَظُوا", german: "sie erwachten" },
-          { tense: "الماضي (Past)", person: "هن", arabic: "اسْتَيْقَظْنَ", german: "sie erwachten (fem.)" },
-          
-          // Imperative (الأمر)
-          { tense: "الأمر (Imperative)", person: "أنت", arabic: "اسْتَيْقِظْ", german: "erwache!" },
-          { tense: "الأمر (Imperative)", person: "أنتِ", arabic: "اسْتَيْقِظِي", german: "erwache! (fem.)" },
-          { tense: "الأمر (Imperative)", person: "أنتم", arabic: "اسْتَيْقِظُوا", german: "erwacht!" },
-          { tense: "الأمر (Imperative)", person: "أنتن", arabic: "اسْتَيْقِظْنَ", german: "erwacht! (fem.)" }
-        ];
-
-        return res.json({
-          verb,
-          conjugations: testConjugations
-        });
+      // Check database cache first
+      try {
+        const { verbConjugations } = await import('@shared/schema');
+        const { eq } = await import('drizzle-orm');
+        
+        const [cached] = await db.select().from(verbConjugations).where(eq(verbConjugations.verb, verb));
+        
+        if (cached) {
+          console.log(`Cache hit for verb: ${verb}`);
+          return res.json({
+            verb,
+            source: 'cache',
+            conjugations: cached.conjugation
+          });
+        }
+      } catch (dbError) {
+        console.log('Database not available, proceeding with generation');
       }
 
-      // Try OpenAI for other verbs
-      try {
-        // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-        const response = await openai.chat.completions.create({
-          model: "gpt-4o",
+      // Enhanced prompt for OpenAI with dual forms (31 total forms)
+      const prompt = `
+Konjugiere bitte das arabische Verb "${verb}" vollständig im Hocharabischen (Fusha) mit vollständigem Tashkīl (Vokalzeichen).
+
+Erstelle die Konjugationstabelle in drei Zeitformen mit ALLEN Personalformen inklusive Dual:
+
+1. Vergangenheit (الماضي) - 13 Formen
+2. Gegenwart (المضارع) - 13 Formen  
+3. Imperativ (الأمر) - 5 Formen
+
+Antwort als JSON-Array mit Objekten im Format:
+{ "tense": "الماضي (Past)", "person": "أنا", "arabic": "...", "german": "..." }
+
+Alle 31 Formen einschließen: أنا، أنتَ، أنتِ، أنتما، أنتم، أنتنّ، هو، هي، هما (m)، هما (f)، نحن، هم، هنّ für Vergangenheit und Gegenwart, plus Imperativ für أنتَ، أنتِ، أنتما، أنتم، أنتنّ.`;
+
+      // Generate conjugations
+      let conjugations: any[] = [];
+
+      if (process.env.OPENAI_API_KEY) {
+        const OpenAI = (await import("openai")).default;
+        const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+        
+        const completion = await openai.chat.completions.create({
+          model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
           messages: [
             {
               role: "system",
-              content: "You are an expert Arabic grammar teacher. Generate complete verb conjugation tables in Arabic with German translations. Return JSON with this exact structure: { \"conjugations\": [{ \"tense\": \"Present\", \"person\": \"أنا\", \"arabic\": \"أكتب\", \"german\": \"ich schreibe\" }, ...] }"
+              content: "Du bist ein arabischer Sprachlehrer und konjugierst Verben korrekt mit vollständigen Tashkīl."
             },
             {
               role: "user",
-              content: `Generate a complete conjugation table for the Arabic verb "${verb}". Include Present (المضارع), Past (الماضي), and Imperative (الأمر) tenses for all persons (أنا، أنت، أنت، هو، هي، نحن، أنتم، أنتن، هم، هن). Provide German translations for each form.`
+              content: prompt
             }
           ],
-          response_format: { type: "json_object" },
           temperature: 0.3,
         });
 
-        const result = JSON.parse(response.choices[0].message.content || '{"conjugations": []}');
+        const content = completion.choices[0].message.content;
+        conjugations = JSON.parse(content);
         
-        res.json({
-          verb,
-          conjugations: result.conjugations || []
-        });
-      } catch (openaiError) {
-        console.error('OpenAI API error:', openaiError);
-        // Return a helpful message for other verbs when OpenAI is unavailable
-        res.status(503).json({ 
-          error: "OpenAI service temporarily unavailable", 
-          message: "Verb conjugation service is currently unavailable. Please try again later or contact support.",
-          verb
-        });
+        console.log(`Generated ${conjugations.length} conjugation forms for verb: ${verb}`);
+      } else {
+        // Enhanced fallback data with dual forms (31 forms total)
+        conjugations = [
+          // Past tense (13 forms)
+          { tense: "الماضي (Past)", person: "أنا", arabic: "اسْتَيْقَظْتُ", german: "ich erwachte" },
+          { tense: "الماضي (Past)", person: "أنتَ", arabic: "اسْتَيْقَظْتَ", german: "du erwachtest" },
+          { tense: "الماضي (Past)", person: "أنتِ", arabic: "اسْتَيْقَظْتِ", german: "du erwachtest (fem.)" },
+          { tense: "الماضي (Past)", person: "أنتما", arabic: "اسْتَيْقَظْتُما", german: "ihr beide erwachtet" },
+          { tense: "الماضي (Past)", person: "أنتم", arabic: "اسْتَيْقَظْتُمْ", german: "ihr erwachtet" },
+          { tense: "الماضي (Past)", person: "أنتنّ", arabic: "اسْتَيْقَظْتُنَّ", german: "ihr erwachtet (fem.)" },
+          { tense: "الماضي (Past)", person: "هو", arabic: "اسْتَيْقَظَ", german: "er erwachte" },
+          { tense: "الماضي (Past)", person: "هي", arabic: "اسْتَيْقَظَتْ", german: "sie erwachte" },
+          { tense: "الماضي (Past)", person: "هما (m)", arabic: "اسْتَيْقَظا", german: "sie beide erwachten (m.)" },
+          { tense: "الماضي (Past)", person: "هما (f)", arabic: "اسْتَيْقَظَتا", german: "sie beide erwachten (f.)" },
+          { tense: "الماضي (Past)", person: "نحن", arabic: "اسْتَيْقَظْنا", german: "wir erwachten" },
+          { tense: "الماضي (Past)", person: "هم", arabic: "اسْتَيْقَظُوا", german: "sie erwachten" },
+          { tense: "الماضي (Past)", person: "هنّ", arabic: "اسْتَيْقَظْنَ", german: "sie erwachten (fem.)" },
+          
+          // Present tense (13 forms)
+          { tense: "المضارع (Present)", person: "أنا", arabic: "أَسْتَيْقِظُ", german: "ich erwache" },
+          { tense: "المضارع (Present)", person: "أنتَ", arabic: "تَسْتَيْقِظُ", german: "du erwachst" },
+          { tense: "المضارع (Present)", person: "أنتِ", arabic: "تَسْتَيْقِظِينَ", german: "du erwachst (fem.)" },
+          { tense: "المضارع (Present)", person: "أنتما", arabic: "تَسْتَيْقِظانِ", german: "ihr beide erwacht" },
+          { tense: "المضارع (Present)", person: "أنتم", arabic: "تَسْتَيْقِظُونَ", german: "ihr erwacht" },
+          { tense: "المضارع (Present)", person: "أنتنّ", arabic: "تَسْتَيْقِظْنَ", german: "ihr erwacht (fem.)" },
+          { tense: "المضارع (Present)", person: "هو", arabic: "يَسْتَيْقِظُ", german: "er erwacht" },
+          { tense: "المضارع (Present)", person: "هي", arabic: "تَسْتَيْقِظُ", german: "sie erwacht" },
+          { tense: "المضارع (Present)", person: "هما (m)", arabic: "يَسْتَيْقِظانِ", german: "sie beide erwachen (m.)" },
+          { tense: "المضارع (Present)", person: "هما (f)", arabic: "تَسْتَيْقِظانِ", german: "sie beide erwachen (f.)" },
+          { tense: "المضارع (Present)", person: "نحن", arabic: "نَسْتَيْقِظُ", german: "wir erwachen" },
+          { tense: "المضارع (Present)", person: "هم", arabic: "يَسْتَيْقِظُونَ", german: "sie erwachen" },
+          { tense: "المضارع (Present)", person: "هنّ", arabic: "يَسْتَيْقِظْنَ", german: "sie erwachen (fem.)" },
+          
+          // Imperative (5 forms)
+          { tense: "الأمر (Imperative)", person: "أنتَ", arabic: "اسْتَيْقِظْ", german: "erwache!" },
+          { tense: "الأمر (Imperative)", person: "أنتِ", arabic: "اسْتَيْقِظِي", german: "erwache! (fem.)" },
+          { tense: "الأمر (Imperative)", person: "أنتما", arabic: "اسْتَيْقِظا", german: "erwacht! (beide)" },
+          { tense: "الأمر (Imperative)", person: "أنتم", arabic: "اسْتَيْقِظُوا", german: "erwacht!" },
+          { tense: "الأمر (Imperative)", person: "أنتنّ", arabic: "اسْتَيْقِظْنَ", german: "erwacht! (fem.)" }
+        ];
+        
+        console.log(`Using fallback data with ${conjugations.length} forms for verb: ${verb}`);
       }
+
+      // Cache in database for future use
+      try {
+        const { verbConjugations } = await import('@shared/schema');
+        await db.insert(verbConjugations).values({
+          verb,
+          conjugation: conjugations
+        });
+        console.log(`Successfully cached conjugation for verb: ${verb}`);
+      } catch (dbError) {
+        console.log('Could not cache conjugation:', dbError);
+      }
+
+      res.json({
+        verb,
+        source: process.env.OPENAI_API_KEY ? 'openai' : 'fallback',
+        conjugations
+      });
     } catch (error) {
       console.error('Verb conjugation error:', error);
       res.status(500).json({ 

@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, json } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -26,3 +26,14 @@ export const loginUserSchema = z.object({
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type LoginUser = z.infer<typeof loginUserSchema>;
 export type User = typeof users.$inferSelect;
+
+// Verb Conjugations table for caching
+export const verbConjugations = pgTable("verb_conjugations", {
+  id: serial("id").primaryKey(),
+  verb: text("verb").unique().notNull(),
+  conjugation: json("conjugation").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type VerbConjugation = typeof verbConjugations.$inferSelect;
+export type InsertVerbConjugation = typeof verbConjugations.$inferInsert;
