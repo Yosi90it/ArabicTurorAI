@@ -1,4 +1,4 @@
-import { X, Plus, RotateCcw, Book } from "lucide-react";
+import { X, Plus, RotateCcw, Book, Table } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useState } from "react";
@@ -12,6 +12,85 @@ interface VerbConjugation {
   person: string;
   arabic: string;
   german: string;
+}
+
+// Separate Conjugation Modal Component
+function ConjugationModal({ 
+  word, 
+  conjugations, 
+  isOpen, 
+  onClose, 
+  onSave 
+}: {
+  word: string;
+  conjugations: VerbConjugation[];
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: () => void;
+}) {
+  const { strings } = useLanguage();
+  
+  if (!isOpen) return null;
+
+  return (
+    <>
+      <div 
+        className="fixed inset-0 bg-black/30 z-50"
+        onClick={onClose}
+      />
+      
+      <Card className="fixed z-60 w-[500px] max-w-[90vw] bg-white border-2 border-purple-200 shadow-2xl top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+        <CardContent className="p-6">
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <h3 className="text-lg font-bold text-purple-700">{strings.language === 'de' ? 'Verb-Konjugationen' : 'Verb Conjugations'}</h3>
+              <p className="text-sm text-gray-600" dir="rtl">{word}</p>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                onClick={onSave}
+                size="sm"
+                className="bg-green-600 hover:bg-green-700 text-white"
+              >
+                <Book className="h-4 w-4 mr-1" />
+                {strings.language === 'de' ? 'Speichern' : 'Save'}
+              </Button>
+              <Button
+                onClick={onClose}
+                size="sm"
+                variant="outline"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+          
+          <div className="max-h-80 overflow-y-auto">
+            <div className="grid gap-2">
+              {conjugations.map((conj, index) => (
+                <div key={index} className="flex justify-between items-center text-sm bg-purple-50 p-3 rounded border">
+                  <div className="flex-1">
+                    <div className="font-medium text-purple-600" dir="rtl">{conj.person}</div>
+                    <div className="text-gray-500 text-xs">{conj.tense}</div>
+                  </div>
+                  <div className="flex-1 text-center">
+                    <div className="font-bold text-lg text-gray-800" dir="rtl">{conj.arabic}</div>
+                  </div>
+                  <div className="flex-1 text-right">
+                    <div className="text-gray-700 font-medium">{conj.german}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <div className="mt-4 text-center text-sm text-gray-500">
+            {conjugations.length} {strings.language === 'de' ? 'Konjugationsformen' : 'conjugation forms'}
+          </div>
+        </CardContent>
+      </Card>
+    </>
+  );
 }
 
 interface WordModalProps {
@@ -62,9 +141,11 @@ export default function WordModal({
 }: WordModalProps) {
   const [loadingConjugations, setLoadingConjugations] = useState(false);
   const [conjugations, setConjugations] = useState<VerbConjugation[]>([]);
-  const [showConjugations, setShowConjugations] = useState(false);
-  const { addVerbConjugation } = useFlashcards();
+  const [showConjugationModal, setShowConjugationModal] = useState(false);
+  const { addVerbConjugation, addFlashcard } = useFlashcards();
   const { strings } = useLanguage();
+  const { awardPoints } = useSimpleGamification();
+  const { toast } = useToast();
 
   const handleShowConjugations = async () => {
     setLoadingConjugations(true);
@@ -72,7 +153,7 @@ export default function WordModal({
     try {
       const conjugationData = await generateConjugations(word);
       setConjugations(conjugationData);
-      setShowConjugations(true);
+      setShowConjugationModal(true);
     } catch (error) {
       console.error('Error getting conjugations:', error);
     } finally {
@@ -82,7 +163,20 @@ export default function WordModal({
 
   const handleSaveConjugations = () => {
     if (conjugations.length > 0) {
+      // Add verb to both normal flashcards AND verb conjugations
+      addFlashcard(word, translation, grammar, "User Added");
       addVerbConjugation(word, translation, conjugations);
+      
+      awardPoints(10, "Verb conjugation saved!");
+      toast({
+        title: strings.language === 'de' ? "Verb gespeichert!" : "Verb saved!",
+        description: strings.language === 'de' 
+          ? "Das Verb wurde sowohl zu den normalen Wörtern als auch zu den Konjugationen hinzugefügt." 
+          : "The verb has been added to both regular words and conjugations.",
+      });
+      
+      setShowConjugationModal(false);
+      onClose();
     }
   };
 
@@ -151,44 +245,7 @@ export default function WordModal({
             </div>
           )}
 
-          {showConjugations && conjugations.length > 0 && (
-            <div className="mb-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
-              <div className="flex justify-between items-center mb-3">
-                <h4 className="text-sm font-semibold text-purple-700">
-                  {strings.language === 'de' ? 'Konjugationen:' : 'Conjugations:'}
-                </h4>
-                <Button
-                  onClick={handleSaveConjugations}
-                  size="sm"
-                  className="bg-green-600 hover:bg-green-700 text-white px-3 py-1"
-                >
-                  <Book className="h-3 w-3 mr-1" />
-                  {strings.language === 'de' ? 'Speichern' : 'Save'}
-                </Button>
-              </div>
-              
-              <div className="max-h-48 overflow-y-auto space-y-1">
-                {conjugations.map((conj, index) => (
-                  <div key={index} className="flex justify-between items-center text-xs bg-white p-2 rounded border">
-                    <div className="flex-1">
-                      <div className="font-medium text-purple-600 text-sm" dir="rtl">{conj.person}</div>
-                      <div className="text-gray-500 text-xs">{conj.tense}</div>
-                    </div>
-                    <div className="flex-1 text-center">
-                      <div className="font-bold text-base text-gray-800" dir="rtl">{conj.arabic}</div>
-                    </div>
-                    <div className="flex-1 text-right">
-                      <div className="text-gray-700 font-medium">{conj.german}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              
-              <div className="mt-2 text-xs text-center text-gray-500">
-                {conjugations.length} {strings.language === 'de' ? 'Formen gefunden' : 'forms found'}
-              </div>
-            </div>
-          )}
+
 
           <div className="flex gap-2">
             <Button
@@ -212,7 +269,7 @@ export default function WordModal({
                 {loadingConjugations ? (
                   <RotateCcw className="h-3 w-3 mr-1 animate-spin" />
                 ) : (
-                  <Book className="h-3 w-3 mr-1" />
+                  <Table className="h-3 w-3 mr-1" />
                 )}
                 {strings.language === 'de' ? 'Konjugieren' : 'Conjugate'}
               </Button>
@@ -220,6 +277,15 @@ export default function WordModal({
           </div>
         </CardContent>
       </Card>
+      
+      {/* Separate Conjugation Modal */}
+      <ConjugationModal
+        word={word}
+        conjugations={conjugations}
+        isOpen={showConjugationModal}
+        onClose={() => setShowConjugationModal(false)}
+        onSave={handleSaveConjugations}
+      />
     </>
   );
 }
