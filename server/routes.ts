@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { insertUserSchema, loginUserSchema } from "@shared/schema";
 import jwt from 'jsonwebtoken';
 import multer from 'multer';
+import OpenAI from 'openai';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
