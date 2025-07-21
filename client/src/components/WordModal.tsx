@@ -167,7 +167,6 @@ export default function WordModal({
       addFlashcard(word, translation, grammar, "User Added");
       addVerbConjugation(word, translation, conjugations);
       
-      awardPoints(10, "Verb conjugation saved!");
       toast({
         title: strings.language === 'de' ? "Verb gespeichert!" : "Verb saved!",
         description: strings.language === 'de' 
