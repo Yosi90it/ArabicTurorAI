@@ -35,11 +35,11 @@ function ConjugationModal({
   return (
     <>
       <div 
-        className="fixed inset-0 bg-black/30 z-50"
+        className="fixed inset-0 bg-black/30 z-[60]"
         onClick={onClose}
       />
       
-      <Card className="fixed z-60 w-[500px] max-w-[90vw] bg-white border-2 border-purple-200 shadow-2xl top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+      <Card className="fixed z-[70] w-[500px] max-w-[90vw] bg-white border-2 border-purple-200 shadow-2xl top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
         <CardContent className="p-6">
           <div className="flex justify-between items-center mb-4">
             <div>
