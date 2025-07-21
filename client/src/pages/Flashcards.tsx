@@ -281,6 +281,45 @@ Antworte im JSON-Format:
         </TabsList>
 
         <TabsContent value="flashcards" className="mt-6">
+          {/* Category Filter */}
+          <div className="mb-4">
+            <div className="flex flex-wrap gap-2 justify-center">
+              <Badge 
+                variant="outline" 
+                className="text-xs px-2 py-1 cursor-pointer hover:bg-purple-100"
+                onClick={() => setCurrentCardIndex(0)}
+              >
+                {strings.language === 'de' ? 'Alle Kategorien' : 'All Categories'} ({allFlashcards.length})
+              </Badge>
+              <Badge 
+                variant="outline" 
+                className="text-xs px-2 py-1 cursor-pointer hover:bg-green-100"
+                onClick={() => {
+                  const verbCards = allFlashcards.filter(card => card.category === "Verben und Konjugationen");
+                  if (verbCards.length > 0) {
+                    const verbIndex = allFlashcards.findIndex(card => card.category === "Verben und Konjugationen");
+                    setCurrentCardIndex(verbIndex);
+                  }
+                }}
+              >
+                {strings.language === 'de' ? 'Verben & Konjugationen' : 'Verbs & Conjugations'} ({allFlashcards.filter(card => card.category === "Verben und Konjugationen").length})
+              </Badge>
+              <Badge 
+                variant="outline" 
+                className="text-xs px-2 py-1 cursor-pointer hover:bg-blue-100"
+                onClick={() => {
+                  const userCards = allFlashcards.filter(card => card.category === "User Added");
+                  if (userCards.length > 0) {
+                    const userIndex = allFlashcards.findIndex(card => card.category === "User Added");
+                    setCurrentCardIndex(userIndex);
+                  }
+                }}
+              >
+                {strings.language === 'de' ? 'Hinzugefügte Wörter' : 'Added Words'} ({allFlashcards.filter(card => card.category === "User Added").length})
+              </Badge>
+            </div>
+          </div>
+
           {/* Study Mode Selector */}
           <div className="mb-6">
             <div className="flex gap-2">
@@ -353,6 +392,35 @@ Antworte im JSON-Format:
                     {currentCard.sentence && (
                       <div className="text-sm text-gray-600 text-center mb-4" dir="rtl">
                         {currentCard.sentence}
+                      </div>
+                    )}
+                    {currentCard.conjugations && currentCard.conjugations.length > 0 && (
+                      <div className="mb-4 p-3 bg-purple-50 rounded-lg">
+                        <h4 className="text-sm font-semibold mb-2 text-purple-700">
+                          {strings.language === 'de' ? 'Konjugationen:' : 'Conjugations:'}
+                        </h4>
+                        <div className="grid grid-cols-1 gap-2 max-h-40 overflow-y-auto">
+                          {currentCard.conjugations.slice(0, 6).map((conj: any, index: number) => (
+                            <div key={index} className="flex justify-between items-center text-xs bg-white p-2 rounded">
+                              <div>
+                                <div className="font-medium text-purple-600" dir="rtl">{conj.person}</div>
+                                <div className="text-gray-500">{conj.tense}</div>
+                              </div>
+                              <div className="text-right">
+                                <div className="font-medium" dir="rtl">{conj.arabic}</div>
+                                <div className="text-gray-600">{conj.german}</div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        {currentCard.conjugations.length > 6 && (
+                          <div className="text-xs text-gray-500 mt-2 text-center">
+                            {strings.language === 'de' ? 
+                              `+${currentCard.conjugations.length - 6} weitere Formen` : 
+                              `+${currentCard.conjugations.length - 6} more forms`
+                            }
+                          </div>
+                        )}
                       </div>
                     )}
                     <div className="text-gray-500">

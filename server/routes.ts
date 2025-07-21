@@ -8,6 +8,11 @@ import OpenAI from 'openai';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
+// Initialize OpenAI
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
 // Configure multer for file uploads
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -312,6 +317,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Download error:", error);
       res.status(500).json({ error: "Download failed" });
+    }
+  });
+
+  // OpenAI Verb Conjugation endpoint
+  app.post("/api/openai/conjugate-verb", async (req: Request, res: Response) => {
+    try {
+      const { verb } = req.body;
+      
+      if (!verb) {
+        return res.status(400).json({ error: "Verb is required" });
+      }
+
+      // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: "You are an expert Arabic grammar teacher. Generate complete verb conjugation tables in Arabic with German translations. Return JSON with this exact structure: { \"conjugations\": [{ \"tense\": \"Present\", \"person\": \"أنا\", \"arabic\": \"أكتب\", \"german\": \"ich schreibe\" }, ...] }"
+          },
+          {
+            role: "user",
+            content: `Generate a complete conjugation table for the Arabic verb "${verb}". Include Present (المضارع), Past (الماضي), and Imperative (الأمر) tenses for all persons (أنا، أنت، أنت، هو، هي، نحن، أنتم، أنتن، هم، هن). Provide German translations for each form.`
+          }
+        ],
+        response_format: { type: "json_object" },
+        temperature: 0.3,
+      });
+
+      const result = JSON.parse(response.choices[0].message.content || '{"conjugations": []}');
+      
+      res.json({
+        verb,
+        conjugations: result.conjugations || []
+      });
+    } catch (error) {
+      console.error('Verb conjugation error:', error);
+      res.status(500).json({ 
+        error: "Conjugation failed", 
+        message: error instanceof Error ? error.message : "Unknown error" 
+      });
     }
   });
 
