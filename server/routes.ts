@@ -5,6 +5,7 @@ import { insertUserSchema, loginUserSchema } from "@shared/schema";
 import jwt from 'jsonwebtoken';
 import multer from 'multer';
 import OpenAI from 'openai';
+import { createClient } from '@supabase/supabase-js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
@@ -12,6 +13,12 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
+
+// Initialize Supabase
+const supabase = createClient(
+  process.env.SUPABASE_URL || '',
+  process.env.SUPABASE_ANON_KEY || ''
+);
 
 // Configure multer for file uploads
 const upload = multer({
@@ -409,6 +416,140 @@ Alle 31 Formen einschließen: أنا، أنتَ، أنتِ، أنتما، أنت
       console.error('Verb conjugation error:', error);
       res.status(500).json({ 
         error: "Conjugation failed", 
+        message: error instanceof Error ? error.message : "Unknown error" 
+      });
+    }
+  });
+
+  // Story generation with Supabase caching
+  app.get("/api/getStory", async (req: Request, res: Response) => {
+    try {
+      const { vocab, wordCount } = req.query;
+      
+      // Validate parameters
+      if (!vocab || !wordCount) {
+        return res.status(400).json({ 
+          error: "Missing required parameters: vocab and wordCount" 
+        });
+      }
+
+      const vocabList = (vocab as string).split(',').map(word => word.trim());
+      const parsedWordCount = parseInt(wordCount as string);
+      
+      if (isNaN(parsedWordCount) || parsedWordCount < 1) {
+        return res.status(400).json({ 
+          error: "wordCount must be a positive number" 
+        });
+      }
+
+      // Create cache key from sorted vocab list
+      const vocabKey = vocabList.sort().join(',');
+
+      // Check Supabase cache first
+      let cachedStory = null;
+      try {
+        const { data, error } = await supabase
+          .from('stories')
+          .select('*')
+          .eq('vocab_key', vocabKey)
+          .eq('word_count', parsedWordCount)
+          .single();
+
+        if (!error && data) {
+          cachedStory = data;
+          console.log(`Found cached story for vocab: ${vocabKey}`);
+        }
+      } catch (cacheError) {
+        console.log('Cache lookup failed:', cacheError);
+      }
+
+      // Return cached story if found
+      if (cachedStory) {
+        return res.json({
+          story: cachedStory.story_text,
+          vocab_used: cachedStory.vocab_list,
+          word_count: cachedStory.word_count,
+          source: 'cache',
+          created_at: cachedStory.created_at
+        });
+      }
+
+      // Generate new story with OpenAI
+      if (!process.env.OPENAI_API_KEY) {
+        return res.status(500).json({ 
+          error: "OpenAI API key not configured" 
+        });
+      }
+
+      const prompt = `Erstelle eine kurze Geschichte auf Arabisch (Fusha), die etwa ${parsedWordCount} Wörter lang ist.
+Benutze sinnvoll folgende Wörter im Text:
+${vocabList.join(', ')}
+
+Die Geschichte soll einfach, sinnvoll und grammatikalisch korrekt sein.
+Gib nur den arabischen Fließtext zurück, ohne Übersetzung oder Kommentare.`;
+
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+        messages: [
+          {
+            role: "system",
+            content: "Du bist ein arabischer Geschichtenerzähler, der einfache und schöne Geschichten auf Hocharabisch schreibt."
+          },
+          {
+            role: "user",
+            content: prompt
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: parsedWordCount * 3 // Allow for Arabic text expansion
+      });
+
+      const storyText = completion.choices[0].message.content?.trim() || '';
+      
+      if (!storyText) {
+        return res.status(500).json({ 
+          error: "Failed to generate story" 
+        });
+      }
+
+      // Save to Supabase cache
+      try {
+        const { data, error } = await supabase
+          .from('stories')
+          .insert([
+            {
+              vocab_key: vocabKey,
+              vocab_list: vocabList,
+              word_count: parsedWordCount,
+              story_text: storyText,
+              created_at: new Date().toISOString()
+            }
+          ])
+          .select()
+          .single();
+
+        if (error) {
+          console.error('Failed to cache story:', error);
+        } else {
+          console.log(`Successfully cached new story for vocab: ${vocabKey}`);
+        }
+      } catch (cacheError) {
+        console.error('Cache save failed:', cacheError);
+      }
+
+      // Return the generated story
+      res.json({
+        story: storyText,
+        vocab_used: vocabList,
+        word_count: parsedWordCount,
+        source: 'generated',
+        created_at: new Date().toISOString()
+      });
+
+    } catch (error) {
+      console.error('Story generation error:', error);
+      res.status(500).json({ 
+        error: "Story generation failed", 
         message: error instanceof Error ? error.message : "Unknown error" 
       });
     }
