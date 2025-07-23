@@ -14,11 +14,10 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-// Initialize Supabase
-const supabase = createClient(
-  process.env.SUPABASE_URL || '',
-  process.env.SUPABASE_ANON_KEY || ''
-);
+// Initialize Supabase (optional - will be null if not configured)
+const supabase = process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY 
+  ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY)
+  : null;
 
 // Configure multer for file uploads
 const upload = multer({
@@ -445,22 +444,26 @@ Alle 31 Formen einschließen: أنا، أنتَ، أنتِ، أنتما، أنت
       // Create cache key from sorted vocab list
       const vocabKey = vocabList.sort().join(',');
 
-      // Check Supabase cache first
+      // Check Supabase cache first (if configured)
       let cachedStory = null;
-      try {
-        const { data, error } = await supabase
-          .from('stories')
-          .select('*')
-          .eq('vocab_key', vocabKey)
-          .eq('word_count', parsedWordCount)
-          .single();
+      if (supabase) {
+        try {
+          const { data, error } = await supabase
+            .from('stories')
+            .select('*')
+            .eq('vocab_key', vocabKey)
+            .eq('word_count', parsedWordCount)
+            .single();
 
-        if (!error && data) {
-          cachedStory = data;
-          console.log(`Found cached story for vocab: ${vocabKey}`);
+          if (!error && data) {
+            cachedStory = data;
+            console.log(`Found cached story for vocab: ${vocabKey}`);
+          }
+        } catch (cacheError) {
+          console.log('Cache lookup failed:', cacheError);
         }
-      } catch (cacheError) {
-        console.log('Cache lookup failed:', cacheError);
+      } else {
+        console.log('Supabase not configured - skipping cache lookup');
       }
 
       // Return cached story if found
@@ -512,29 +515,33 @@ Gib nur den arabischen Fließtext zurück, ohne Übersetzung oder Kommentare.`;
         });
       }
 
-      // Save to Supabase cache
-      try {
-        const { data, error } = await supabase
-          .from('stories')
-          .insert([
-            {
-              vocab_key: vocabKey,
-              vocab_list: vocabList,
-              word_count: parsedWordCount,
-              story_text: storyText,
-              created_at: new Date().toISOString()
-            }
-          ])
-          .select()
-          .single();
+      // Save to Supabase cache (if configured)
+      if (supabase) {
+        try {
+          const { data, error } = await supabase
+            .from('stories')
+            .insert([
+              {
+                vocab_key: vocabKey,
+                vocab_list: vocabList,
+                word_count: parsedWordCount,
+                story_text: storyText,
+                created_at: new Date().toISOString()
+              }
+            ])
+            .select()
+            .single();
 
-        if (error) {
-          console.error('Failed to cache story:', error);
-        } else {
-          console.log(`Successfully cached new story for vocab: ${vocabKey}`);
+          if (error) {
+            console.error('Failed to cache story:', error);
+          } else {
+            console.log(`Successfully cached new story for vocab: ${vocabKey}`);
+          }
+        } catch (cacheError) {
+          console.error('Cache save failed:', cacheError);
         }
-      } catch (cacheError) {
-        console.error('Cache save failed:', cacheError);
+      } else {
+        console.log('Supabase not configured - story not cached');
       }
 
       // Return the generated story
