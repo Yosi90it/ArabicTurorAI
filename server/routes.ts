@@ -281,6 +281,166 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Enhanced word translation with Supabase caching
+  app.post("/api/translate-word-cached", async (req: Request, res: Response) => {
+    try {
+      const { word } = req.body;
+      
+      if (!word) {
+        return res.status(400).json({ error: "Word is required" });
+      }
+
+      // Normalize Arabic text (remove tashkeel for consistent caching)
+      const normalizedWord = word
+        .replace(/[\u064B-\u065F\u0670\u06D6-\u06ED]/g, '')
+        .trim();
+
+      // Check Supabase cache first (if configured)
+      let cachedTranslation = null;
+      if (supabase) {
+        try {
+          const { data, error } = await supabase
+            .from('word_translations')
+            .select('*')
+            .eq('arabic_word', normalizedWord)
+            .single();
+
+          if (!error && data) {
+            cachedTranslation = data;
+            console.log(`Found cached translation for: ${normalizedWord}`);
+            
+            return res.json({
+              word: normalizedWord,
+              translation: cachedTranslation.german_translation,
+              grammar: cachedTranslation.grammar_info || "",
+              context: cachedTranslation.context || "",
+              source: 'cache'
+            });
+          }
+        } catch (cacheError) {
+          console.log('Translation cache lookup failed:', cacheError);
+        }
+      }
+
+      // Try Weaviate first (existing system)
+      let weaviateResult = null;
+      try {
+        const weaviateResponse = await fetch("http://localhost:5000/api/weaviate/translate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ word: normalizedWord })
+        });
+
+        if (weaviateResponse.ok) {
+          weaviateResult = await weaviateResponse.json();
+          
+          // Cache successful Weaviate result in Supabase
+          if (supabase && weaviateResult.translation && weaviateResult.translation !== 'Translation not found') {
+            try {
+              await supabase
+                .from('word_translations')
+                .insert([
+                  {
+                    arabic_word: normalizedWord,
+                    german_translation: weaviateResult.translation,
+                    grammar_info: weaviateResult.grammar || "",
+                    context: weaviateResult.context || "",
+                    created_at: new Date().toISOString(),
+                    source: 'weaviate'
+                  }
+                ]);
+              console.log(`Cached Weaviate translation for: ${normalizedWord}`);
+            } catch (cacheError) {
+              console.log('Failed to cache Weaviate result:', cacheError);
+            }
+          }
+
+          return res.json({
+            word: normalizedWord,
+            translation: weaviateResult.translation,
+            grammar: weaviateResult.grammar || "",
+            context: weaviateResult.context || "",
+            source: 'weaviate'
+          });
+        }
+      } catch (weaviateError) {
+        console.log('Weaviate lookup failed, trying OpenAI fallback');
+      }
+
+      // Fallback to OpenAI if both cache and Weaviate fail
+      if (!process.env.OPENAI_API_KEY) {
+        return res.status(500).json({ 
+          error: "No translation found and OpenAI not configured" 
+        });
+      }
+
+      const prompt = `Übersetze das arabische Wort "${word}" ins Deutsche. 
+Gib zusätzlich grammatische Informationen an (Wortart, Genus falls Nomen, etc.).
+
+Antworte im JSON-Format:
+{
+  "translation": "deutsche Übersetzung",
+  "grammar": "grammatische Info (z.B. Nomen maskulin, Verb Form I)",
+  "context": "Beispielkontext oder Anwendung"
+}`;
+
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: "Du bist ein arabischer Sprachexperte. Antworte immer im angegebenen JSON-Format."
+          },
+          {
+            role: "user",
+            content: prompt
+          }
+        ],
+        response_format: { type: "json_object" },
+        temperature: 0.3,
+        max_tokens: 200
+      });
+
+      const result = JSON.parse(completion.choices[0].message.content || '{}');
+      
+      // Cache OpenAI result in Supabase
+      if (supabase && result.translation) {
+        try {
+          await supabase
+            .from('word_translations')
+            .insert([
+              {
+                arabic_word: normalizedWord,
+                german_translation: result.translation,
+                grammar_info: result.grammar || "",
+                context: result.context || "",
+                created_at: new Date().toISOString(),
+                source: 'openai'
+              }
+            ]);
+          console.log(`Cached OpenAI translation for: ${normalizedWord}`);
+        } catch (cacheError) {
+          console.log('Failed to cache OpenAI result:', cacheError);
+        }
+      }
+
+      res.json({
+        word: normalizedWord,
+        translation: result.translation || 'Translation not found',
+        grammar: result.grammar || "",
+        context: result.context || "",
+        source: 'openai'
+      });
+
+    } catch (error) {
+      console.error('Word translation error:', error);
+      res.status(500).json({ 
+        error: "Translation failed", 
+        message: error instanceof Error ? error.message : "Unknown error" 
+      });
+    }
+  });
+
   // OpenAI Verb Conjugation endpoint
   app.post("/api/openai/conjugate-verb", async (req: Request, res: Response) => {
     try {
