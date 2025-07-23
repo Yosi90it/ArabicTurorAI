@@ -8,9 +8,9 @@ import { useFlashcards } from "@/contexts/FlashcardContext";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
 
-// Weaviate translation function
-async function translateWithWeaviate(word: string): Promise<{word: string, translation: string, grammar: string, examples: string[], pronunciation: string}> {
-  const response = await fetch('/api/weaviate/translate', {
+// Cached translation function with Supabase caching
+async function translateWithCache(word: string): Promise<{word: string, translation: string, grammar: string, examples: string[], pronunciation: string, context?: string, source?: string}> {
+  const response = await fetch('/api/translate-word-cached', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -22,7 +22,18 @@ async function translateWithWeaviate(word: string): Promise<{word: string, trans
     throw new Error('Failed to translate word');
   }
   
-  return response.json();
+  const result = await response.json();
+  
+  // Convert to expected format for backwards compatibility
+  return {
+    word: result.word,
+    translation: result.translation,
+    grammar: result.grammar || "noun",
+    examples: [], // Keep empty for now
+    pronunciation: "",
+    context: result.context,
+    source: result.source
+  };
 }
 
 interface ClickableTextProps {
@@ -51,19 +62,21 @@ export default function ClickableText({ text, className = "" }: ClickableTextPro
     
     setIsAnalyzing(true);
     try {
-      // Try Weaviate first, fallback to dictionary
+      // Try cached translation first (Supabase -> Weaviate -> OpenAI), fallback to dictionary
       let result;
       try {
-        result = await translateWithWeaviate(word);
-      } catch (weaviateError) {
-        console.log('Weaviate not available, using fallback dictionary');
+        result = await translateWithCache(word);
+        console.log(`Translation retrieved from: ${result.source || 'unknown'}`);
+      } catch (translationError) {
+        console.log('Cached translation not available, using fallback dictionary');
         const fallbackWord = getWordInfo(word);
         result = {
           word: word,
           translation: fallbackWord?.translation || strings.translationNotFound,
           grammar: fallbackWord?.grammar || "noun",
           examples: [],
-          pronunciation: ""
+          pronunciation: "",
+          source: 'dictionary'
         };
       }
       
