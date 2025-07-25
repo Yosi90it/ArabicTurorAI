@@ -36,6 +36,11 @@ export default function AiChat() {
   const { updateProgress } = useSimpleGamification();
   const { strings } = useLanguage();
   
+  // Define messages with both tashkeel and without
+  const getDisplayText = (withTashkeel: string, withoutTashkeel: string) => {
+    return tashkeelEnabled ? withTashkeel : withoutTashkeel;
+  };
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -68,6 +73,7 @@ export default function AiChat() {
     setInput("");
     setIsLoading(true);
 
+    // Add user message
     const newMessage: Message = {
       id: messages.length + 1,
       sender: "ME",
@@ -77,29 +83,26 @@ export default function AiChat() {
     setMessages(prev => [...prev, newMessage]);
 
     try {
+      // Call OpenAI API
       const response = await openai.chat.completions.create({
         model: "gpt-4o",
         messages: [
           {
             role: "system",
-            content: `You are a helpful Arabic tutor. Always respond in Arabic with English translations.
+            content: `You are an expert Arabic language teacher. Always respond in Arabic and provide English translations. 
             Format your response as JSON:
             {
               "arabic": "your Arabic response",
               "translation": "English translation of your response"
             }`
           },
-          ...messages.slice(-3).map(msg => ({
-            role: msg.sender === "ME" ? "user" as const : "assistant" as const,
-            content: msg.arabic
-          })),
           {
             role: "user",
             content: userMessage
           }
         ],
         response_format: { type: "json_object" },
-        max_tokens: 500
+        max_tokens: 300
       });
 
       const result = JSON.parse(response.choices[0].message.content || '{}');
@@ -113,6 +116,7 @@ export default function AiChat() {
       
       setMessages(prev => [...prev, aiResponse]);
       
+      // Award points for sending a chat message
       updateProgress('chat');
       toast({
         title: "Chat-Nachricht gesendet! +10 Punkte",
@@ -180,6 +184,7 @@ export default function AiChat() {
     setPracticeInput("");
     setIsPracticeLoading(true);
 
+    // Add user message
     const newMessage: Message = {
       id: practiceMessages.length + 1,
       sender: "ME",
@@ -585,82 +590,84 @@ export default function AiChat() {
                         </p>
                       </div>
                     )}
-
-                    {/* Chat area for practice */}
-                    <div className="h-96 bg-soft-gray rounded-2xl p-4 mb-4 overflow-y-auto scrollbar-hide">
-                      <div className="space-y-4">
-                        {practiceMessages.map((message) => (
-                          <div
-                            key={message.id}
-                            className={`flex items-start space-x-3 ${
-                              message.sender === "ME" ? "justify-end" : ""
-                            }`}
-                          >
-                            {message.sender === "AI" && (
-                              <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                                AI
-                              </div>
-                            )}
-                            
-                            <div className={`max-w-md ${
-                              message.sender === "ME" ? "bg-blue-600 text-white" : "bg-white border"
-                            } rounded-2xl p-3 shadow-sm`}>
-                              <div className="text-lg font-medium mb-1" dir="rtl" style={{lineHeight: '2', fontFamily: 'Arial, sans-serif'}}>
-                                {tashkeelEnabled ? message.arabic : message.arabic.replace(/[\u064B-\u065F\u0670\u0640]/g, '')}
-                              </div>
-                              <div className="text-sm opacity-80">
-                                {message.translation}
-                              </div>
-                            </div>
-
-                            {message.sender === "ME" && (
-                              <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-gray-600 text-sm font-bold">
-                                ME
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Practice input */}
-                    <div className="flex space-x-2">
-                      <Input
-                        type="text"
-                        placeholder={practiceStarted ? 
-                          "Verwenden Sie Ihre neuen Wörter in einem Satz oder einer Frage..." : 
-                          "Starten Sie zuerst die Übung..."
-                        }
-                        value={practiceInput}
-                        onChange={(e) => setPracticeInput(e.target.value)}
-                        onKeyPress={(e) => e.key === "Enter" && handlePracticeSend()}
-                        className="flex-1"
-                        disabled={isPracticeLoading || !practiceStarted}
-                      />
-                      <Button 
-                        onClick={handlePracticeSend}
-                        disabled={isPracticeLoading || !practiceInput.trim() || !practiceStarted}
-                        className="px-6"
-                      >
-                        {isPracticeLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                      </Button>
-                    </div>
-
-                    {/* Progress indicator */}
-                    {practiceStarted && currentChallengeWords.length > 0 && (
-                      <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                        <div className="flex items-center gap-2">
-                          <Target className="w-4 h-4 text-yellow-600" />
-                          <span className="text-sm font-medium text-yellow-800">
-                            Fortschritt: {usedWords.size} von {currentChallengeWords.length} Wörtern erfolgreich verwendet
-                            {usedWords.size === currentChallengeWords.length && " 🎉 Alle Wörter gemeistert!"}
-                          </span>
-                        </div>
-                      </div>
-                    )}
                   </>
                 );
               })()}
+
+                  {/* Chat area for practice */}
+                  <div className="h-96 bg-soft-gray rounded-2xl p-4 mb-4 overflow-y-auto scrollbar-hide">
+                    <div className="space-y-4">
+                      {practiceMessages.map((message) => (
+                        <div
+                          key={message.id}
+                          className={`flex items-start space-x-3 ${
+                            message.sender === "ME" ? "justify-end" : ""
+                          }`}
+                        >
+                          {message.sender === "AI" && (
+                            <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                              AI
+                            </div>
+                          )}
+                          
+                          <div className={`max-w-md ${
+                            message.sender === "ME" ? "bg-blue-600 text-white" : "bg-white border"
+                          } rounded-2xl p-3 shadow-sm`}>
+                            <div className="text-lg font-medium mb-1" dir="rtl" style={{lineHeight: '2', fontFamily: 'Arial, sans-serif'}}>
+                              {tashkeelEnabled ? message.arabic : message.arabic.replace(/[\u064B-\u065F\u0670\u0640]/g, '')}
+                            </div>
+                            <div className="text-sm opacity-80">
+                              {message.translation}
+                            </div>
+                          </div>
+
+                          {message.sender === "ME" && (
+                            <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-gray-600 text-sm font-bold">
+                              ME
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Practice input */}
+                  <div className="flex space-x-2">
+                    <Input
+                      type="text"
+                      placeholder={practiceStarted ? 
+                        "Verwenden Sie Ihre neuen Wörter in einem Satz oder einer Frage..." : 
+                        "Starten Sie zuerst die Übung..."
+                      }
+                      value={practiceInput}
+                      onChange={(e) => setPracticeInput(e.target.value)}
+                      onKeyPress={(e) => e.key === "Enter" && handlePracticeSend()}
+                      className="flex-1"
+                      disabled={isPracticeLoading || !practiceStarted}
+                    />
+                    <Button 
+                      onClick={handlePracticeSend}
+                      disabled={isPracticeLoading || !practiceInput.trim() || !practiceStarted}
+                      className="px-6"
+                    >
+                      {isPracticeLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                    </Button>
+                  </div>
+
+                  {/* Progress indicator */}
+                  {practiceStarted && currentChallengeWords.length > 0 && (
+                    <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <Target className="w-4 h-4 text-yellow-600" />
+                        <span className="text-sm font-medium text-yellow-800">
+                          Fortschritt: {usedWords.size} von {currentChallengeWords.length} Wörtern erfolgreich verwendet
+                          {usedWords.size === currentChallengeWords.length && " 🎉 Alle Wörter gemeistert!"}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

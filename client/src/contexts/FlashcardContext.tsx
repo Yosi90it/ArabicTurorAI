@@ -18,12 +18,15 @@ interface FlashcardEntry {
   grammar?: string;
   sentence?: string;
   conjugations?: VerbConjugation[];
+  dateAdded?: Date;
 }
 
 interface FlashcardContextType {
   userFlashcards: FlashcardEntry[];
   addFlashcard: (word: string, translation: string, grammar: string) => void;
   addVerbConjugation: (verb: string, translation: string, conjugations: VerbConjugation[]) => void;
+  getWordsFromLastDays: (days: number) => FlashcardEntry[];
+  getWordsByDateGroup: () => { [key: string]: FlashcardEntry[] };
 }
 
 const FlashcardContext = createContext<FlashcardContextType | undefined>(undefined);
@@ -45,7 +48,8 @@ export function FlashcardProvider({ children }: { children: ReactNode }) {
         translation: translation,
         category: "User Added",
         grammar: grammar,
-        sentence: `هذا مثال على استخدام كلمة **${word}** في جملة.`
+        sentence: `هذا مثال على استخدام كلمة **${word}** في جملة.`,
+        dateAdded: new Date()
       };
       
       setUserFlashcards(prev => [...prev, newCard]);
@@ -72,7 +76,8 @@ export function FlashcardProvider({ children }: { children: ReactNode }) {
         category: "Verben und Konjugationen",
         grammar: "Verb",
         conjugations: conjugations,
-        sentence: `Konjugationstabelle für das Verb **${verb}**`
+        sentence: `Konjugationstabelle für das Verb **${verb}**`,
+        dateAdded: new Date()
       };
       
       setUserFlashcards(prev => [...prev, newCard]);
@@ -91,8 +96,40 @@ export function FlashcardProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const getWordsFromLastDays = (days: number): FlashcardEntry[] => {
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - days);
+    
+    return userFlashcards.filter(card => {
+      const cardDate = card.dateAdded || new Date(card.id); // Fallback to ID timestamp
+      return cardDate >= cutoffDate;
+    });
+  };
+
+  const getWordsByDateGroup = (): { [key: string]: FlashcardEntry[] } => {
+    const groups: { [key: string]: FlashcardEntry[] } = {};
+    
+    userFlashcards.forEach(card => {
+      const cardDate = card.dateAdded || new Date(card.id);
+      const dateKey = cardDate.toDateString();
+      
+      if (!groups[dateKey]) {
+        groups[dateKey] = [];
+      }
+      groups[dateKey].push(card);
+    });
+    
+    return groups;
+  };
+
   return (
-    <FlashcardContext.Provider value={{ userFlashcards, addFlashcard, addVerbConjugation }}>
+    <FlashcardContext.Provider value={{ 
+      userFlashcards, 
+      addFlashcard, 
+      addVerbConjugation, 
+      getWordsFromLastDays, 
+      getWordsByDateGroup 
+    }}>
       {children}
     </FlashcardContext.Provider>
   );
