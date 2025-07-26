@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RotateCcw, Volume2, Check, X, BookOpen, Trophy, Star, Target, Sparkles, RefreshCw, Loader2 } from "lucide-react";
+import { RotateCcw, Volume2, Check, X, BookOpen, Trophy, Star, Target, Sparkles, RefreshCw, Loader2, Download, Play, Pause } from "lucide-react";
 import { useFlashcards } from "@/contexts/FlashcardContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTashkeel } from "@/contexts/TashkeelContext";
@@ -65,6 +65,11 @@ export default function Flashcards() {
     pronunciation?: string;
   } | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  
+  // Audio states
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentUtterance, setCurrentUtterance] = useState<SpeechSynthesisUtterance | null>(null);
+  const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
 
   // Static flashcard data for demo
   const staticFlashcards: FlashcardData[] = [
@@ -151,10 +156,88 @@ export default function Flashcards() {
 
   const playAudio = (text: string) => {
     if ('speechSynthesis' in window) {
+      // Stop any currently playing audio
+      if (currentUtterance) {
+        speechSynthesis.cancel();
+        setIsPlaying(false);
+        setCurrentUtterance(null);
+      }
+      
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'ar-SA';
-      utterance.rate = 0.8;
+      utterance.rate = 0.8; // Slower speech for better comprehension
+      utterance.pitch = 1.0;
+      
+      utterance.onstart = () => {
+        setIsPlaying(true);
+      };
+      
+      utterance.onend = () => {
+        setIsPlaying(false);
+        setCurrentUtterance(null);
+      };
+      
+      utterance.onerror = () => {
+        setIsPlaying(false);
+        setCurrentUtterance(null);
+        toast({
+          title: strings.language === 'de' ? "Audio-Fehler" : "Audio Error",
+          description: strings.language === 'de' ? "Konnte Audio nicht abspielen" : "Could not play audio",
+          variant: "destructive"
+        });
+      };
+      
+      setCurrentUtterance(utterance);
       speechSynthesis.speak(utterance);
+    } else {
+      toast({
+        title: strings.language === 'de' ? "Nicht unterstützt" : "Not Supported",
+        description: strings.language === 'de' ? "Ihr Browser unterstützt kein Text-zu-Sprache" : "Your browser doesn't support text-to-speech",
+        variant: "destructive"
+      });
+    }
+  };
+  
+  const stopAudio = () => {
+    if (currentUtterance && isPlaying) {
+      speechSynthesis.cancel();
+      setIsPlaying(false);
+      setCurrentUtterance(null);
+    }
+  };
+  
+  const downloadAudioAsMP3 = async (text: string, filename: string = 'arabic_story') => {
+    setIsGeneratingAudio(true);
+    
+    try {
+      // For browser compatibility, we'll create a simple text file with instructions
+      // In a production environment, you would integrate with a proper TTS service
+      const instructions = `${strings.language === 'de' ? 'Arabischer Text' : 'Arabic Text'}:\n${text}\n\n${strings.language === 'de' ? 'Hinweis: Verwenden Sie einen TTS-Service wie Google Text-to-Speech oder Amazon Polly, um diese Datei in Audio umzuwandeln.' : 'Note: Use a TTS service like Google Text-to-Speech or Amazon Polly to convert this text to audio.'}`;
+      
+      const blob = new Blob([instructions], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${filename}.txt`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      toast({
+        title: strings.language === 'de' ? "Text heruntergeladen" : "Text Downloaded",
+        description: strings.language === 'de' ? "Verwenden Sie einen TTS-Service für Audio-Konvertierung" : "Use a TTS service for audio conversion",
+      });
+    } catch (error) {
+      console.error('Download error:', error);
+      toast({
+        title: strings.language === 'de' ? "Download-Fehler" : "Download Error",
+        description: strings.language === 'de' ? "Konnte Datei nicht herunterladen" : "Could not download file",
+        variant: "destructive"
+      });
+    } finally {
+      setIsGeneratingAudio(false);
     }
   };
 
@@ -563,9 +646,18 @@ Antworte im JSON-Format:
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => playAudio(currentStory.arabicText)}
+                    onClick={isPlaying ? stopAudio : () => playAudio(currentStory.arabicText)}
+                    disabled={isGeneratingAudio}
                   >
-                    <Volume2 className="w-4 h-4" />
+                    {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => downloadAudioAsMP3(currentStory.arabicText, currentStory.title.replace(/\s+/g, '_'))}
+                    disabled={isGeneratingAudio}
+                  >
+                    {isGeneratingAudio ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
                   </Button>
                   <Button
                     variant="outline"
@@ -584,13 +676,25 @@ Antworte im JSON-Format:
                     <h3 className="font-semibold text-lg">
                       {strings.language === 'de' ? 'Arabische Geschichte' : 'Arabic Story'}
                     </h3>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => playAudio(currentStory.arabicText)}
-                    >
-                      <Volume2 className="w-4 h-4" />
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={isPlaying ? stopAudio : () => playAudio(currentStory.arabicText)}
+                        disabled={isGeneratingAudio}
+                      >
+                        {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => downloadAudioAsMP3(currentStory.arabicText, currentStory.title.replace(/\s+/g, '_'))}
+                        disabled={isGeneratingAudio}
+                        title={strings.language === 'de' ? 'Text als Datei herunterladen' : 'Download text as file'}
+                      >
+                        {isGeneratingAudio ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                      </Button>
+                    </div>
                   </div>
                   <div 
                     dir="rtl" 
