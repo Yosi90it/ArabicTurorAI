@@ -116,7 +116,7 @@ const translations = {
     changeLanguageAnytime: "You can change your language preference anytime in the settings.",
     
     // Flashcards
-    flashcards: "Flashcards",
+    flashcardsPage: "Flashcards",
     storyGenerator: "Story Generator",
     reviewMode: "Review Mode",
     testMode: "Test Mode",
@@ -137,7 +137,7 @@ const translations = {
     generating: "Generating...",
     yourFlashcards: "Your Flashcards",
     noFlashcardsYet: "No flashcards yet",
-    startLearning: "Start learning by adding words from the book reader or video trainer!",
+    startLearningMessage: "Start learning by adding words from the book reader or video trainer!",
     homeFamily: "Home & Family",
     dailyLife: "Daily Life",
     nature: "Nature",
@@ -264,7 +264,7 @@ const translations = {
     changeLanguageAnytime: "Sie können Ihre Spracheinstellung jederzeit in den Einstellungen ändern.",
     
     // Flashcards
-    flashcards: "Karteikarten",
+    flashcardsPage: "Karteikarten",
     storyGenerator: "Geschichten-Generator",
     reviewMode: "Wiederholungsmodus",
     testMode: "Testmodus",
@@ -285,7 +285,7 @@ const translations = {
     generating: "Generiere...",
     yourFlashcards: "Ihre Karteikarten",
     noFlashcardsYet: "Noch keine Karteikarten",
-    startLearning: "Beginnen Sie zu lernen, indem Sie Wörter aus dem Buchleser oder Videotrainer hinzufügen!",
+    startLearningMessage: "Beginnen Sie zu lernen, indem Sie Wörter aus dem Buchleser oder Videotrainer hinzufügen!",
     homeFamily: "Haus & Familie",
     dailyLife: "Alltag",
     nature: "Natur",
