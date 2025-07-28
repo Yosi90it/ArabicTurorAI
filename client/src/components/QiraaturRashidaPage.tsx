@@ -82,11 +82,26 @@ export default function QiraaturRashidaPage({ pageNumber, filename }: QiraaturRa
                   transformOrigin: 'center',
                   transition: 'transform 0.3s ease'
                 }}
+                onLoad={() => {
+                  console.log(`Successfully loaded: ${filename}`);
+                }}
                 onError={(e) => {
                   console.error(`Failed to load image: ${filename}`);
+                  console.log(`Trying alternative path for page ${pageNumber}`);
                   // Try alternative file path if first fails
                   if (!e.currentTarget.src.includes('attached_assets')) {
                     e.currentTarget.src = `/attached_assets/${filename}`;
+                  } else {
+                    // Show error message instead of broken image
+                    e.currentTarget.style.display = 'none';
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'text-red-500 text-center p-8 border-2 border-dashed border-red-300 rounded-lg';
+                    errorDiv.innerHTML = `
+                      <div class="text-6xl mb-4">📄</div>
+                      <h3 class="text-lg font-semibold mb-2">Seite ${pageNumber} nicht verfügbar</h3>
+                      <p class="text-sm">Datei: ${filename}</p>
+                    `;
+                    e.currentTarget.parentNode?.appendChild(errorDiv);
                   }
                 }}
               />

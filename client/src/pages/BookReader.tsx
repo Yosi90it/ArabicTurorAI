@@ -150,13 +150,22 @@ export default function BookReader() {
     position: { x: number; y: number };
   } | null>(null);
 
-  // Split content into pages based on word count
+  // Get available page images for complete Qiraatu book
+  const qiraaturPages = [
+    30, 33, 35, 37, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 84, 85, 86, 87, 88, 89, 91, 94, 95, 96, 97, 116, 131, 226, 236, 238, 242, 245, 247
+  ];
+
+  // Split content into pages based on book type
   const currentBookPages = selectedBook 
     ? (() => {
-        // First try to split by existing pagebreaks
+        // For complete Qiraatu book with images, use page numbers
+        if (selectedBook.title.includes("كامل مع الصور الأصلية")) {
+          return qiraaturPages.map(pageNum => `Page ${pageNum}`);
+        }
+        
+        // For other books, use existing pagebreak logic
         const existingPages = selectedBook.content.split("<!-- pagebreak -->").map(p => p.trim()).filter(p => p.length > 0);
         
-        // If we have existing pagebreaks, use them
         if (existingPages.length > 1) {
           return existingPages;
         }
@@ -359,8 +368,8 @@ export default function BookReader() {
                       <OriginalFirstPage />
                     ) : (
                       <QiraaturRashidaPage
-                        pageNumber={33 + currentPage - 1}
-                        filename={`Al-Qir\`atur.Rashida (1-2)-page-${String(33 + currentPage - 1).padStart(3, '0')}.jpg`}
+                        pageNumber={qiraaturPages[currentPage]}
+                        filename={`Al-Qir\`atur.Rashida (1-2)-page-${String(qiraaturPages[currentPage]).padStart(3, '0')}.jpg`}
                       />
                     )
                   ) : currentPage === 0 ? (
