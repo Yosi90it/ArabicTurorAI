@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import ClickableText from "@/components/ClickableText";
 import InterlinearText from "@/components/InterlinearText";
 import WordModal from "@/components/WordModal";
+import OriginalFirstPage from "@/components/OriginalFirstPage";
 import { getWordInfo } from "@/data/arabicDictionary";
 import { useSimpleGamification } from "@/contexts/SimpleGamificationContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -354,23 +355,30 @@ export default function BookReader() {
             </CardHeader>
             <CardContent className="space-y-6">
               {selectedBook ? (
-                <div className="prose prose-lg max-w-none">
-                  <div className="bg-gradient-to-br from-amber-50 to-orange-50 p-6 rounded-2xl border border-amber-200 min-h-[500px]">
-                    <div 
-                      className="leading-relaxed space-y-4" 
-                      onClick={handleContentClick}
-                    >
-                      {selectedBook && currentBookPages[currentPage] && (
-                        <BookContent 
-                          content={currentBookPages[currentPage]} 
-                          tashkeelEnabled={tashkeelEnabled}
-                          interlinearEnabled={interlinearEnabled}
-                          onWordClick={handleContentClick}
-                        />
-                      )}
+                <>
+                  {/* Show original first page for page 0, normal content for other pages */}
+                  {currentPage === 0 ? (
+                    <OriginalFirstPage />
+                  ) : (
+                    <div className="prose prose-lg max-w-none">
+                      <div className="bg-gradient-to-br from-amber-50 to-orange-50 p-6 rounded-2xl border border-amber-200 min-h-[500px]">
+                        <div 
+                          className="leading-relaxed space-y-4" 
+                          onClick={handleContentClick}
+                        >
+                          {selectedBook && currentBookPages[currentPage] && (
+                            <BookContent 
+                              content={currentBookPages[currentPage]} 
+                              tashkeelEnabled={tashkeelEnabled}
+                              interlinearEnabled={interlinearEnabled}
+                              onWordClick={handleContentClick}
+                            />
+                          )}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
+                  )}
+                </>
               ) : (
                 <div className="text-center py-12">
                   <p className="text-gray-500">{strings.selectBook}</p>
