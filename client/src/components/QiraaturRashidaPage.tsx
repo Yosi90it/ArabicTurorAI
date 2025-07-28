@@ -65,20 +65,12 @@ export default function QiraaturRashidaPage({ pageNumber, filename }: QiraaturRa
     loadPageContent();
   }, [pageNumber]);
 
-  // Sample content generator for pages without extracted text
+  // Use the same authentic text as the first page
   const getSampleContentForPage = (pageNum: number): string => {
-    const sampleTexts = [
-      "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ",
-      "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ",
-      "الرَّحْمَنِ الرَّحِيمِ",
-      "مَالِكِ يَوْمِ الدِّينِ",
-      "إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ",
-      "اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ",
-      "صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ",
-      "غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ"
-    ];
-    
-    return sampleTexts[(pageNum - 30) % sampleTexts.length] || "اللَّهُ أَكْبَرُ";
+    // Use the actual text from the first page
+    return `أَنَامُ مُبَكِّراً فِي اللَّيْلِ وَأَقُومُ مُبَكِّراً فِي الصَّبَاحِ ، أَسْتَيْقِظُ عَلَى اسْمِ اللهِ وَذِكْرِهِ ، أَسْتَعِدُّ لِلصَّلاَةِ ثُمَّ أُصَلِّي مَعَ وَالِدِي إِلَى الْمَسْجِدِ ، وَالْمَسْجِدُ قَرِيبٌ مِنْ بَيْتِي ، فَأَتَوَضَّأُ وَأُصَلِّي مَعَ الْجَمَاعَةِ ، وَأَرْجِعُ إِلَى الْبَيْتِ وَأَتَنَاوَلُ شَيْئاً مِنَ الْقُرْآنِ الْكَرِيمِ ، ثُمَّ أَخْرُجُ إِلَى الْبُسْتَانِ وَأَجْرِي ، ثُمَّ أَرْجِعُ إِلَى الْبَيْتِ فَأَشْرَبُ اللَّبَنَ وَأَسْتَعِدُّ لِلذَّهَابِ إِلَى الْمَدْرَسَةِ ، وَأُفْطِرُ إِذَا كَانَتْ أَيَّامُ الضَّعْفِ ، وَأَتَغَدَّى إِذَا كَانَتْ أَيَّامُ الشِّتَاءِ ، وَأَصِلُ إِلَى الْمَدْرَسَةِ فِي الْمِيعَادِ.
+
+وَأَمْكُثُ فِي الْمَدْرَسَةِ سِتَّ سَاعَاتٍ ، وَأَسْمَعُ الدُّرُوسَ بِنَشَاطٍ`;
   };
 
   return (
@@ -156,6 +148,13 @@ export default function QiraaturRashidaPage({ pageNumber, filename }: QiraaturRa
                     <span className="text-lg">({pageNumber})</span>
                   </div>
                   
+                  {/* Main Title like first page */}
+                  <div className="text-center mb-8">
+                    <h1 className="text-3xl font-arabic font-bold leading-relaxed" dir="rtl">
+                      <ClickableText text="كَيْفَ أَقْضِي يَوْمِي" />
+                    </h1>
+                  </div>
+
                   {/* Main Arabic text content */}
                   <div className="text-center leading-loose text-xl font-arabic space-y-4" dir="rtl">
                     <ClickableText text={pageContent} />
