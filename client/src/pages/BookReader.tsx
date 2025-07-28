@@ -10,6 +10,7 @@ import ClickableText from "@/components/ClickableText";
 import InterlinearText from "@/components/InterlinearText";
 import WordModal from "@/components/WordModal";
 import OriginalFirstPage from "@/components/OriginalFirstPage";
+import BookSelector from "@/components/BookSelector";
 import { getWordInfo } from "@/data/arabicDictionary";
 import { useSimpleGamification } from "@/contexts/SimpleGamificationContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -248,34 +249,14 @@ export default function BookReader() {
           <CardTitle className="text-base">{strings.myLibrary}</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-3 overflow-x-auto">
-            {books.length === 0 ? (
-              <p className="text-center py-4 text-gray-500 text-sm">
-                {strings.noBooksAvailable}
-              </p>
-            ) : (
-              books.map((book) => (
-                <div
-                  key={book.id}
-                  onClick={() => {
-                    setSelectedBook(book);
-                    setCurrentPage(0);
-                  }}
-                  className={`flex items-center space-x-3 p-3 rounded-xl cursor-pointer transition-colors min-w-fit ${
-                    selectedBook?.id === book.id ? "bg-purple-100 border-2 border-purple-300" : "hover:bg-gray-100 border-2 border-transparent"
-                  }`}
-                >
-                  <div className="w-10 h-12 bg-purple-600 rounded-lg flex items-center justify-center text-white text-xs">
-                    {book.icon}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-sm truncate">{book.title}</h3>
-                    <p className="text-xs text-gray-500 capitalize">{book.level}</p>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
+          <BookSelector 
+            books={books} 
+            selectedBook={selectedBook} 
+            onBookSelect={(book) => {
+              setSelectedBook(book);
+              setCurrentPage(0);
+            }}
+          />
         </CardContent>
       </Card>
 

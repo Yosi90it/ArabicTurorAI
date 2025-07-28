@@ -185,12 +185,12 @@ Ich bleibe sechs Stunden in der Schule und höre aktiv den Unterrichtsstunden zu
 
             {/* Main Title */}
             <div className="text-center mb-12">
-              <h1 className="text-3xl font-arabic font-bold leading-relaxed">
+              <h1 className="text-4xl font-arabic font-bold leading-relaxed" dir="rtl">
                 {showArabicText && (
                   <div onClick={handleWordClick}>
                     <ClickableText 
                       text={tashkeelEnabled ? "كَيْفَ أَقْضِي يَوْمِي" : "كيف أقضي يومي"}
-                      className="text-3xl font-arabic font-bold leading-relaxed text-center"
+                      className="text-4xl font-arabic font-bold leading-relaxed text-center"
                     />
                   </div>
                 )}
@@ -198,17 +198,17 @@ Ich bleibe sechs Stunden in der Schule und höre aktiv den Unterrichtsstunden zu
             </div>
 
             {/* Main Content */}
-            <div className="text-center leading-loose text-lg font-arabic space-y-4" dir="rtl" onClick={handleWordClick}>
+            <div className="text-center leading-loose text-xl font-arabic space-y-4" dir="rtl" onClick={handleWordClick}>
               {showArabicText ? (
                 interlinearEnabled ? (
                   <InterlinearText 
                     text={tashkeelEnabled ? arabicText : arabicText.replace(/[\u064B-\u065F\u0670\u0640]/g, '')}
-                    className="text-lg font-arabic leading-loose text-black text-center"
+                    className="text-xl font-arabic leading-loose text-black text-center"
                   />
                 ) : (
                   <ClickableText 
                     text={tashkeelEnabled ? arabicText : arabicText.replace(/[\u064B-\u065F\u0670\u0640]/g, '')}
-                    className="text-lg font-arabic leading-loose text-black text-center"
+                    className="text-xl font-arabic leading-loose text-black text-center"
                   />
                 )
               ) : (
