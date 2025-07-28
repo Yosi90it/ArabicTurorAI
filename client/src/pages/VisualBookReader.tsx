@@ -44,7 +44,7 @@ export default function VisualBookReader() {
     title: page.title || `${strings.language === 'de' ? 'Seite' : 'Page'} ${page.pageNumber || (index + 30)}`,
     arabicText: page.content,
     translation: page.translation || '',
-    imageUrl: `/Al-Qir'atur.Rashida (1-2)-page-${String(page.pageNumber || (index + 30)).padStart(3, '0')}.jpg`
+    imageUrl: `/Al-Qir\`atur.Rashida (1-2)-page-${String(page.pageNumber || (index + 30)).padStart(3, '0')}.jpg`
   }));
 
   const currentPageData = pages[currentPage];
@@ -198,44 +198,44 @@ export default function VisualBookReader() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="relative overflow-auto border rounded-lg bg-gray-50">
+          <div className="relative overflow-auto border rounded-lg bg-gray-50" style={{ minHeight: '700px' }}>
             {/* Background Image */}
-            <div 
-              className="relative min-h-[600px] bg-contain bg-no-repeat bg-center"
+            <img 
+              src={currentPageData.imageUrl}
+              alt={`Page ${currentPageData.page}`}
+              className="w-full object-contain"
               style={{
-                backgroundImage: `url('${currentPageData.imageUrl}')`,
                 transform: `scale(${zoomLevel})`,
                 transformOrigin: 'top left',
-                width: `${100 / zoomLevel}%`,
-                height: `${100 / zoomLevel}%`
+                maxHeight: '800px'
               }}
-            >
-              {/* Text Overlay */}
-              {showTextOverlay && currentPageData.arabicText && (
-                <div 
-                  className="absolute inset-0 p-8 cursor-pointer"
-                  onClick={handleWordClick}
-                  dir="rtl"
-                >
-                  <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-lg">
-                    <ClickableText 
-                      text={tashkeelEnabled ? currentPageData.arabicText : currentPageData.arabicText.replace(/[\u064B-\u065F\u0670\u0640]/g, '')}
-                      className="text-lg leading-relaxed font-arabic text-black"
-                    />
-                  </div>
-                </div>
-              )}
-              
-              {/* Loading placeholder for missing images */}
-              <div className="absolute inset-0 flex items-center justify-center bg-gray-100 text-gray-400">
-                <div className="text-center">
-                  <BookOpen className="w-16 h-16 mx-auto mb-4 opacity-20" />
-                  <p className="text-sm">
-                    {strings.loadingOriginalImage || 'Loading original page image...'}
-                  </p>
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+                console.log('Image failed to load:', currentPageData.imageUrl);
+              }}
+              onLoad={() => {
+                console.log('Image loaded successfully:', currentPageData.imageUrl);
+              }}
+            />
+            
+            {/* Text Overlay */}
+            {showTextOverlay && currentPageData.arabicText && (
+              <div 
+                className="absolute top-4 right-4 max-w-md cursor-pointer"
+                onClick={handleWordClick}
+                dir="rtl"
+              >
+                <div className="bg-white/95 backdrop-blur-sm rounded-lg p-6 shadow-xl border">
+                  <h3 className="text-sm font-semibold mb-3 text-gray-600">
+                    {strings.language === 'de' ? 'Seitentext' : 'Page Text'}
+                  </h3>
+                  <ClickableText 
+                    text={tashkeelEnabled ? currentPageData.arabicText : currentPageData.arabicText.replace(/[\u064B-\u065F\u0670\u0640]/g, '')}
+                    className="text-lg leading-relaxed font-arabic text-black"
+                  />
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </CardContent>
       </Card>
