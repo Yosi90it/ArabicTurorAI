@@ -11,6 +11,7 @@ import InterlinearText from "@/components/InterlinearText";
 import WordModal from "@/components/WordModal";
 import OriginalFirstPage from "@/components/OriginalFirstPage";
 import BookSelector from "@/components/BookSelector";
+import QiraaturRashidaPage from "@/components/QiraaturRashidaPage";
 import { getWordInfo } from "@/data/arabicDictionary";
 import { useSimpleGamification } from "@/contexts/SimpleGamificationContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -123,7 +124,16 @@ async function fetchTranslation(arabicWord: string): Promise<string> {
 }
 
 export default function BookReader() {
-  const { books } = useContent();
+  const { books: contextBooks } = useContent();
+  
+  // Transform books to match BookSelector interface
+  const books = contextBooks.map(book => ({
+    id: book.id.toString(),
+    title: book.title,
+    level: book.level === 'beginner' ? 'anfänger' : book.level === 'intermediate' ? 'mittelstufe' : 'fortgeschritten',
+    icon: book.icon,
+    content: book.content
+  }));
   const { addFlashcard } = useFlashcards();
   const { toast } = useToast();
   const { tashkeelEnabled } = useTashkeel();
@@ -300,35 +310,40 @@ export default function BookReader() {
                     </div>
                   )}
                   
-                  <Button variant="outline" size="sm">
-                    <Search className="w-4 h-4 mr-2" />
-                    Search
-                  </Button>
-                  
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => selectedBook && playAudio(currentBookPages[currentPage])}
-                  >
-                    <Volume2 className="w-4 h-4 mr-2" />
-                    Listen
-                  </Button>
-                  
-                  {/* Interlinear Toggle */}
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-700">{strings.wordByWordTranslation}</span>
-                    <button
-                      onClick={() => setInterlinearEnabled(!interlinearEnabled)}
-                      className="flex items-center"
-                      title={strings.wordByWordTranslation}
-                    >
-                      {interlinearEnabled ? (
-                        <ToggleRight className="w-5 h-5 text-purple-600" />
-                      ) : (
-                        <ToggleLeft className="w-5 h-5 text-gray-400" />
-                      )}
-                    </button>
-                  </div>
+                  {/* Only show controls for interactive books, not image-based */}
+                  {!selectedBook?.title.includes("كامل مع الصور الأصلية") && (
+                    <>
+                      <Button variant="outline" size="sm">
+                        <Search className="w-4 h-4 mr-2" />
+                        Search
+                      </Button>
+                      
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => selectedBook && playAudio(currentBookPages[currentPage])}
+                      >
+                        <Volume2 className="w-4 h-4 mr-2" />
+                        Listen
+                      </Button>
+                      
+                      {/* Interlinear Toggle */}
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-gray-700">{strings.wordByWordTranslation}</span>
+                        <button
+                          onClick={() => setInterlinearEnabled(!interlinearEnabled)}
+                          className="flex items-center"
+                          title={strings.wordByWordTranslation}
+                        >
+                          {interlinearEnabled ? (
+                            <ToggleRight className="w-5 h-5 text-purple-600" />
+                          ) : (
+                            <ToggleLeft className="w-5 h-5 text-gray-400" />
+                          )}
+                        </button>
+                      </div>
+                    </>
+                  )}
                   
 
 
@@ -338,8 +353,17 @@ export default function BookReader() {
             <CardContent className="space-y-6">
               {selectedBook ? (
                 <>
-                  {/* Show original first page for page 0, normal content for other pages */}
-                  {currentPage === 0 ? (
+                  {/* Show original book pages for complete Qiraatu al-Rashida */}
+                  {selectedBook.title.includes("كامل مع الصور الأصلية") ? (
+                    currentPage === 0 ? (
+                      <OriginalFirstPage />
+                    ) : (
+                      <QiraaturRashidaPage
+                        pageNumber={33 + currentPage - 1}
+                        filename={`Al-Qir\`atur.Rashida (1-2)-page-${String(33 + currentPage - 1).padStart(3, '0')}.jpg`}
+                      />
+                    )
+                  ) : currentPage === 0 ? (
                     <OriginalFirstPage />
                   ) : (
                     <div className="prose prose-lg max-w-none">
