@@ -303,7 +303,15 @@ const translations = {
     readyToGenerate: "Bereit, deine Geschichte zu generieren?",
     clickGenerate: "Klicke auf 'Geschichte generieren', um eine personalisierte arabische Geschichte mit deinem Vokabular zu erstellen!",
     generatedStory: "Generierte Geschichte",
-    wordsUsed: "Verwendete Wörter aus deiner Sammlung"
+    wordsUsed: "Verwendete Wörter aus deiner Sammlung",
+    visualBookReader: "Visueller Buchleser",
+    textOverlay: "Text-Overlay",
+    loadingOriginalImage: "Originalbild wird geladen...",
+    germanTranslation: "Deutsche Übersetzung",
+    englishTranslation: "Englische Übersetzung",
+    previousPage: "Vorherige Seite",
+    nextPage: "Nächste Seite",
+    achievements: "Erfolge"
   }
 };
 

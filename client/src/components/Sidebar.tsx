@@ -35,6 +35,11 @@ const navigationItems = [
     route: "/book-reader"
   },
   {
+    icon: FileText,
+    label: "Visual Book",
+    route: "/visual-book-reader"
+  },
+  {
     icon: Video,
     label: "Video Trainer",
     route: "/video-trainer"
@@ -95,7 +100,17 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
               }`}
             >
               <item.icon className="w-5 h-5" />
-              <span className="font-medium">{item.label}</span>
+              <span className="font-medium">
+                {item.route === "/book-reader" ? strings.bookReader :
+                 item.route === "/visual-book-reader" ? (strings.language === 'de' ? 'Visuelles Buch' : 'Visual Book') :
+                 item.route === "/ai-chat" ? strings.aiChat :
+                 item.route === "/flashcards" ? strings.flashcards :
+                 item.route === "/video-trainer" ? strings.videoTrainer :
+                 item.route === "/alphabet-trainer" ? strings.alphabetTrainer :
+                 item.route === "/weekly-plan" ? strings.weeklyPlan :
+                 item.route === "/gamification" ? strings.achievements :
+                 item.label}
+              </span>
             </button>
           </Link>
         ))}
