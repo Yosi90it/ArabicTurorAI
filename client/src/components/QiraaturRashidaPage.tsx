@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Volume2, Eye, EyeOff, ZoomIn, ZoomOut, MousePointer } from "lucide-react";
+import { Volume2, Eye, ZoomIn, ZoomOut, MousePointer } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 import ClickableText from "./ClickableText";
@@ -11,17 +11,11 @@ interface QiraaturRashidaPageProps {
   filename: string;
 }
 
-interface PageContent {
-  pageNumber: number;
-  content: string;
-}
-
 export default function QiraaturRashidaPage({ pageNumber, filename }: QiraaturRashidaPageProps) {
   const { strings } = useLanguage();
   const { toast } = useToast();
   const [imageScale, setImageScale] = useState(1);
   const [showFullscreen, setShowFullscreen] = useState(false);
-  const [showTextOverlay, setShowTextOverlay] = useState(false);
   const [pageContent, setPageContent] = useState<string>("");
 
   const playAudio = () => {
@@ -116,142 +110,86 @@ export default function QiraaturRashidaPage({ pageNumber, filename }: QiraaturRa
               <Button onClick={playAudio} variant="outline" size="sm">
                 <Volume2 className="w-4 h-4" />
               </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setShowTextOverlay(!showTextOverlay)}
-                className={`${showTextOverlay ? 'bg-purple-100 text-purple-700' : 'text-purple-600'}`}
-              >
-                <MousePointer className="w-4 h-4 mr-1" />
-                {strings.language === 'de' ? 'Text' : 'Text'}
-              </Button>
             </div>
           </div>
 
-          {/* Image Content with Text Overlay */}
-          <div className={`relative ${showFullscreen ? 'min-h-screen' : 'min-h-[600px]'} bg-white p-8 flex items-center justify-center overflow-auto`}>
-            <div className="relative text-center">
-              {/* Original Book Image */}
-              <img
-                src={`/qiraatu-images/${filename}`}
-                alt={`Qiraatu al-Rashida Page ${pageNumber}`}
-                className="max-w-full h-auto shadow-lg rounded-lg border"
-                style={{ 
-                  transform: `scale(${imageScale})`,
-                  transformOrigin: 'center',
-                  transition: 'transform 0.3s ease'
-                }}
-                onLoad={() => {
-                  console.log(`Successfully loaded: ${filename}`);
-                }}
-                onError={(e) => {
-                  console.error(`Failed to load image: /${filename}`);
-                  console.log(`Current src: ${e.currentTarget.src}`);
-                  console.log(`Trying alternative path for page ${pageNumber}`);
-                  
-                  // Try different path variations
-                  const currentSrc = e.currentTarget.src;
-                  
-                  if (currentSrc.includes('/qiraatu-images/') && !currentSrc.includes('attached_assets')) {
-                    // Try attached_assets path
-                    console.log('Trying attached_assets path...');
-                    e.currentTarget.src = `/attached_assets/${filename}`;
-                  } else if (!currentSrc.includes('/qiraatu-images/')) {
-                    // Try original root path
-                    console.log('Trying root path...');
-                    e.currentTarget.src = `/${filename}`;
-                  } else {
-                    // Show error message instead of broken image
-                    console.log('All paths failed, showing error message');
-                    e.currentTarget.style.display = 'none';
-                    const errorDiv = document.createElement('div');
-                    errorDiv.className = 'text-red-500 text-center p-8 border-2 border-dashed border-red-300 rounded-lg bg-red-50';
-                    errorDiv.innerHTML = `
-                      <div class="text-6xl mb-4">📄</div>
-                      <h3 class="text-lg font-semibold mb-2">Seite ${pageNumber} nicht verfügbar</h3>
-                      <p class="text-sm text-gray-600">Datei: ${filename}</p>
-                      <p class="text-xs text-gray-500 mt-2">Pfad getestet: /qiraatu-images/${filename}</p>
-                    `;
-                    if (e.currentTarget.parentNode && !e.currentTarget.parentNode.querySelector('.text-red-500')) {
-                      e.currentTarget.parentNode.appendChild(errorDiv);
-                    }
-                  }
-                }}
-              />
-              
-              {/* Clickable Text Overlay */}
-              {showTextOverlay && pageContent && (
+          {/* Main Content Area with Book Design - matching first page style */}
+          <div 
+            className={`relative ${showFullscreen ? 'min-h-screen' : 'min-h-[800px]'} bg-white p-8`}
+            style={{
+              backgroundImage: `url(/qiraatu-images/${filename})`,
+              backgroundSize: 'contain',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              fontFamily: 'serif'
+            }}
+          >
+            {/* Subtle overlay to make text readable */}
+            <div className="absolute inset-0 bg-white/30"></div>
+            
+            {/* Content overlay matching first page design */}
+            <div className="relative z-10 h-full flex items-center justify-center">
+              <div className="max-w-2xl mx-auto">
+                {/* Arabic text area with original book styling */}
                 <div 
-                  className="absolute inset-0 bg-white bg-opacity-90 backdrop-blur-sm flex items-center justify-center rounded-lg"
+                  className="bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-8 border border-gray-200"
                   style={{ 
                     transform: `scale(${imageScale})`,
                     transformOrigin: 'center',
                     transition: 'transform 0.3s ease'
                   }}
                 >
-                  <div className="max-w-md p-8 text-center">
-                    <h3 className="text-lg font-semibold mb-6 text-gray-800">
-                      {strings.language === 'de' ? 'Klickbarer arabischer Text' : 'Clickable Arabic Text'}
-                    </h3>
-                    <div className="text-right leading-loose text-2xl">
-                      <ClickableText text={pageContent} />
+                  {/* Header URL - Small red text at top like original */}
+                  <div className="text-red-600 text-xs mb-6 text-left">
+                    www.abullhasanalinadwi.org
+                  </div>
+
+                  {/* Bismillah like original */}
+                  <div className="text-center mb-6">
+                    <div className="text-xl font-arabic leading-relaxed">
+                      بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيمِ
                     </div>
-                    <p className="text-sm text-gray-600 mt-6">
+                  </div>
+
+                  {/* Page Number in Arabic like original */}
+                  <div className="text-center mb-6">
+                    <span className="text-lg">({pageNumber})</span>
+                  </div>
+                  
+                  {/* Main Arabic text content */}
+                  <div className="text-center leading-loose text-xl font-arabic space-y-4" dir="rtl">
+                    <ClickableText text={pageContent} />
+                  </div>
+                  
+                  {/* Footer instruction */}
+                  <div className="border-t border-gray-200 pt-4 mt-6 text-center">
+                    <p className="text-sm text-gray-600">
                       {strings.language === 'de' 
                         ? 'Klicken Sie auf arabische Wörter für Übersetzungen' 
                         : 'Click on Arabic words for translations'}
                     </p>
                   </div>
                 </div>
-              )}
-              
-              {/* Page Info */}
-              <div className="mt-4 text-sm text-gray-600">
-                <p>{strings.language === 'de' 
-                  ? `Originalseite ${pageNumber} aus dem klassischen arabischen Lehrbuch "Qiraatu al-Rashida"`
-                  : `Original page ${pageNumber} from the classical Arabic textbook "Qiraatu al-Rashida"`}
-                </p>
-                <p className="mt-2 text-xs text-gray-500">
-                  {strings.language === 'de' 
-                    ? 'Zoom mit den Buttons oben oder Mausrad verwenden'
-                    : 'Use zoom buttons above or mouse wheel to zoom'}
-                </p>
               </div>
             </div>
-          </div>
-
-          {/* Footer Info */}
-          <div className="border-t bg-gray-50 p-4 text-center text-sm text-gray-600">
-            {strings.language === 'de' 
-              ? 'Diese Seite zeigt das originale Buchlayout. Für interaktive Übersetzungen nutzen Sie die anderen Buchseiten.'
-              : 'This page shows the original book layout. For interactive translations, use the other book pages.'}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Fullscreen Overlay */}
-      {showFullscreen && (
-        <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center">
-          <div className="relative max-w-full max-h-full">
-            <Button
-              onClick={() => setShowFullscreen(false)}
-              className="absolute top-4 right-4 z-10"
-              variant="secondary"
-            >
-              ✕
-            </Button>
+            
+            {/* Hidden original image for error handling */}
             <img
-              src={`/${filename}`}
+              src={`/qiraatu-images/${filename}`}
               alt={`Qiraatu al-Rashida Page ${pageNumber}`}
-              className="max-w-full max-h-full object-contain"
-              style={{ 
-                transform: `scale(${imageScale})`,
-                transformOrigin: 'center'
+              className="hidden"
+              onError={(e) => {
+                console.error(`Failed to load background image: ${filename}`);
+                // Fallback to solid background if image fails
+                const container = e.currentTarget.closest('div') as HTMLElement;
+                if (container) {
+                  container.style.backgroundImage = 'linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%)';
+                }
               }}
             />
           </div>
-        </div>
-      )}
+        </CardContent>
+      </Card>
     </>
   );
 }
