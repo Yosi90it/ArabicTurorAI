@@ -34,11 +34,7 @@ const navigationItems = [
     label: "Book Reader",
     route: "/book-reader"
   },
-  {
-    icon: FileText,
-    label: "Visual Book",
-    route: "/visual-book-reader"
-  },
+
   {
     icon: Video,
     label: "Video Trainer",
@@ -102,7 +98,6 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
               <item.icon className="w-5 h-5" />
               <span className="font-medium">
                 {item.route === "/book-reader" ? strings.bookReader :
-                 item.route === "/visual-book-reader" ? (strings.language === 'de' ? 'Visuelles Buch' : 'Visual Book') :
                  item.route === "/ai-chat" ? strings.aiChat :
                  item.route === "/flashcards" ? strings.flashcards :
                  item.route === "/video-trainer" ? strings.videoTrainer :

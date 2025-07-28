@@ -15,7 +15,7 @@ import Layout from "@/components/Layout";
 import AiChat from "@/pages/AiChat";
 import Flashcards from "@/pages/Flashcards";
 import BookReader from "@/pages/BookReader";
-import VisualBookReader from "@/pages/VisualBookReader";
+
 import VideoTrainer from "@/pages/VideoTrainer";
 import AlphabetTrainer from "@/pages/AlphabetTrainer";
 import SimpleGoalTracker from "@/components/SimpleGoalTracker";
@@ -91,7 +91,7 @@ function Router() {
             <Route path="/ai-chat" component={AiChat} />
             <Route path="/flashcards" component={Flashcards} />
             <Route path="/book-reader" component={BookReader} />
-            <Route path="/visual-book-reader" component={VisualBookReader} />
+
             <Route path="/video-trainer" component={VideoTrainer} />
             <Route path="/alphabet-trainer" component={AlphabetTrainer} />
 
