@@ -242,16 +242,16 @@ export default function BookReader() {
 
   return (
     <div className="container mx-auto p-6 max-w-6xl">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Book Library */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">{strings.myLibrary}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
+      {/* Book Library - Above the content */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="text-base">{strings.myLibrary}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-3 overflow-x-auto">
             {books.length === 0 ? (
               <p className="text-center py-4 text-gray-500 text-sm">
-{strings.noBooksAvailable}
+                {strings.noBooksAvailable}
               </p>
             ) : (
               books.map((book) => (
@@ -261,8 +261,8 @@ export default function BookReader() {
                     setSelectedBook(book);
                     setCurrentPage(0);
                   }}
-                  className={`flex items-center space-x-3 p-2 rounded-xl cursor-pointer transition-colors ${
-                    selectedBook?.id === book.id ? "bg-purple-100" : "hover:bg-gray-100"
+                  className={`flex items-center space-x-3 p-3 rounded-xl cursor-pointer transition-colors min-w-fit ${
+                    selectedBook?.id === book.id ? "bg-purple-100 border-2 border-purple-300" : "hover:bg-gray-100 border-2 border-transparent"
                   }`}
                 >
                   <div className="w-10 h-12 bg-purple-600 rounded-lg flex items-center justify-center text-white text-xs">
@@ -275,11 +275,12 @@ export default function BookReader() {
                 </div>
               ))
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </CardContent>
+      </Card>
 
-        {/* Reading Area */}
-        <div className="lg:col-span-2">
+      {/* Reading Area */}
+      <div className="w-full">
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -387,19 +388,18 @@ export default function BookReader() {
             </CardContent>
           </Card>
         </div>
-      </div>
 
-      {/* Word Modal */}
-      {selectedWord && (
-        <WordModal
-          word={selectedWord.word}
-          translation={selectedWord.translation}
-          grammar={selectedWord.grammar}
-          position={selectedWord.position}
-          onClose={() => setSelectedWord(null)}
-          onAddToFlashcards={handleAddToFlashcards}
-        />
-      )}
-    </div>
-  );
+        {/* Word Modal */}
+        {selectedWord && (
+          <WordModal
+            word={selectedWord.word}
+            translation={selectedWord.translation}
+            grammar={selectedWord.grammar}
+            position={selectedWord.position}
+            onClose={() => setSelectedWord(null)}
+            onAddToFlashcards={handleAddToFlashcards}
+          />
+        )}
+      </div>
+    );
 }
