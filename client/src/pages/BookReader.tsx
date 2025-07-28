@@ -369,7 +369,7 @@ export default function BookReader() {
                     ) : (
                       <QiraaturRashidaPage
                         pageNumber={qiraaturPages[currentPage]}
-                        filename={`Al-Qir\`atur.Rashida (1-2)-page-${String(qiraaturPages[currentPage]).padStart(3, '0')}.jpg`}
+                        filename={`Al-Qir\`atur.Rashida (1-2)-page-${qiraaturPages[currentPage].toString().padStart(3, '0')}.jpg`}
                       />
                     )
                   ) : currentPage === 0 ? (

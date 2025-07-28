@@ -74,7 +74,7 @@ export default function QiraaturRashidaPage({ pageNumber, filename }: QiraaturRa
           <div className={`relative ${showFullscreen ? 'min-h-screen' : 'min-h-[600px]'} bg-white p-8 flex items-center justify-center overflow-auto`}>
             <div className="text-center">
               <img
-                src={`/${filename}`}
+                src={`/qiraatu-images/${filename}`}
                 alt={`Qiraatu al-Rashida Page ${pageNumber}`}
                 className="max-w-full h-auto shadow-lg rounded-lg border"
                 style={{ 
@@ -86,22 +86,36 @@ export default function QiraaturRashidaPage({ pageNumber, filename }: QiraaturRa
                   console.log(`Successfully loaded: ${filename}`);
                 }}
                 onError={(e) => {
-                  console.error(`Failed to load image: ${filename}`);
+                  console.error(`Failed to load image: /${filename}`);
+                  console.log(`Current src: ${e.currentTarget.src}`);
                   console.log(`Trying alternative path for page ${pageNumber}`);
-                  // Try alternative file path if first fails
-                  if (!e.currentTarget.src.includes('attached_assets')) {
+                  
+                  // Try different path variations
+                  const currentSrc = e.currentTarget.src;
+                  
+                  if (currentSrc.includes('/qiraatu-images/') && !currentSrc.includes('attached_assets')) {
+                    // Try attached_assets path
+                    console.log('Trying attached_assets path...');
                     e.currentTarget.src = `/attached_assets/${filename}`;
+                  } else if (!currentSrc.includes('/qiraatu-images/')) {
+                    // Try original root path
+                    console.log('Trying root path...');
+                    e.currentTarget.src = `/${filename}`;
                   } else {
                     // Show error message instead of broken image
+                    console.log('All paths failed, showing error message');
                     e.currentTarget.style.display = 'none';
                     const errorDiv = document.createElement('div');
-                    errorDiv.className = 'text-red-500 text-center p-8 border-2 border-dashed border-red-300 rounded-lg';
+                    errorDiv.className = 'text-red-500 text-center p-8 border-2 border-dashed border-red-300 rounded-lg bg-red-50';
                     errorDiv.innerHTML = `
                       <div class="text-6xl mb-4">📄</div>
                       <h3 class="text-lg font-semibold mb-2">Seite ${pageNumber} nicht verfügbar</h3>
-                      <p class="text-sm">Datei: ${filename}</p>
+                      <p class="text-sm text-gray-600">Datei: ${filename}</p>
+                      <p class="text-xs text-gray-500 mt-2">Pfad getestet: /qiraatu-images/${filename}</p>
                     `;
-                    e.currentTarget.parentNode?.appendChild(errorDiv);
+                    if (e.currentTarget.parentNode && !e.currentTarget.parentNode.querySelector('.text-red-500')) {
+                      e.currentTarget.parentNode.appendChild(errorDiv);
+                    }
                   }
                 }}
               />
