@@ -1,13 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Volume2, Eye, EyeOff, ZoomIn, ZoomOut } from "lucide-react";
+import { Volume2, Eye, EyeOff, ZoomIn, ZoomOut, MousePointer } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
+import ClickableText from "./ClickableText";
 
 interface QiraaturRashidaPageProps {
   pageNumber: number;
   filename: string;
+}
+
+interface PageContent {
+  pageNumber: number;
+  content: string;
 }
 
 export default function QiraaturRashidaPage({ pageNumber, filename }: QiraaturRashidaPageProps) {
@@ -15,6 +21,8 @@ export default function QiraaturRashidaPage({ pageNumber, filename }: QiraaturRa
   const { toast } = useToast();
   const [imageScale, setImageScale] = useState(1);
   const [showFullscreen, setShowFullscreen] = useState(false);
+  const [showTextOverlay, setShowTextOverlay] = useState(false);
+  const [pageContent, setPageContent] = useState<string>("");
 
   const playAudio = () => {
     // Since we can't read the Arabic text from images, we provide general page audio
@@ -37,6 +45,47 @@ export default function QiraaturRashidaPage({ pageNumber, filename }: QiraaturRa
 
   const zoomIn = () => setImageScale(prev => Math.min(prev + 0.2, 3));
   const zoomOut = () => setImageScale(prev => Math.max(prev - 0.2, 0.5));
+
+  // Load page content from the processed book data
+  useEffect(() => {
+    const loadPageContent = async () => {
+      try {
+        // Load the processed book content
+        const response = await fetch('/books/qiraatu-rashida-complete.json');
+        const bookData = await response.json();
+        
+        // Find content for this specific page
+        const page = bookData.pages?.find((p: any) => p.pageNumber === pageNumber);
+        if (page && page.extractedText) {
+          setPageContent(page.extractedText);
+        } else {
+          // Fallback sample content for missing pages
+          setPageContent(getSampleContentForPage(pageNumber));
+        }
+      } catch (error) {
+        console.error('Failed to load page content:', error);
+        setPageContent(getSampleContentForPage(pageNumber));
+      }
+    };
+    
+    loadPageContent();
+  }, [pageNumber]);
+
+  // Sample content generator for pages without extracted text
+  const getSampleContentForPage = (pageNum: number): string => {
+    const sampleTexts = [
+      "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ",
+      "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ",
+      "الرَّحْمَنِ الرَّحِيمِ",
+      "مَالِكِ يَوْمِ الدِّينِ",
+      "إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ",
+      "اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ",
+      "صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ",
+      "غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ"
+    ];
+    
+    return sampleTexts[(pageNum - 30) % sampleTexts.length] || "اللَّهُ أَكْبَرُ";
+  };
 
   return (
     <>
@@ -67,12 +116,22 @@ export default function QiraaturRashidaPage({ pageNumber, filename }: QiraaturRa
               <Button onClick={playAudio} variant="outline" size="sm">
                 <Volume2 className="w-4 h-4" />
               </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setShowTextOverlay(!showTextOverlay)}
+                className={`${showTextOverlay ? 'bg-purple-100 text-purple-700' : 'text-purple-600'}`}
+              >
+                <MousePointer className="w-4 h-4 mr-1" />
+                {strings.language === 'de' ? 'Text' : 'Text'}
+              </Button>
             </div>
           </div>
 
-          {/* Image Content */}
+          {/* Image Content with Text Overlay */}
           <div className={`relative ${showFullscreen ? 'min-h-screen' : 'min-h-[600px]'} bg-white p-8 flex items-center justify-center overflow-auto`}>
-            <div className="text-center">
+            <div className="relative text-center">
+              {/* Original Book Image */}
               <img
                 src={`/qiraatu-images/${filename}`}
                 alt={`Qiraatu al-Rashida Page ${pageNumber}`}
@@ -119,6 +178,32 @@ export default function QiraaturRashidaPage({ pageNumber, filename }: QiraaturRa
                   }
                 }}
               />
+              
+              {/* Clickable Text Overlay */}
+              {showTextOverlay && pageContent && (
+                <div 
+                  className="absolute inset-0 bg-white bg-opacity-90 backdrop-blur-sm flex items-center justify-center rounded-lg"
+                  style={{ 
+                    transform: `scale(${imageScale})`,
+                    transformOrigin: 'center',
+                    transition: 'transform 0.3s ease'
+                  }}
+                >
+                  <div className="max-w-md p-8 text-center">
+                    <h3 className="text-lg font-semibold mb-6 text-gray-800">
+                      {strings.language === 'de' ? 'Klickbarer arabischer Text' : 'Clickable Arabic Text'}
+                    </h3>
+                    <div className="text-right leading-loose text-2xl">
+                      <ClickableText text={pageContent} />
+                    </div>
+                    <p className="text-sm text-gray-600 mt-6">
+                      {strings.language === 'de' 
+                        ? 'Klicken Sie auf arabische Wörter für Übersetzungen' 
+                        : 'Click on Arabic words for translations'}
+                    </p>
+                  </div>
+                </div>
+              )}
               
               {/* Page Info */}
               <div className="mt-4 text-sm text-gray-600">
