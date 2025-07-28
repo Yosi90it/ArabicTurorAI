@@ -10,6 +10,7 @@ import ClickableText from "@/components/ClickableText";
 import InterlinearText from "@/components/InterlinearText";
 import WordModal from "@/components/WordModal";
 import OriginalFirstPage from "@/components/OriginalFirstPage";
+import OriginalPage31 from "@/components/OriginalPage31";
 import BookSelector from "@/components/BookSelector";
 import QiraaturRashidaPage from "@/components/QiraaturRashidaPage";
 import { getWordInfo } from "@/data/arabicDictionary";
@@ -366,6 +367,8 @@ export default function BookReader() {
                   {selectedBook.title.includes("كامل مع الصور الأصلية") ? (
                     currentPage === 0 ? (
                       <OriginalFirstPage />
+                    ) : currentPage === 1 ? (
+                      <OriginalPage31 />
                     ) : (
                       <QiraaturRashidaPage
                         pageNumber={qiraaturPages[currentPage]}
@@ -374,6 +377,8 @@ export default function BookReader() {
                     )
                   ) : currentPage === 0 ? (
                     <OriginalFirstPage />
+                  ) : currentPage === 1 ? (
+                    <OriginalPage31 />
                   ) : (
                     <div className="prose prose-lg max-w-none">
                       <div className="bg-gradient-to-br from-amber-50 to-orange-50 p-6 rounded-2xl border border-amber-200 min-h-[500px]">
