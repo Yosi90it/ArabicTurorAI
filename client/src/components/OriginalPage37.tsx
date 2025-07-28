@@ -9,7 +9,7 @@ import ClickableText from "@/components/ClickableText";
 import InterlinearText from "@/components/InterlinearText";
 import WordModal from "@/components/WordModal";
 
-export default function OriginalPage31() {
+export default function OriginalPage37() {
   const { strings } = useLanguage();
   const { tashkeelEnabled } = useTashkeel();
   const { toast } = useToast();
@@ -113,20 +113,20 @@ export default function OriginalPage31() {
     setSelectedWord(null);
   };
 
-  // Arabic text extracted from page 33 (which shows as page 31 content)
-  const arabicText = `قُلْتُ : يَا أَبِي ! إِنَّكَ لاَ تَحْتَاجُ إِلَى أَنْ تَضْرِبَنِي وَتُحَافِظَ عَلَى الصَّلَوَاتِ ، وَكَذَلِكَ تَعْلَمُنِي ، فَقَدْ كُنْتُ أُصَلِّي أَيْنَمَا كُنْتُ ، إِذَا ذَهَبْتُ إِلَى الشَّوْقِ أَوْ كُنْتُ فِي شُغُلٍ وَأَدْرَكَتْنِي الصَّلاَةُ فِي مَكَانٍ صَلَّيْتُ ، لأَنَّ أَرْضَ اللهِ وَاسِعَةٌ لاَ يَتَخَلَّدُونَ مِنَ الأَكْلِ إِذَا جَاعُوا ، وَاللَّعِبُ إِذَا أَرَادُوا ، فَلِمَاذَا أَعْجَلُ مِنَ الصَّلاَةِ؟ وَإِنَّ الصَّلاَةَ لَفَرِيضَةٌ ، وَإِنَّ الصَّلاَةَ لَتَرْوِيحٌ لِلْمُسْلِمِ.
+  // Arabic text extracted from page 37 - Market scene dialog
+  const arabicText = `عُمَرُ: هَلْ زُرْتَ سُوقَ هَذَا الْبَلَدِ يَا صَدِيقِي؟
 
-وَخَرَجْتُ مَرَّةً إِلَى مِيدَانٍ وَكَانَ الزِّحَامُ شَدِيداً ، وَأَدْرَكَتْنِي صَلاَةُ الْعَصْرِ وَكُنْتُ عَلَى وُضُوءٍ ، فَبَحَثْتُ أَمَامِي ، وَجَعَلَ النَّاسُ يَنْظُرُونَ إِلَيَّ وَيَتَعَجَّبُونَ ، وَأَكْمَلْتُ صَلاَتِي بِسَكِينَةٍ وَاعْتِدَالٍ وَرَجَعْتُ إِلَى الْمِيدَانِ.
+خَالِدٌ: لَا يَا أَخِي ، فَإِنِّي غَرِيبٌ جَدِيدٌ فِي هَذَا الْبَلَدِ لَا أَعْرِفُ الطَّرِيقَ.
 
-وَلَمَّا انْتَهَتِ الْمُبَارَاةُ جَاءَ إِلَيَّ رَجُلٌ وَسَأَلَنِي عَنِ اسْمِي وَاسْمِ وَالِدِي ، وَسَأَلَنِي عَنْ سِنِّي فَأَخْبَرْتُهُ ، فَأَثْنَى عَلَيَّ أَبِي خَيْراً ، وَدَعَا لِي بِالْبَرَكَةِ ، وَقَالَ : مَا رَأَيْتُ وَلَداً يُصَلِّي فِي الْمِيدَانِ وَيَتْرُكُ كَثِيراً مِنَ النَّاسِ الصَّلاَةَ فِي هَذَا الْوَقْتِ ، فَحَمِدْتُ اللهَ وَشَكَرْتُ أَبِي.`;
+عُمَرُ: تَعَالَ مَعِي فَإِنِّي ذَاهِبٌ إِلَى السُّوقِ لِأَشْتَرِي بَعْضَ`;
 
-  const germanTranslation = `Über das Gebet - Fortsetzung der Geschichte
+  const germanTranslation = `Im Markt - Dialog
 
-Ich sagte: "O mein Vater! Du brauchst mich nicht zu schlagen und auf die Gebete zu achten, und du lehrst mich ebenso, denn ich betete bereits, wo immer ich war. Wenn ich zum Markt ging oder bei der Arbeit war und mich das Gebet an einem Ort erreichte, betete ich, denn Allahs Erde ist weit und sie enthalten sich nicht vom Essen, wenn sie hungrig sind, und vom Spielen, wenn sie wollen, warum sollte ich also vor dem Gebet weglaufen? Das Gebet ist eine Pflicht und das Gebet ist Erholung für den Muslim."
+Umar: Hast du den Markt dieser Stadt besucht, mein Freund?
 
-Einmal ging ich zu einem Platz und es war sehr gedrängt, und mich erreichte das Nachmittagsgebet und ich war rituell rein, so suchte ich vor mir, und die Leute begannen mich anzuschauen und sich zu wundern, und ich vollendete mein Gebet in Ruhe und Ausgeglichenheit und kehrte zum Platz zurück.
+Khalid: Nein, mein Bruder, denn ich bin ein neuer Fremder in dieser Stadt und kenne den Weg nicht.
 
-Als das Spiel zu Ende war, kam ein Mann zu mir und fragte mich nach meinem Namen und dem Namen meines Vaters, und fragte mich nach meinem Alter, so teilte ich es ihm mit, da lobte er meinen Vater gut und betete für mich um Segen und sagte: "Ich habe kein Kind gesehen, das auf dem Platz betet, während viele Menschen das Gebet zu dieser Zeit vernachlässigen", so pries ich Allah und dankte meinem Vater.`;
+Umar: Komm mit mir, denn ich gehe zum Markt, um etwas zu kaufen.`;
 
   return (
     <>
@@ -135,7 +135,7 @@ Als das Spiel zu Ende war, kam ein Mann zu mir und fragte mich nach meinem Namen
           {/* Header Controls */}
           <div className="flex justify-between items-center p-4 border-b bg-gray-50">
             <h2 className="text-lg font-semibold text-gray-800">
-              {strings.language === 'de' ? 'Seite 33 - Original Layout' : 'Page 33 - Original Layout'}
+              {strings.language === 'de' ? 'Seite 37 - Original Layout' : 'Page 37 - Original Layout'}
             </h2>
             <div className="flex gap-2">
               <Button
@@ -169,12 +169,12 @@ Als das Spiel zu Ende war, kam ein Mann zu mir und fragte mich nach meinem Namen
             </div>
           </div>
 
-          {/* Original Page Layout */}
+          {/* Original Page Layout - WITHOUT Bismillah */}
           <div 
             className="relative min-h-[800px] bg-white p-8" 
             style={{ 
               fontFamily: 'serif',
-              backgroundImage: 'url(/Al-Qir`atur.Rashida (1-2)-page-033.jpg)',
+              backgroundImage: 'url(/Al-Qir`atur.Rashida (1-2)-page-037.jpg)',
               backgroundSize: 'contain',
               backgroundPosition: 'center',
               backgroundRepeat: 'no-repeat'
@@ -192,11 +192,9 @@ Als das Spiel zu Ende war, kam ein Mann zu mir und fragte mich nach meinem Namen
                     www.abullhasanalinadwi.org
                   </div>
 
-
-
                   {/* Page Number */}
                   <div className="text-center mb-8">
-                    <span className="text-lg">(٣٣)</span>
+                    <span className="text-lg">(٣٧)</span>
                   </div>
 
                   {/* Main Title */}
@@ -205,7 +203,7 @@ Als das Spiel zu Ende war, kam ein Mann zu mir und fragte mich nach meinem Namen
                       {showArabicText && (
                         <div onClick={handleWordClick}>
                           <ClickableText 
-                            text={tashkeelEnabled ? "فِي الصَّلاَةِ" : "في الصلاة"}
+                            text={tashkeelEnabled ? "فِي السُّوقِ" : "في السوق"}
                             className="text-4xl font-arabic font-bold leading-relaxed text-center"
                           />
                         </div>
@@ -213,8 +211,17 @@ Als das Spiel zu Ende war, kam ein Mann zu mir und fragte mich nach meinem Namen
                     </h1>
                   </div>
 
-                  {/* Main Content */}
-                  <div className="text-center leading-loose text-xl font-arabic space-y-4" dir="rtl" onClick={handleWordClick}>
+                  {/* Market scene illustration placeholder */}
+                  <div className="text-center mb-8">
+                    <div className="w-full h-32 bg-gray-100 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300">
+                      <span className="text-gray-500 text-sm">
+                        {strings.language === 'de' ? 'Marktszene Illustration' : 'Market Scene Illustration'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Main Content - Dialog format */}
+                  <div className="text-right leading-loose text-xl font-arabic space-y-4" dir="rtl" onClick={handleWordClick}>
                     {showArabicText ? (
                       interlinearEnabled ? (
                         <InterlinearText 
@@ -222,10 +229,13 @@ Als das Spiel zu Ende war, kam ein Mann zu mir und fragte mich nach meinem Namen
                           className="text-xl font-arabic leading-loose"
                         />
                       ) : (
-                        <ClickableText 
-                          text={tashkeelEnabled ? arabicText : arabicText.replace(/[\u064B-\u065F\u0670\u0640]/g, '')}
-                          className="text-xl font-arabic leading-loose"
-                        />
+                        <div className="space-y-4">
+                          {arabicText.split('\n\n').map((paragraph, index) => (
+                            <div key={index} className="text-xl font-arabic leading-relaxed">
+                              <ClickableText text={tashkeelEnabled ? paragraph : paragraph.replace(/[\u064B-\u065F\u0670\u0640]/g, '')} />
+                            </div>
+                          ))}
+                        </div>
                       )
                     ) : (
                       <div className="text-left text-lg leading-relaxed text-gray-800">
