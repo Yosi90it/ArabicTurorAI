@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ClickableText from '@/components/ClickableText';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { Button } from '@/components/ui/button';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 // Convert HTML structure to React component based on qiraatu al rashida.html
 export const QiratuRashidaPages: React.FC = () => {
   const { strings } = useLanguage();
+  const [currentPage, setCurrentPage] = useState(0);
 
   // Create context-aware word data from the HTML structure
   const createWordWithContext = (words: string[], index: number) => {
@@ -36,184 +39,113 @@ export const QiratuRashidaPages: React.FC = () => {
     'فَإِذَا', 'تَرَكْتَ', 'صَلَاةَ', 'ضُحَاكَ،', 'لِأَنَّ', 'النَّبِيَّ', 'ﷺ', 'قَالَ:', 'مُرُوا', 'أَوْلَادَكُمْ', 'بِالصَّلَاةِ', 'وَهُمْ', 'أَبْنَاءُ', 'سَبْعِ', 'سِنِينَ،', 'وَاضْرِبُوهُمْ', 'عَلَيْهَا', 'وَهُمْ', 'أَبْنَاءُ', 'عَشْرِ', 'سِنِينَ.'
   ];
 
+  const pages = [
+    {
+      number: 30,
+      title: "الصفحة ٣٠",
+      words: page30Words,
+      paragraphs: [
+        { start: 0, end: 21 },
+        { start: 21, end: 37 },
+        { start: 37, end: 69 },
+        { start: 69, end: page30Words.length }
+      ]
+    },
+    {
+      number: 31,
+      title: "الصفحة ٣١", 
+      words: page31Words,
+      paragraphs: [
+        { start: 0, end: 22 },
+        { start: 22, end: 38 },
+        { start: 38, end: page31Words.length }
+      ]
+    },
+    {
+      number: 32,
+      title: "الصفحة ٣٢",
+      words: page32Words,
+      paragraphs: [
+        { start: 0, end: 20 },
+        { start: 20, end: 44 },
+        { start: 44, end: 70 },
+        { start: 70, end: page32Words.length }
+      ]
+    }
+  ];
+
+  const currentPageData = pages[currentPage];
+
+  const renderPage = (pageData: typeof pages[0]) => {
+    return (
+      <div className="space-y-4 leading-relaxed text-lg">
+        {pageData.paragraphs.map((paragraph, paragraphIndex) => (
+          <div key={paragraphIndex} className="flex flex-wrap gap-1 justify-end">
+            {pageData.words.slice(paragraph.start, paragraph.end).map((word, index) => {
+              const actualIndex = paragraph.start + index;
+              const { word: cleanWord, context } = createWordWithContext(pageData.words, actualIndex);
+              return (
+                <ClickableText
+                  key={`p${pageData.number}-${paragraphIndex}-${actualIndex}`}
+                  text={cleanWord}
+                  context={context}
+                  className="cursor-pointer hover:bg-yellow-100 px-1 rounded transition-colors"
+                />
+              );
+            })}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
-    <div className="space-y-8 font-arabic text-right" dir="rtl">
-      {/* Page 30 */}
-      <div>
-        <h2 className="text-2xl font-bold text-center mb-6 border-b pb-2">
-          الصفحة ٣٠
+    <div className="font-arabic text-right" dir="rtl">
+      {/* Page Navigation */}
+      <div className="flex items-center justify-between mb-6">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setCurrentPage(Math.max(0, currentPage - 1))}
+          disabled={currentPage === 0}
+          className="flex items-center gap-2"
+        >
+          <ChevronRight className="w-4 h-4" />
+          السابق
+        </Button>
+        
+        <h2 className="text-2xl font-bold text-center border-b pb-2">
+          {currentPageData.title}
         </h2>
-        <div className="space-y-4 leading-relaxed text-lg">
-          <div className="flex flex-wrap gap-1 justify-end">
-            {page30Words.slice(0, 21).map((word, index) => {
-              const { word: cleanWord, context } = createWordWithContext(page30Words, index);
-              return (
-                <ClickableText
-                  key={`p30-1-${index}`}
-                  text={cleanWord}
-                  context={context}
-                  className="cursor-pointer hover:bg-yellow-100 px-1 rounded transition-colors"
-                />
-              );
-            })}
-          </div>
-          <div className="flex flex-wrap gap-1 justify-end">
-            {page30Words.slice(21, 37).map((word, index) => {
-              const actualIndex = index + 21;
-              const { word: cleanWord, context } = createWordWithContext(page30Words, actualIndex);
-              return (
-                <ClickableText
-                  key={`p30-2-${actualIndex}`}
-                  text={cleanWord}
-                  context={context}
-                  className="cursor-pointer hover:bg-yellow-100 px-1 rounded transition-colors"
-                />
-              );
-            })}
-          </div>
-          <div className="flex flex-wrap gap-1 justify-end">
-            {page30Words.slice(37, 69).map((word, index) => {
-              const actualIndex = index + 37;
-              const { word: cleanWord, context } = createWordWithContext(page30Words, actualIndex);
-              return (
-                <ClickableText
-                  key={`p30-3-${actualIndex}`}
-                  text={cleanWord}
-                  context={context}
-                  className="cursor-pointer hover:bg-yellow-100 px-1 rounded transition-colors"
-                />
-              );
-            })}
-          </div>
-          <div className="flex flex-wrap gap-1 justify-end">
-            {page30Words.slice(69).map((word, index) => {
-              const actualIndex = index + 69;
-              const { word: cleanWord, context } = createWordWithContext(page30Words, actualIndex);
-              return (
-                <ClickableText
-                  key={`p30-4-${actualIndex}`}
-                  text={cleanWord}
-                  context={context}
-                  className="cursor-pointer hover:bg-yellow-100 px-1 rounded transition-colors"
-                />
-              );
-            })}
-          </div>
-        </div>
+        
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setCurrentPage(Math.min(pages.length - 1, currentPage + 1))}
+          disabled={currentPage === pages.length - 1}
+          className="flex items-center gap-2"
+        >
+          التالي
+          <ChevronLeft className="w-4 h-4" />
+        </Button>
       </div>
 
-      {/* Page 31 */}
-      <div>
-        <h2 className="text-2xl font-bold text-center mb-6 border-b pb-2">
-          الصفحة ٣١
-        </h2>
-        <div className="space-y-4 leading-relaxed text-lg">
-          <div className="flex flex-wrap gap-1 justify-end">
-            {page31Words.slice(0, 22).map((word, index) => {
-              const { word: cleanWord, context } = createWordWithContext(page31Words, index);
-              return (
-                <ClickableText
-                  key={`p31-1-${index}`}
-                  text={cleanWord}
-                  context={context}
-                  className="cursor-pointer hover:bg-yellow-100 px-1 rounded transition-colors"
-                />
-              );
-            })}
-          </div>
-          <div className="flex flex-wrap gap-1 justify-end">
-            {page31Words.slice(22, 38).map((word, index) => {
-              const actualIndex = index + 22;
-              const { word: cleanWord, context } = createWordWithContext(page31Words, actualIndex);
-              return (
-                <ClickableText
-                  key={`p31-2-${actualIndex}`}
-                  text={cleanWord}
-                  context={context}
-                  className="cursor-pointer hover:bg-yellow-100 px-1 rounded transition-colors"
-                />
-              );
-            })}
-          </div>
-          <div className="flex flex-wrap gap-1 justify-end">
-            {page31Words.slice(38).map((word, index) => {
-              const actualIndex = index + 38;
-              const { word: cleanWord, context } = createWordWithContext(page31Words, actualIndex);
-              return (
-                <ClickableText
-                  key={`p31-3-${actualIndex}`}
-                  text={cleanWord}
-                  context={context}
-                  className="cursor-pointer hover:bg-yellow-100 px-1 rounded transition-colors"
-                />
-              );
-            })}
-          </div>
-        </div>
+      {/* Page Content */}
+      <div className="min-h-[400px]">
+        {renderPage(currentPageData)}
       </div>
 
-      {/* Page 32 */}
-      <div>
-        <h2 className="text-2xl font-bold text-center mb-6 border-b pb-2">
-          الصفحة ٣٢
-        </h2>
-        <div className="space-y-4 leading-relaxed text-lg">
-          <div className="flex flex-wrap gap-1 justify-end">
-            {page32Words.slice(0, 20).map((word, index) => {
-              const { word: cleanWord, context } = createWordWithContext(page32Words, index);
-              return (
-                <ClickableText
-                  key={`p32-1-${index}`}
-                  text={cleanWord}
-                  context={context}
-                  className="cursor-pointer hover:bg-yellow-100 px-1 rounded transition-colors"
-                />
-              );
-            })}
-          </div>
-          <div className="flex flex-wrap gap-1 justify-end">
-            {page32Words.slice(20, 44).map((word, index) => {
-              const actualIndex = index + 20;
-              const { word: cleanWord, context } = createWordWithContext(page32Words, actualIndex);
-              return (
-                <ClickableText
-                  key={`p32-2-${actualIndex}`}
-                  text={cleanWord}
-                  context={context}
-                  className="cursor-pointer hover:bg-yellow-100 px-1 rounded transition-colors"
-                />
-              );
-            })}
-          </div>
-          <div className="flex flex-wrap gap-1 justify-end">
-            {page32Words.slice(44, 70).map((word, index) => {
-              const actualIndex = index + 44;
-              const { word: cleanWord, context } = createWordWithContext(page32Words, actualIndex);
-              return (
-                <ClickableText
-                  key={`p32-3-${actualIndex}`}
-                  text={cleanWord}
-                  context={context}
-                  className="cursor-pointer hover:bg-yellow-100 px-1 rounded transition-colors"
-                />
-              );
-            })}
-          </div>
-          <div className="flex flex-wrap gap-1 justify-end">
-            {page32Words.slice(70).map((word, index) => {
-              const actualIndex = index + 70;
-              const { word: cleanWord, context } = createWordWithContext(page32Words, actualIndex);
-              return (
-                <ClickableText
-                  key={`p32-4-${actualIndex}`}
-                  text={cleanWord}
-                  context={context}
-                  className="cursor-pointer hover:bg-yellow-100 px-1 rounded transition-colors"
-                />
-              );
-            })}
-          </div>
-        </div>
+      {/* Page Indicator */}
+      <div className="flex justify-center mt-6 gap-2">
+        {pages.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentPage(index)}
+            className={`w-3 h-3 rounded-full transition-colors ${
+              index === currentPage ? 'bg-blue-500' : 'bg-gray-300'
+            }`}
+          />
+        ))}
       </div>
     </div>
   );
