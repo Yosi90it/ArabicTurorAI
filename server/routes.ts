@@ -136,6 +136,88 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Enhanced word translation with context using ChatGPT
+  app.post("/api/translate-word-with-context", async (req: Request, res: Response) => {
+    try {
+      const { word, context } = req.body;
+      
+      if (!word) {
+        return res.status(400).json({ error: "Word is required" });
+      }
+
+      // If no context provided, fall back to regular translation
+      if (!context || context.trim().length === 0) {
+        return res.status(400).json({ error: "Context is required for accurate translation" });
+      }
+
+      // Use ChatGPT for context-aware translation
+      if (!process.env.OPENAI_API_KEY) {
+        throw new Error("OpenAI API key not configured");
+      }
+
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+        messages: [
+          {
+            role: "system",
+            content: `You are an expert Arabic-German translator. Translate the given Arabic word in the context provided. Always respond in JSON format with the following structure:
+            {
+              "word": "original Arabic word",
+              "translation": "German translation considering context",
+              "grammar": "grammatical information (noun, verb, adjective, etc.)",
+              "contextual_meaning": "explanation of how context affects the meaning"
+            }`
+          },
+          {
+            role: "user",
+            content: `Please translate the Arabic word "${word}" in this context: "${context}". Consider how the surrounding words affect the meaning and provide the most accurate German translation.`
+          }
+        ],
+        response_format: { type: "json_object" },
+        temperature: 0.1
+      });
+
+      const result = JSON.parse(completion.choices[0].message.content || '{}');
+      
+      // Cache the result in Supabase if available
+      if (supabase) {
+        try {
+          const normalizedWord = word.replace(/[\u064B-\u065F\u0670\u06D6-\u06ED]/g, '').trim();
+          await supabase
+            .from('word_translations')
+            .insert([
+              {
+                arabic_word: normalizedWord,
+                german_translation: result.translation,
+                grammar_info: result.grammar || "",
+                context: context,
+                contextual_meaning: result.contextual_meaning || "",
+                created_at: new Date().toISOString(),
+                source: 'openai_context'
+              }
+            ]);
+          console.log(`Cached context translation for: ${normalizedWord}`);
+        } catch (cacheError) {
+          console.log('Failed to cache context translation:', cacheError);
+        }
+      }
+
+      res.json({
+        word: result.word || word,
+        translation: result.translation || "Übersetzung nicht verfügbar",
+        grammar: result.grammar || "noun",
+        contextual_meaning: result.contextual_meaning || "",
+        examples: [],
+        pronunciation: "",
+        source: 'openai_context'
+      });
+
+    } catch (error) {
+      console.error("Context translation error:", error);
+      res.status(500).json({ error: "Failed to translate word with context" });
+    }
+  });
+
   // OpenAI Story Generation endpoint
   app.post("/api/weaviate/translate", async (req: Request, res: Response) => {
     try {
