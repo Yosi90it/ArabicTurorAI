@@ -9,12 +9,8 @@ import { useToast } from "@/hooks/use-toast";
 import ClickableText from "@/components/ClickableText";
 import InterlinearText from "@/components/InterlinearText";
 import WordModal from "@/components/WordModal";
-import OriginalFirstPage from "@/components/OriginalFirstPage";
-import OriginalPage31 from "@/components/OriginalPage31";
-import OriginalPage35 from "@/components/OriginalPage35";
-import OriginalPage37 from "@/components/OriginalPage37";
 import BookSelector from "@/components/BookSelector";
-import QiraaturRashidaPage from "@/components/QiraaturRashidaPage";
+import { QiratuRashidaPages } from "@/components/QiratuRashidaPages";
 import { getWordInfo } from "@/data/arabicDictionary";
 import { useSimpleGamification } from "@/contexts/SimpleGamificationContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -365,49 +361,12 @@ export default function BookReader() {
             <CardContent className="space-y-6">
               {selectedBook ? (
                 <>
-                  {/* Show original book pages for complete Qiraatu al-Rashida */}
-                  {selectedBook.title.includes("كامل مع الصور الأصلية") ? (
-                    currentPage === 0 ? (
-                      <OriginalFirstPage />
-                    ) : currentPage === 1 ? (
-                      <OriginalPage31 />
-                    ) : currentPage === 2 ? (
-                      <OriginalPage35 />
-                    ) : currentPage === 3 ? (
-                      <OriginalPage37 />
-                    ) : (
-                      <QiraaturRashidaPage
-                        pageNumber={qiraaturPages[currentPage]}
-                        filename={`Al-Qir\`atur.Rashida (1-2)-page-${qiraaturPages[currentPage].toString().padStart(3, '0')}.jpg`}
-                      />
-                    )
-                  ) : currentPage === 0 ? (
-                    <OriginalFirstPage />
-                  ) : currentPage === 1 ? (
-                    <OriginalPage31 />
-                  ) : currentPage === 2 ? (
-                    <OriginalPage35 />
-                  ) : currentPage === 3 ? (
-                    <OriginalPage37 />
-                  ) : (
-                    <div className="prose prose-lg max-w-none">
-                      <div className="bg-gradient-to-br from-amber-50 to-orange-50 p-6 rounded-2xl border border-amber-200 min-h-[500px]">
-                        <div 
-                          className="leading-relaxed space-y-4" 
-                          onClick={handleContentClick}
-                        >
-                          {selectedBook && currentBookPages[currentPage] && (
-                            <BookContent 
-                              content={currentBookPages[currentPage]} 
-                              tashkeelEnabled={tashkeelEnabled}
-                              interlinearEnabled={interlinearEnabled}
-                              onWordClick={handleContentClick}
-                            />
-                          )}
-                        </div>
-                      </div>
+                  {/* Use new Qiraatu Rashida Pages based on HTML structure */}
+                  <div className="prose prose-lg max-w-none">
+                    <div className="bg-gradient-to-br from-amber-50 to-orange-50 p-6 rounded-2xl border border-amber-200 min-h-[500px]">
+                      <QiratuRashidaPages />
                     </div>
-                  )}
+                  </div>
                 </>
               ) : (
                 <div className="text-center py-12">
