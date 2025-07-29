@@ -8,9 +8,9 @@ import { useFlashcards } from "@/contexts/FlashcardContext";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
 
-// Cached translation function with Supabase caching
-async function translateWithCache(word: string): Promise<{word: string, translation: string, grammar: string, examples: string[], pronunciation: string, context?: string, source?: string}> {
-  const response = await fetch('/api/translate-word-cached', {
+// Fast Supabase-only translation function
+async function translateFast(word: string): Promise<{word: string, translation: string, grammar: string, examples: string[], pronunciation: string, context?: string, source?: string}> {
+  const response = await fetch('/api/translate-word-supabase', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -24,12 +24,11 @@ async function translateWithCache(word: string): Promise<{word: string, translat
   
   const result = await response.json();
   
-  // Convert to expected format for backwards compatibility
   return {
     word: result.word,
     translation: result.translation,
     grammar: result.grammar || "noun",
-    examples: [], // Keep empty for now
+    examples: [],
     pronunciation: "",
     context: result.context,
     source: result.source
@@ -60,42 +59,55 @@ export default function ClickableText({ text, className = "" }: ClickableTextPro
     event.preventDefault();
     event.stopPropagation();
     
+    const rect = (event.target as HTMLElement).getBoundingClientRect();
+    
+    // Show loading state immediately
+    setSelectedWord({
+      word: word,
+      translation: "Lädt…",
+      grammar: "loading",
+      position: {
+        x: rect.left + rect.width / 2,
+        y: rect.top
+      }
+    });
+    
     setIsAnalyzing(true);
     try {
-      // Try cached translation first, but include context for ChatGPT calls
       let result;
+      
+      // 1. Try Supabase first (fast database lookup)
       try {
-        // Create enhanced translation request with context
-        const translationRequest = {
-          word: word,
-          context: context || ""
-        };
-        
-        const response = await fetch('/api/translate-word-with-context', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(translationRequest),
-        });
-        
-        if (!response.ok) {
-          throw new Error('Failed to translate word with context');
-        }
-        
-        result = await response.json();
-        console.log(`Translation with context retrieved from: ${result.source || 'unknown'}`);
+        result = await translateFast(word);
+        console.log(`Translation from Supabase: ${result.source || 'supabase'}`);
       } catch (translationError) {
-        console.log('Context translation not available, trying cached translation');
+        console.log('No Supabase translation, trying ChatGPT');
+        
+        // 2. Fall back to ChatGPT if not in Supabase
         try {
-          result = await translateWithCache(word);
-          console.log(`Translation retrieved from: ${result.source || 'unknown'}`);
-        } catch (secondError) {
-          console.log('Cached translation not available, using fallback dictionary');
+          const response = await fetch('/api/translate-word-openai', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+              word: word,
+              context: context || ""
+            }),
+          });
+          
+          if (response.ok) {
+            result = await response.json();
+            console.log('Used ChatGPT translation');
+          } else {
+            throw new Error('ChatGPT failed');
+          }
+        } catch (openaiError) {
+          console.log('ChatGPT also failed, using local dictionary');
           const fallbackWord = getWordInfo(word);
           result = {
             word: word,
-            translation: fallbackWord?.translation || strings.translationNotFound,
+            translation: fallbackWord?.translation || "Übersetzung nicht verfügbar",
             grammar: fallbackWord?.grammar || "noun",
             examples: [],
             pronunciation: "",
@@ -104,7 +116,7 @@ export default function ClickableText({ text, className = "" }: ClickableTextPro
         }
       }
       
-      const rect = (event.target as HTMLElement).getBoundingClientRect();
+      // Update with actual result
       setSelectedWord({
         ...result,
         position: {
@@ -112,12 +124,18 @@ export default function ClickableText({ text, className = "" }: ClickableTextPro
           y: rect.top
         }
       });
+      
     } catch (error) {
       console.error('Error translating word:', error);
-      toast({
-        title: strings.error,
-        description: strings.failedToTranslate,
-        variant: "destructive"
+      // Still show something rather than failing completely
+      setSelectedWord({
+        word: word,
+        translation: "Übersetzung fehlgeschlagen",
+        grammar: "error",
+        position: {
+          x: rect.left + rect.width / 2,
+          y: rect.top
+        }
       });
     } finally {
       setIsAnalyzing(false);

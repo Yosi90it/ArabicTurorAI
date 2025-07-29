@@ -136,85 +136,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Enhanced word translation with context using ChatGPT
-  app.post("/api/translate-word-with-context", async (req: Request, res: Response) => {
+  // Supabase-only word translation for speed
+  app.post("/api/translate-word-supabase", async (req: Request, res: Response) => {
     try {
-      const { word, context } = req.body;
+      const { word } = req.body;
       
       if (!word) {
         return res.status(400).json({ error: "Word is required" });
       }
 
-      // If no context provided, fall back to regular translation
-      if (!context || context.trim().length === 0) {
-        return res.status(400).json({ error: "Context is required for accurate translation" });
-      }
+      const normalizedWord = word.replace(/[\u064B-\u065F\u0670\u06D6-\u06ED]/g, '').trim();
 
-      // Use ChatGPT for context-aware translation
-      if (!process.env.OPENAI_API_KEY) {
-        throw new Error("OpenAI API key not configured");
-      }
-
-      const completion = await openai.chat.completions.create({
-        model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-        messages: [
-          {
-            role: "system",
-            content: `You are an expert Arabic-German translator. Translate the given Arabic word in the context provided. Always respond in JSON format with the following structure:
-            {
-              "word": "original Arabic word",
-              "translation": "German translation considering context",
-              "grammar": "grammatical information (noun, verb, adjective, etc.)",
-              "contextual_meaning": "explanation of how context affects the meaning"
-            }`
-          },
-          {
-            role: "user",
-            content: `Please translate the Arabic word "${word}" in this context: "${context}". Consider how the surrounding words affect the meaning and provide the most accurate German translation.`
-          }
-        ],
-        response_format: { type: "json_object" },
-        temperature: 0.1
-      });
-
-      const result = JSON.parse(completion.choices[0].message.content || '{}');
-      
-      // Cache the result in Supabase if available
+      // Only check Supabase - no Weaviate, no OpenAI for speed
       if (supabase) {
         try {
-          const normalizedWord = word.replace(/[\u064B-\u065F\u0670\u06D6-\u06ED]/g, '').trim();
-          await supabase
+          const { data, error } = await supabase
             .from('word_translations')
-            .insert([
-              {
-                arabic_word: normalizedWord,
-                german_translation: result.translation,
-                grammar_info: result.grammar || "",
-                context: context,
-                contextual_meaning: result.contextual_meaning || "",
-                created_at: new Date().toISOString(),
-                source: 'openai_context'
-              }
-            ]);
-          console.log(`Cached context translation for: ${normalizedWord}`);
+            .select('*')
+            .eq('arabic_word', normalizedWord)
+            .single();
+
+          if (!error && data) {
+            return res.json({
+              word: normalizedWord,
+              translation: data.german_translation,
+              grammar: data.grammar_info || "noun",
+              context: data.context || "",
+              source: 'supabase'
+            });
+          }
         } catch (cacheError) {
-          console.log('Failed to cache context translation:', cacheError);
+          console.log('Supabase lookup failed:', cacheError);
         }
       }
 
-      res.json({
-        word: result.word || word,
-        translation: result.translation || "Übersetzung nicht verfügbar",
-        grammar: result.grammar || "noun",
-        contextual_meaning: result.contextual_meaning || "",
-        examples: [],
-        pronunciation: "",
-        source: 'openai_context'
+      // No translation found
+      return res.status(404).json({
+        word: normalizedWord,
+        translation: "Nicht in Datenbank",
+        grammar: "unknown",
+        source: 'not_found'
       });
 
     } catch (error) {
-      console.error("Context translation error:", error);
-      res.status(500).json({ error: "Failed to translate word with context" });
+      console.error("Supabase translation error:", error);
+      res.status(500).json({ error: "Supabase translation failed" });
     }
   });
 
@@ -363,115 +329,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Enhanced word translation with Supabase caching
-  app.post("/api/translate-word-cached", async (req: Request, res: Response) => {
+  // ChatGPT translation with context (fallback when not in Supabase)
+  app.post("/api/translate-word-openai", async (req: Request, res: Response) => {
     try {
-      const { word } = req.body;
+      const { word, context } = req.body;
       
       if (!word) {
         return res.status(400).json({ error: "Word is required" });
       }
 
-      // Normalize Arabic text (remove tashkeel for consistent caching)
-      const normalizedWord = word
-        .replace(/[\u064B-\u065F\u0670\u06D6-\u06ED]/g, '')
-        .trim();
-
-      // Check Supabase cache first (if configured)
-      let cachedTranslation = null;
-      if (supabase) {
-        try {
-          const { data, error } = await supabase
-            .from('word_translations')
-            .select('*')
-            .eq('arabic_word', normalizedWord)
-            .single();
-
-          if (!error && data) {
-            cachedTranslation = data;
-            console.log(`Found cached translation for: ${normalizedWord}`);
-            
-            return res.json({
-              word: normalizedWord,
-              translation: cachedTranslation.german_translation,
-              grammar: cachedTranslation.grammar_info || "",
-              context: cachedTranslation.context || "",
-              source: 'cache'
-            });
-          }
-        } catch (cacheError) {
-          console.log('Translation cache lookup failed:', cacheError);
-        }
-      }
-
-      // Try Weaviate first (existing system)
-      let weaviateResult = null;
-      try {
-        const weaviateResponse = await fetch("http://localhost:5000/api/weaviate/translate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ word: normalizedWord })
-        });
-
-        if (weaviateResponse.ok) {
-          weaviateResult = await weaviateResponse.json();
-          
-          // Cache successful Weaviate result in Supabase
-          if (supabase && weaviateResult.translation && weaviateResult.translation !== 'Translation not found') {
-            try {
-              await supabase
-                .from('word_translations')
-                .insert([
-                  {
-                    arabic_word: normalizedWord,
-                    german_translation: weaviateResult.translation,
-                    grammar_info: weaviateResult.grammar || "",
-                    context: weaviateResult.context || "",
-                    created_at: new Date().toISOString(),
-                    source: 'weaviate'
-                  }
-                ]);
-              console.log(`Cached Weaviate translation for: ${normalizedWord}`);
-            } catch (cacheError) {
-              console.log('Failed to cache Weaviate result:', cacheError);
-            }
-          }
-
-          return res.json({
-            word: normalizedWord,
-            translation: weaviateResult.translation,
-            grammar: weaviateResult.grammar || "",
-            context: weaviateResult.context || "",
-            source: 'weaviate'
-          });
-        }
-      } catch (weaviateError) {
-        console.log('Weaviate lookup failed, trying OpenAI fallback');
-      }
-
-      // Fallback to OpenAI if both cache and Weaviate fail
       if (!process.env.OPENAI_API_KEY) {
-        return res.status(500).json({ 
-          error: "No translation found and OpenAI not configured" 
-        });
+        return res.status(500).json({ error: "OpenAI not configured" });
       }
 
-      const prompt = `Übersetze das arabische Wort "${word}" ins Deutsche. 
-Gib zusätzlich grammatische Informationen an (Wortart, Genus falls Nomen, etc.).
+      const normalizedWord = word.replace(/[\u064B-\u065F\u0670\u06D6-\u06ED]/g, '').trim();
 
-Antworte im JSON-Format:
-{
-  "translation": "deutsche Übersetzung",
-  "grammar": "grammatische Info (z.B. Nomen maskulin, Verb Form I)",
-  "context": "Beispielkontext oder Anwendung"
-}`;
+      // Use context if available, otherwise simple translation
+      const prompt = context && context.trim() 
+        ? `Übersetze das arabische Wort "${word}" ins Deutsche im Kontext: "${context}". Berücksichtige den Kontext für eine präzise Übersetzung.`
+        : `Übersetze das arabische Wort "${word}" ins Deutsche.`;
 
       const completion = await openai.chat.completions.create({
-        model: "gpt-4o",
+        model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
         messages: [
           {
             role: "system",
-            content: "Du bist ein arabischer Sprachexperte. Antworte immer im angegebenen JSON-Format."
+            content: `Du bist ein Arabisch-Deutsch Übersetzer. Antworte im JSON-Format:
+            {
+              "word": "ursprüngliches arabisches Wort",
+              "translation": "deutsche Übersetzung", 
+              "grammar": "Wortart (Nomen, Verb, etc.)",
+              "context_note": "Erklärung falls Kontext die Bedeutung beeinflusst"
+            }`
           },
           {
             role: "user",
@@ -479,13 +368,13 @@ Antworte im JSON-Format:
           }
         ],
         response_format: { type: "json_object" },
-        temperature: 0.3,
-        max_tokens: 200
+        temperature: 0.1,
+        max_tokens: 150
       });
 
       const result = JSON.parse(completion.choices[0].message.content || '{}');
       
-      // Cache OpenAI result in Supabase
+      // Cache the result in Supabase for future use
       if (supabase && result.translation) {
         try {
           await supabase
@@ -495,31 +384,31 @@ Antworte im JSON-Format:
                 arabic_word: normalizedWord,
                 german_translation: result.translation,
                 grammar_info: result.grammar || "",
-                context: result.context || "",
+                context: context || "",
+                contextual_meaning: result.context_note || "",
                 created_at: new Date().toISOString(),
                 source: 'openai'
               }
             ]);
-          console.log(`Cached OpenAI translation for: ${normalizedWord}`);
+          console.log(`Cached new OpenAI translation for: ${normalizedWord}`);
         } catch (cacheError) {
           console.log('Failed to cache OpenAI result:', cacheError);
         }
       }
 
       res.json({
-        word: normalizedWord,
-        translation: result.translation || 'Translation not found',
-        grammar: result.grammar || "",
-        context: result.context || "",
+        word: result.word || normalizedWord,
+        translation: result.translation || "Übersetzung nicht verfügbar",
+        grammar: result.grammar || "noun",
+        context_note: result.context_note || "",
+        examples: [],
+        pronunciation: "",
         source: 'openai'
       });
 
     } catch (error) {
-      console.error('Word translation error:', error);
-      res.status(500).json({ 
-        error: "Translation failed", 
-        message: error instanceof Error ? error.message : "Unknown error" 
-      });
+      console.error("OpenAI translation error:", error);
+      res.status(500).json({ error: "OpenAI translation failed" });
     }
   });
 
