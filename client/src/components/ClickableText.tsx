@@ -62,84 +62,37 @@ export default function ClickableText({ text, context, className = "" }: Clickab
     
     const rect = (event.target as HTMLElement).getBoundingClientRect();
     
-    // Show loading state immediately
-    setSelectedWord({
-      word: word,
-      translation: "Lädt…",
-      grammar: "loading",
-      position: {
-        x: rect.left + rect.width / 2,
-        y: rect.top
-      }
-    });
+    // Direkt lokales Wörterbuch verwenden für sofortige Antwort
+    console.log(`Translating word: ${word}`);
+    const localWord = getWordInfo(word);
     
-    setIsAnalyzing(true);
-    try {
-      let result;
-      
-      // 1. Try Supabase first (fast database lookup)
-      try {
-        result = await translateFast(word);
-        console.log(`Translation from Supabase: ${result.source || 'supabase'}`);
-      } catch (translationError) {
-        console.log('No Supabase translation, trying ChatGPT');
-        
-        // 2. Fall back to ChatGPT if not in Supabase
-        try {
-          const response = await fetch('/api/translate-word-openai', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ 
-              word: word,
-              context: context || ""
-            }),
-          });
-          
-          if (response.ok) {
-            result = await response.json();
-            console.log('Used ChatGPT translation');
-          } else {
-            throw new Error('ChatGPT failed');
-          }
-        } catch (openaiError) {
-          console.log('ChatGPT also failed, using local dictionary');
-          const fallbackWord = getWordInfo(word);
-          result = {
-            word: word,
-            translation: fallbackWord?.translation || "Übersetzung nicht verfügbar",
-            grammar: fallbackWord?.grammar || "noun",
-            examples: [],
-            pronunciation: "",
-            source: 'dictionary'
-          };
-        }
-      }
-      
-      // Update with actual result
-      setSelectedWord({
-        ...result,
-        position: {
-          x: rect.left + rect.width / 2,
-          y: rect.top
-        }
-      });
-      
-    } catch (error) {
-      console.error('Error translating word:', error);
-      // Still show something rather than failing completely
+    if (localWord) {
       setSelectedWord({
         word: word,
-        translation: "Übersetzung fehlgeschlagen",
-        grammar: "error",
+        translation: localWord.translation,
+        grammar: localWord.grammar,
         position: {
           x: rect.left + rect.width / 2,
           y: rect.top
-        }
+        },
+        examples: localWord.examples || [],
+        pronunciation: localWord.pronunciation || ""
       });
-    } finally {
-      setIsAnalyzing(false);
+      console.log('Used local dictionary for:', word);
+    } else {
+      // Fallback für unbekannte Wörter
+      setSelectedWord({
+        word: word,
+        translation: "Wort nicht im Wörterbuch gefunden",
+        grammar: "unknown",
+        position: {
+          x: rect.left + rect.width / 2,
+          y: rect.top
+        },
+        examples: [],
+        pronunciation: ""
+      });
+      console.log('Word not found in dictionary:', word);
     }
   };
 

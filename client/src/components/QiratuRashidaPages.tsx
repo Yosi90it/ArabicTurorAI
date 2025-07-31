@@ -24,7 +24,7 @@ export default function QiratuRashidaPages() {
     refetchInterval: 5000, // Aktualisiert alle 5 Sekunden
   });
 
-  const pages: PageData[] = pagesData?.pages || [];
+  const pages: PageData[] = (pagesData as any)?.pages || [];
 
   // Create context-aware word data
   const createWordWithContext = (words: string[], index: number) => {
