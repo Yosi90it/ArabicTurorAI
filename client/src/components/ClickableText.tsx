@@ -37,10 +37,11 @@ async function translateFast(word: string): Promise<{word: string, translation: 
 
 interface ClickableTextProps {
   text: string;
+  context?: string;
   className?: string;
 }
 
-export default function ClickableText({ text, className = "" }: ClickableTextProps) {
+export default function ClickableText({ text, context, className = "" }: ClickableTextProps) {
   const [selectedWord, setSelectedWord] = useState<{
     word: string;
     translation: string;

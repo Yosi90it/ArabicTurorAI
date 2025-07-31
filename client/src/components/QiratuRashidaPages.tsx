@@ -35,32 +35,19 @@ export default function QiratuRashidaPages() {
     return { word, context };
   };
 
-  // Render paragraph with clickable words
+  // Render paragraph with clickable words - simplified approach
   const renderParagraph = (words: string[], maxWordsPerLine: number, pageNum: number, paragraphIndex: number) => {
-    // Split words into lines
-    const lines = [];
-    for (let i = 0; i < words.length; i += maxWordsPerLine) {
-      lines.push(words.slice(i, i + maxWordsPerLine));
-    }
-
+    // Create full text string for this paragraph
+    const fullText = words.join(' ');
+    
     return (
       <div className="space-y-3 arabic-container">
-        {lines.map((lineWords, lineIndex) => (
-          <div key={lineIndex} className="text-right arabic-text" style={{ direction: 'rtl', textAlign: 'right' }}>
-            {lineWords.map((word, wordIndex) => {
-              const absoluteIndex = lineIndex * maxWordsPerLine + wordIndex;
-              const { word: cleanWord, context } = createWordWithContext(words, absoluteIndex);
-              return (
-                <span key={`p${pageNum}-par${paragraphIndex}-line${lineIndex}-${absoluteIndex}`} className="inline-block ml-1">
-                  <ClickableText
-                    text={cleanWord}
-                    className="cursor-pointer hover:bg-yellow-100 px-1 rounded transition-colors"
-                  />
-                </span>
-              );
-            })}
-          </div>
-        ))}
+        <div className="text-right arabic-text" style={{ direction: 'rtl', textAlign: 'right' }}>
+          <ClickableText
+            text={fullText}
+            className="text-lg leading-relaxed"
+          />
+        </div>
       </div>
     );
   };
