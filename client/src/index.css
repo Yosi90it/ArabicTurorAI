@@ -114,11 +114,5 @@
     text-align: right !important;
   }
   
-  .arabic-flex {
-    display: flex !important;
-    flex-direction: row-reverse !important;
-    justify-content: flex-start !important;
-    align-items: flex-start !important;
-    text-align: right !important;
-  }
+
 }

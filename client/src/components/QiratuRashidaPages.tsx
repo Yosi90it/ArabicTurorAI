@@ -46,16 +46,17 @@ export default function QiratuRashidaPages() {
     return (
       <div className="space-y-3 arabic-container">
         {lines.map((lineWords, lineIndex) => (
-          <div key={lineIndex} className="arabic-flex flex-wrap gap-1">
+          <div key={lineIndex} className="text-right arabic-text" style={{ direction: 'rtl', textAlign: 'right' }}>
             {lineWords.map((word, wordIndex) => {
               const absoluteIndex = lineIndex * maxWordsPerLine + wordIndex;
               const { word: cleanWord, context } = createWordWithContext(words, absoluteIndex);
               return (
-                <ClickableText
-                  key={`p${pageNum}-par${paragraphIndex}-line${lineIndex}-${absoluteIndex}`}
-                  text={cleanWord}
-                  className="cursor-pointer hover:bg-yellow-100 px-1 rounded transition-colors arabic-text"
-                />
+                <span key={`p${pageNum}-par${paragraphIndex}-line${lineIndex}-${absoluteIndex}`} className="inline-block ml-1">
+                  <ClickableText
+                    text={cleanWord}
+                    className="cursor-pointer hover:bg-yellow-100 px-1 rounded transition-colors"
+                  />
+                </span>
               );
             })}
           </div>
@@ -104,9 +105,7 @@ export default function QiratuRashidaPages() {
         <div className="text-sm text-gray-500">
           {strings.page || "Seite"} {currentPage + 1} {strings.of || "von"} {pages.length}
         </div>
-        <div className="text-xs text-gray-400 mt-1">
-          {strings.lastUpdated || "Zuletzt aktualisiert"}: {pagesData?.lastUpdated ? new Date(pagesData.lastUpdated).toLocaleString('de-DE') : 'Unbekannt'}
-        </div>
+
       </div>
 
       {/* Seiten-Inhalt */}
@@ -161,7 +160,7 @@ export default function QiratuRashidaPages() {
       <div className="mt-4 text-center text-xs text-gray-500">
         <div className="flex items-center justify-center gap-2">
           <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-          <span>Automatische Synchronisation aktiv - Ihre HTML-Änderungen werden automatisch angezeigt</span>
+          <span>Automatische Synchronisation aktiv</span>
         </div>
       </div>
     </div>
