@@ -7,6 +7,11 @@ import multer from 'multer';
 import OpenAI from 'openai';
 import { createClient } from '@supabase/supabase-js';
 
+// Dynamische HTML-Parser für Qiraatu al-Rashida
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const { parseQiratuRashidaHTML } = require('./htmlParser.js');
+
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 // Initialize OpenAI
@@ -689,6 +694,26 @@ Gib nur den arabischen Fließtext zurück, ohne Übersetzung oder Kommentare.`;
       res.status(500).json({ 
         error: "Story generation failed", 
         message: error instanceof Error ? error.message : "Unknown error" 
+      });
+    }
+  });
+
+  // API endpoint für dynamische HTML-Seiten
+  app.get("/api/qiraatu-pages", async (req: Request, res: Response) => {
+    try {
+      console.log('Parsing HTML file for pages...');
+      const pages = parseQiratuRashidaHTML();
+      
+      res.json({
+        pages: pages,
+        totalPages: pages.length,
+        lastUpdated: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Error parsing HTML:', error);
+      res.status(500).json({ 
+        error: "Failed to parse HTML file",
+        message: error instanceof Error ? error.message : "Unknown error"
       });
     }
   });

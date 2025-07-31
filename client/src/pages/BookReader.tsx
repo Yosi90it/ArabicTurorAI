@@ -10,7 +10,7 @@ import ClickableText from "@/components/ClickableText";
 import InterlinearText from "@/components/InterlinearText";
 import WordModal from "@/components/WordModal";
 import BookSelector from "@/components/BookSelector";
-import { QiratuRashidaPages } from "@/components/QiratuRashidaPages";
+import QiratuRashidaPages from "@/components/QiratuRashidaPages";
 import { getWordInfo } from "@/data/arabicDictionary";
 import { useSimpleGamification } from "@/contexts/SimpleGamificationContext";
 import { useLanguage } from "@/contexts/LanguageContext";
