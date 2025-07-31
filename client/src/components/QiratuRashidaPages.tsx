@@ -99,7 +99,7 @@ export default function QiratuRashidaPages() {
     <div className="max-w-4xl mx-auto p-6">
       {/* Header mit Titel */}
       <div className="text-center mb-6">
-        <h1 className="text-2xl font-bold mb-2 arabic-text">
+        <h1 className="text-2xl font-bold mb-2 text-center arabic-text">
           {currentPageData.title}
         </h1>
         <div className="text-sm text-gray-500">
@@ -109,7 +109,7 @@ export default function QiratuRashidaPages() {
       </div>
 
       {/* Seiten-Inhalt */}
-      <div className="bg-white p-8 rounded-lg shadow-sm border min-h-96 arabic-container">
+      <div className="p-8 min-h-96 arabic-container">
         <div className="space-y-6">
           {currentPageData.paragraphs.map((paragraph, paragraphIndex) => (
             <div key={paragraphIndex} className="text-lg leading-relaxed arabic-container">

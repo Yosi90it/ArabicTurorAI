@@ -109,6 +109,10 @@
     unicode-bidi: bidi-override !important;
   }
   
+  .arabic-text.text-center {
+    text-align: center !important;
+  }
+  
   .arabic-container {
     direction: rtl !important;
     text-align: right !important;
