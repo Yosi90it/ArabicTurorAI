@@ -101,4 +101,24 @@
   .border-gentle-shadow {
     border-color: var(--gentle-shadow);
   }
+  
+  /* Arabische Rechtsausrichtung erzwingen */
+  .arabic-text {
+    direction: rtl !important;
+    text-align: right !important;
+    unicode-bidi: bidi-override !important;
+  }
+  
+  .arabic-container {
+    direction: rtl !important;
+    text-align: right !important;
+  }
+  
+  .arabic-flex {
+    display: flex !important;
+    flex-direction: row-reverse !important;
+    justify-content: flex-start !important;
+    align-items: flex-start !important;
+    text-align: right !important;
+  }
 }

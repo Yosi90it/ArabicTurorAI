@@ -44,9 +44,9 @@ export default function QiratuRashidaPages() {
     }
 
     return (
-      <div className="space-y-3">
+      <div className="space-y-3 arabic-container">
         {lines.map((lineWords, lineIndex) => (
-          <div key={lineIndex} className="flex flex-wrap gap-1 justify-end text-right" dir="rtl">
+          <div key={lineIndex} className="arabic-flex flex-wrap gap-1">
             {lineWords.map((word, wordIndex) => {
               const absoluteIndex = lineIndex * maxWordsPerLine + wordIndex;
               const { word: cleanWord, context } = createWordWithContext(words, absoluteIndex);
@@ -54,7 +54,7 @@ export default function QiratuRashidaPages() {
                 <ClickableText
                   key={`p${pageNum}-par${paragraphIndex}-line${lineIndex}-${absoluteIndex}`}
                   text={cleanWord}
-                  className="cursor-pointer hover:bg-yellow-100 px-1 rounded transition-colors"
+                  className="cursor-pointer hover:bg-yellow-100 px-1 rounded transition-colors arabic-text"
                 />
               );
             })}
@@ -98,7 +98,7 @@ export default function QiratuRashidaPages() {
     <div className="max-w-4xl mx-auto p-6">
       {/* Header mit Titel */}
       <div className="text-center mb-6">
-        <h1 className="text-2xl font-bold mb-2 text-right" dir="rtl">
+        <h1 className="text-2xl font-bold mb-2 arabic-text">
           {currentPageData.title}
         </h1>
         <div className="text-sm text-gray-500">
@@ -110,10 +110,10 @@ export default function QiratuRashidaPages() {
       </div>
 
       {/* Seiten-Inhalt */}
-      <div className="bg-white p-8 rounded-lg shadow-sm border min-h-96">
+      <div className="bg-white p-8 rounded-lg shadow-sm border min-h-96 arabic-container">
         <div className="space-y-6">
           {currentPageData.paragraphs.map((paragraph, paragraphIndex) => (
-            <div key={paragraphIndex} className="text-lg leading-relaxed">
+            <div key={paragraphIndex} className="text-lg leading-relaxed arabic-container">
               {renderParagraph(paragraph.words, paragraph.maxWordsPerLine, currentPage, paragraphIndex)}
             </div>
           ))}
