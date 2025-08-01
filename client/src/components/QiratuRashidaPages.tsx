@@ -83,20 +83,9 @@ export default function QiratuRashidaPages() {
   const currentPageData = pages[currentPage];
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      {/* Header mit Titel */}
-      <div className="text-center mb-6">
-        <h1 className="text-2xl font-bold mb-2 text-center arabic-text">
-          {currentPageData.title}
-        </h1>
-        <div className="text-sm text-gray-500">
-          {currentPage + 1} {strings.of || "von"} {pages.length}
-        </div>
-
-      </div>
-
-      {/* Seiten-Inhalt */}
-      <div className="p-8 min-h-96 arabic-container">
+    <div className="max-w-6xl mx-auto p-6">
+      {/* Arabischer Text-Container mit Rahmen wie im Bild */}
+      <div className="border-2 border-gray-300 rounded-lg p-8 min-h-96 arabic-container bg-white">
         <div className="space-y-6">
           {currentPageData.paragraphs.map((paragraph, paragraphIndex) => (
             <div key={paragraphIndex} className="text-lg leading-relaxed arabic-container">
@@ -106,41 +95,66 @@ export default function QiratuRashidaPages() {
         </div>
       </div>
 
-      {/* Navigation */}
-      <div className="flex justify-between items-center mt-6">
+      {/* Navigation wie im Bild gezeigt */}
+      <div className="flex justify-center items-center mt-6 gap-4">
+        {/* Erste Seite */}
         <Button
-          variant="outline"
+          variant="ghost"
+          size="sm"
+          onClick={() => setCurrentPage(0)}
+          disabled={currentPage === 0}
+          className="p-2"
+        >
+          ≪
+        </Button>
+        
+        {/* Vorherige Seite */}
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={() => setCurrentPage(Math.max(0, currentPage - 1))}
           disabled={currentPage === 0}
-          className="flex items-center gap-2"
+          className="p-2"
         >
-          <ChevronLeft className="w-4 h-4" />
-          <span className="text-sm" dir="rtl">السابق</span>
+          ‹
         </Button>
 
-        <div className="flex gap-2">
-          {pages.map((_, index) => (
-            <Button
-              key={index}
-              variant={index === currentPage ? "default" : "outline"}
-              size="sm"
-              onClick={() => setCurrentPage(index)}
-              className="w-8 h-8 p-0"
-            >
-              {index + 1}
-            </Button>
-          ))}
+        {/* Seitenzahl-Anzeige */}
+        <div className="text-sm text-gray-600 px-4">
+          {currentPage + 1} of {pages.length}
         </div>
 
+        {/* Nächste Seite */}
         <Button
-          variant="outline"
+          variant="ghost"
+          size="sm"
           onClick={() => setCurrentPage(Math.min(pages.length - 1, currentPage + 1))}
           disabled={currentPage === pages.length - 1}
-          className="flex items-center gap-2"
+          className="p-2"
         >
-          <span className="text-sm" dir="rtl">التالي</span>
-          <ChevronRight className="w-4 h-4" />
+          ›
         </Button>
+
+        {/* Letzte Seite */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setCurrentPage(pages.length - 1)}
+          disabled={currentPage === pages.length - 1}
+          className="p-2"
+        >
+          ≫
+        </Button>
+      </div>
+
+      {/* Fortschrittsbalken */}
+      <div className="mt-4 max-w-md mx-auto">
+        <div className="w-full bg-gray-200 rounded-full h-2">
+          <div 
+            className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+            style={{ width: `${((currentPage + 1) / pages.length) * 100}%` }}
+          ></div>
+        </div>
       </div>
 
       {/* Status-Anzeige */}

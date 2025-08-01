@@ -9,29 +9,37 @@ function parseQiratuRashidaHTML() {
     
     const pages = [];
     
-    // Teile HTML nach <div class="page" auf
-    const pageSections = htmlContent.split(/<div class="page"[^>]*>/);
+    // Verwende einfaches String-Splitting und direktes Parsing
+    const pageMarkers = [];
+    let index = 0;
     
-    // Entferne den ersten leeren Teil (vor der ersten Seite)
-    pageSections.shift();
+    // Finde alle <div class="page"> Positionen
+    while ((index = htmlContent.indexOf('<div class="page"', index)) !== -1) {
+      pageMarkers.push(index);
+      index += 17; // Länge von '<div class="page"'
+    }
     
-    let pageNumber = 1;
+    console.log(`Found ${pageMarkers.length} page markers`);
     
-    for (const pageSection of pageSections) {
-      // Finde das Ende der Seite (nächste page div oder body Ende)
-      let pageContent = pageSection;
+    for (let i = 0; i < pageMarkers.length; i++) {
+      const startPos = pageMarkers[i];
+      const endPos = i < pageMarkers.length - 1 ? pageMarkers[i + 1] : htmlContent.indexOf('</body>');
       
-      // Entferne alles nach dem schließenden </div> der aktuellen Seite
-      const endMatch = pageContent.match(/^(.*?)(<\/div>.*)?$/s);
-      if (endMatch) {
-        pageContent = endMatch[1];
-      }
+      if (endPos === -1) continue;
+      
+      let pageSection = htmlContent.substring(startPos, endPos);
+      
+      // Entferne den <div class="page"> Tag am Anfang
+      pageSection = pageSection.replace(/^<div class="page"[^>]*>/, '');
+      
+      // Entferne schließende </div> Tags am Ende
+      pageSection = pageSection.replace(/<\/div>\s*$/, '').trim();
       
       // Titel extrahieren (h2 Element)
       const titleRegex = /<h2[^>]*>(.*?)<\/h2>/s;
-      const titleMatch = pageContent.match(titleRegex);
+      const titleMatch = pageSection.match(titleRegex);
       
-      let title = `الصفحة ${pageNumber}`;
+      let title = `الصفحة ${i + 1}`;
       if (titleMatch) {
         // Extrahiere Text aus span class="word" Elementen im Titel  
         const titleWords = extractWordsFromHTML(titleMatch[1]);
@@ -45,7 +53,7 @@ function parseQiratuRashidaHTML() {
       const paragraphRegex = /<p[^>]*>(.*?)<\/p>/gs;
       let paragraphMatch;
       
-      while ((paragraphMatch = paragraphRegex.exec(pageContent)) !== null) {
+      while ((paragraphMatch = paragraphRegex.exec(pageSection)) !== null) {
         const paragraphContent = paragraphMatch[1];
         const words = extractWordsFromHTML(paragraphContent);
         
@@ -59,13 +67,11 @@ function parseQiratuRashidaHTML() {
       
       if (paragraphs.length > 0) {
         pages.push({
-          number: pageNumber,
+          number: i + 1,
           title: title,
           paragraphs: paragraphs
         });
       }
-      
-      pageNumber++;
     }
     
     return pages;
