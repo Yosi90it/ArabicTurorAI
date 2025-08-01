@@ -90,7 +90,7 @@ export default function QiratuRashidaPages() {
           {currentPageData.title}
         </h1>
         <div className="text-sm text-gray-500">
-          {strings.page || "Seite"} {currentPage + 1} {strings.of || "von"} {pages.length}
+          {currentPage + 1} {strings.of || "von"} {pages.length}
         </div>
 
       </div>

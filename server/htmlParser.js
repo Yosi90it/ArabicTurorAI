@@ -9,13 +9,23 @@ function parseQiratuRashidaHTML() {
     
     const pages = [];
     
-    // Regulärer Ausdruck für Seiten (div class="page")
-    const pageRegex = /<div class="page"[^>]*>(.*?)<\/div>/gs;
-    let pageMatch;
+    // Teile HTML nach <div class="page" auf
+    const pageSections = htmlContent.split(/<div class="page"[^>]*>/);
+    
+    // Entferne den ersten leeren Teil (vor der ersten Seite)
+    pageSections.shift();
+    
     let pageNumber = 1;
     
-    while ((pageMatch = pageRegex.exec(htmlContent)) !== null) {
-      const pageContent = pageMatch[1];
+    for (const pageSection of pageSections) {
+      // Finde das Ende der Seite (nächste page div oder body Ende)
+      let pageContent = pageSection;
+      
+      // Entferne alles nach dem schließenden </div> der aktuellen Seite
+      const endMatch = pageContent.match(/^(.*?)(<\/div>.*)?$/s);
+      if (endMatch) {
+        pageContent = endMatch[1];
+      }
       
       // Titel extrahieren (h2 Element)
       const titleRegex = /<h2[^>]*>(.*?)<\/h2>/s;
