@@ -23,9 +23,9 @@ function parseQiratuRashidaHTML() {
     
     for (let i = 0; i < pageMarkers.length; i++) {
       const startPos = pageMarkers[i];
-      const endPos = i < pageMarkers.length - 1 ? pageMarkers[i + 1] : htmlContent.indexOf('</body>');
+      const endPos = i < pageMarkers.length - 1 ? pageMarkers[i + 1] : htmlContent.length;
       
-      if (endPos === -1) continue;
+      if (endPos <= startPos) continue;
       
       let pageSection = htmlContent.substring(startPos, endPos);
       
@@ -65,13 +65,17 @@ function parseQiratuRashidaHTML() {
         }
       }
       
-      if (paragraphs.length > 0) {
-        pages.push({
-          number: i + 1,
-          title: title,
-          paragraphs: paragraphs
-        });
-      }
+      // Immer eine Seite hinzufügen, auch wenn sie leer ist
+      pages.push({
+        number: i + 1,
+        title: title,
+        paragraphs: paragraphs.length > 0 ? paragraphs : [{
+          words: ['Leere Seite'],
+          maxWordsPerLine: 2
+        }]
+      });
+      
+      console.log(`Processed page ${i + 1}: ${title} with ${paragraphs.length} paragraphs`);
     }
     
     return pages;
