@@ -35,8 +35,8 @@ function parseQiratuRashidaHTML() {
       // Entferne schließende </div> Tags am Ende
       pageSection = pageSection.replace(/<\/div>\s*$/, '').trim();
       
-      // Titel extrahieren (h2 Element)
-      const titleRegex = /<h2[^>]*>(.*?)<\/h2>/s;
+      // Titel extrahieren (h1 oder h2 Element)
+      const titleRegex = /<h[12][^>]*>(.*?)<\/h[12]>/s;
       const titleMatch = pageSection.match(titleRegex);
       
       let title = `الصفحة ${i + 1}`;
