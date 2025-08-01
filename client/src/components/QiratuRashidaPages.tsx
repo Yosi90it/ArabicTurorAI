@@ -84,6 +84,13 @@ export default function QiratuRashidaPages() {
 
   return (
     <div className="max-w-6xl mx-auto p-6">
+      {/* Seitentitel */}
+      <div className="text-center mb-4">
+        <h1 className="text-2xl font-bold arabic-text" style={{ direction: 'rtl' }}>
+          {currentPageData.title}
+        </h1>
+      </div>
+
       {/* Arabischer Text-Container mit Rahmen wie im Bild */}
       <div className="border-2 border-gray-300 rounded-lg p-8 min-h-96 arabic-container bg-white">
         <div className="space-y-6">
