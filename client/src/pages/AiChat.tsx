@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTashkeel } from "@/contexts/TashkeelContext";
 import { useWordByWord } from "@/contexts/WordByWordContext";
-import { Send, Bot, User, Volume2, Loader2, Plus, BookOpen, Target, CheckCircle } from "lucide-react";
+import { Bot, User, Volume2, Loader2, Plus, BookOpen, Target, CheckCircle } from "lucide-react";
+import VoiceChatComponent from "@/components/VoiceChatComponent";
 import { Badge } from "@/components/ui/badge";
 import { useFlashcards } from "@/contexts/FlashcardContext";
 import { useToast } from "@/hooks/use-toast";
@@ -49,6 +49,16 @@ export default function AiChat() {
   } | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   
+  // Voice conversation state
+  const [isVoiceModeActive, setIsVoiceModeActive] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [recognition, setRecognition] = useState<any | null>(null);
+  const [synthesis, setSynthesis] = useState<SpeechSynthesis | null>(null);
+  const [isListening, setIsListening] = useState(false);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  
   // Practice mode state
   const [practiceMessages, setPracticeMessages] = useState<Message[]>([]);
   const [practiceInput, setPracticeInput] = useState("");
@@ -61,17 +71,117 @@ export default function AiChat() {
   }[]>([]);
   const [practiceStarted, setPracticeStarted] = useState(false);
 
-  const handleSend = async () => {
-    if (!input.trim()) return;
+  // Initialize speech recognition and synthesis
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        const recognizer = new SpeechRecognition();
+        recognizer.continuous = true;
+        recognizer.interimResults = true;
+        recognizer.lang = 'ar-SA'; // Arabic language
+        setRecognition(recognizer);
+      }
+      
+      if (window.speechSynthesis) {
+        setSynthesis(window.speechSynthesis);
+      }
+    }
+  }, []);
 
-    const userMessage = input.trim();
+  // Voice mode functions
+  const startVoiceMode = async () => {
+    if (!recognition || !synthesis) {
+      toast({
+        title: strings.error || "Fehler",
+        description: "Sprachfunktion wird von Ihrem Browser nicht unterstützt",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsVoiceModeActive(true);
+    setIsListening(true);
+    
+    recognition.onstart = () => {
+      setIsRecording(true);
+    };
+
+    recognition.onresult = (event: any) => {
+      let finalTranscript = '';
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        if (event.results[i].isFinal) {
+          finalTranscript += event.results[i][0].transcript;
+        }
+      }
+      
+      if (finalTranscript.trim()) {
+        setInput(finalTranscript);
+        handleSend(finalTranscript);
+      }
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error('Speech recognition error:', event.error);
+      setIsRecording(false);
+    };
+
+    recognition.onend = () => {
+      setIsRecording(false);
+      if (isVoiceModeActive) {
+        setTimeout(() => {
+          recognition.start();
+        }, 1000);
+      }
+    };
+
+    recognition.start();
+  };
+
+  const stopVoiceMode = () => {
+    setIsVoiceModeActive(false);
+    setIsListening(false);
+    setIsRecording(false);
+    
+    if (recognition) {
+      recognition.stop();
+    }
+    
+    if (synthesis) {
+      synthesis.cancel();
+    }
+    
+    setIsSpeaking(false);
+  };
+
+  const speakText = (text: string, lang: string = 'ar-SA') => {
+    if (!synthesis) return;
+    
+    synthesis.cancel();
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = lang;
+    utterance.rate = 0.8;
+    utterance.pitch = 1;
+    
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+    
+    synthesis.speak(utterance);
+  };
+
+  const handleSend = async (voiceInput?: string) => {
+    const messageText = voiceInput || input.trim();
+    if (!messageText) return;
+
     setInput("");
     setIsLoading(true);
 
     const newMessage: Message = {
       id: messages.length + 1,
       sender: "ME",
-      arabic: userMessage,
+      arabic: messageText,
       translation: ""
     };
     setMessages(prev => [...prev, newMessage]);
@@ -95,7 +205,7 @@ export default function AiChat() {
           })),
           {
             role: "user",
-            content: userMessage
+            content: messageText
           }
         ],
         response_format: { type: "json_object" },
@@ -112,6 +222,11 @@ export default function AiChat() {
       };
       
       setMessages(prev => [...prev, aiResponse]);
+      
+      // Automatically speak AI response if in voice mode
+      if (isVoiceModeActive && result.arabic) {
+        speakText(result.arabic, 'ar-SA');
+      }
       
       updateProgress('chat');
       toast({
@@ -235,7 +350,7 @@ export default function AiChat() {
           })),
           {
             role: "user",
-            content: userMessage
+            content: messageText
           }
         ],
         response_format: { type: "json_object" },
@@ -485,10 +600,67 @@ export default function AiChat() {
                 </div>
               )}
               
+              {/* Voice Mode Toggle */}
+              <div className="flex justify-center mb-4">
+                <Button
+                  onClick={isVoiceModeActive ? stopVoiceMode : startVoiceMode}
+                  className={`px-6 py-3 rounded-full ${
+                    isVoiceModeActive 
+                      ? 'bg-red-500 hover:bg-red-600 text-white' 
+                      : 'bg-green-500 hover:bg-green-600 text-white'
+                  }`}
+                >
+                  {isVoiceModeActive ? (
+                    <>
+                      <PhoneOff className="w-5 h-5 mr-2" />
+                      Gespräch beenden
+                    </>
+                  ) : (
+                    <>
+                      <Phone className="w-5 h-5 mr-2" />
+                      Sprachgespräch starten
+                    </>
+                  )}
+                </Button>
+              </div>
+
+              {/* Voice Status */}
+              {isVoiceModeActive && (
+                <div className="flex justify-center items-center gap-4 mb-4 p-3 bg-blue-50 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    {isRecording ? (
+                      <>
+                        <Mic className="w-5 h-5 text-red-500 animate-pulse" />
+                        <span className="text-sm font-medium text-red-600">Hört zu...</span>
+                      </>
+                    ) : (
+                      <>
+                        <MicOff className="w-5 h-5 text-gray-500" />
+                        <span className="text-sm text-gray-600">Bereit</span>
+                      </>
+                    )}
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    {isSpeaking ? (
+                      <>
+                        <Volume2 className="w-5 h-5 text-blue-500 animate-pulse" />
+                        <span className="text-sm font-medium text-blue-600">KI spricht...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Volume2 className="w-5 h-5 text-gray-500" />
+                        <span className="text-sm text-gray-600">Stille</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+              )}
+
               <div className="flex space-x-2">
                 <Input
                   type="text"
-                  placeholder="Type your message in Arabic or English..."
+                  placeholder={isVoiceModeActive ? "Sprechen Sie oder tippen Sie..." : "Nachricht auf Arabisch oder Englisch..."}
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && handleSend()}
@@ -496,7 +668,7 @@ export default function AiChat() {
                   disabled={isLoading}
                 />
                 <Button 
-                  onClick={handleSend}
+                  onClick={() => handleSend()}
                   disabled={isLoading || !input.trim()}
                   className="px-6"
                 >
