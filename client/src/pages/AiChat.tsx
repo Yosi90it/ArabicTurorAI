@@ -49,15 +49,7 @@ export default function AiChat() {
   } | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   
-  // Voice conversation state
-  const [isVoiceModeActive, setIsVoiceModeActive] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const [recognition, setRecognition] = useState<any | null>(null);
-  const [synthesis, setSynthesis] = useState<SpeechSynthesis | null>(null);
-  const [isListening, setIsListening] = useState(false);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
+
   
   // Practice mode state
   const [practiceMessages, setPracticeMessages] = useState<Message[]>([]);
@@ -71,23 +63,7 @@ export default function AiChat() {
   }[]>([]);
   const [practiceStarted, setPracticeStarted] = useState(false);
 
-  // Initialize speech recognition and synthesis
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-      if (SpeechRecognition) {
-        const recognizer = new SpeechRecognition();
-        recognizer.continuous = true;
-        recognizer.interimResults = true;
-        recognizer.lang = 'ar-SA'; // Arabic language
-        setRecognition(recognizer);
-      }
-      
-      if (window.speechSynthesis) {
-        setSynthesis(window.speechSynthesis);
-      }
-    }
-  }, []);
+
 
   // Voice mode functions
   const startVoiceMode = async () => {
@@ -224,8 +200,8 @@ export default function AiChat() {
       setMessages(prev => [...prev, aiResponse]);
       
       // Automatically speak AI response if in voice mode
-      if (isVoiceModeActive && result.arabic) {
-        speakText(result.arabic, 'ar-SA');
+      if (result.arabic && (window as any).speakArabicText) {
+        (window as any).speakArabicText(result.arabic, 'ar-SA');
       }
       
       updateProgress('chat');
@@ -600,81 +576,12 @@ export default function AiChat() {
                 </div>
               )}
               
-              {/* Voice Mode Toggle */}
-              <div className="flex justify-center mb-4">
-                <Button
-                  onClick={isVoiceModeActive ? stopVoiceMode : startVoiceMode}
-                  className={`px-6 py-3 rounded-full ${
-                    isVoiceModeActive 
-                      ? 'bg-red-500 hover:bg-red-600 text-white' 
-                      : 'bg-green-500 hover:bg-green-600 text-white'
-                  }`}
-                >
-                  {isVoiceModeActive ? (
-                    <>
-                      <PhoneOff className="w-5 h-5 mr-2" />
-                      Gespräch beenden
-                    </>
-                  ) : (
-                    <>
-                      <Phone className="w-5 h-5 mr-2" />
-                      Sprachgespräch starten
-                    </>
-                  )}
-                </Button>
-              </div>
-
-              {/* Voice Status */}
-              {isVoiceModeActive && (
-                <div className="flex justify-center items-center gap-4 mb-4 p-3 bg-blue-50 rounded-lg">
-                  <div className="flex items-center gap-2">
-                    {isRecording ? (
-                      <>
-                        <Mic className="w-5 h-5 text-red-500 animate-pulse" />
-                        <span className="text-sm font-medium text-red-600">Hört zu...</span>
-                      </>
-                    ) : (
-                      <>
-                        <MicOff className="w-5 h-5 text-gray-500" />
-                        <span className="text-sm text-gray-600">Bereit</span>
-                      </>
-                    )}
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    {isSpeaking ? (
-                      <>
-                        <Volume2 className="w-5 h-5 text-blue-500 animate-pulse" />
-                        <span className="text-sm font-medium text-blue-600">KI spricht...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Volume2 className="w-5 h-5 text-gray-500" />
-                        <span className="text-sm text-gray-600">Stille</span>
-                      </>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              <div className="flex space-x-2">
-                <Input
-                  type="text"
-                  placeholder={isVoiceModeActive ? "Sprechen Sie oder tippen Sie..." : "Nachricht auf Arabisch oder Englisch..."}
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && handleSend()}
-                  className="flex-1"
-                  disabled={isLoading}
-                />
-                <Button 
-                  onClick={() => handleSend()}
-                  disabled={isLoading || !input.trim()}
-                  className="px-6"
-                >
-                  {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                </Button>
-              </div>
+              <VoiceChatComponent 
+                onSendMessage={handleSend}
+                isLoading={isLoading}
+                input={input}
+                setInput={setInput}
+              />
             </CardContent>
           </Card>
         </TabsContent>
