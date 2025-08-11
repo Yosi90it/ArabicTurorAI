@@ -5,7 +5,6 @@ import {
   BookOpen, 
   Video, 
   Languages, 
-  Calendar,
   Settings,
   Trophy,
   FileText
@@ -45,11 +44,7 @@ const navigationItems = [
     label: "Alphabet Trainer",
     route: "/alphabet-trainer"
   },
-  {
-    icon: Calendar,
-    label: "7-Day Plan",
-    route: "/weekly-plan"
-  },
+
 
   {
     icon: Trophy,
@@ -102,7 +97,7 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
                  item.route === "/flashcards" ? strings.flashcards :
                  item.route === "/video-trainer" ? strings.videoTrainer :
                  item.route === "/alphabet-trainer" ? strings.alphabetTrainer :
-                 item.route === "/weekly-plan" ? strings.weeklyPlan :
+
                  item.route === "/gamification" ? strings.achievements :
                  item.label}
               </span>
