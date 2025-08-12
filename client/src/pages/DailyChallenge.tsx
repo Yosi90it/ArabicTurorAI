@@ -45,14 +45,14 @@ export default function DailyChallenge() {
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
   const { stats, updateProgress } = useSimpleGamification();
-  const { words } = useFlashcards();
+  const { userFlashcards } = useFlashcards();
 
   // Generate personalized challenges based on user's vocabulary and progress
   const generateChallenges = () => {
     setIsGenerating(true);
     
     // Get user's recent flashcards for personalized content
-    const recentFlashcards = words.slice(-10);
+    const recentFlashcards = userFlashcards.slice(-10);
     
     const challengeTemplates: Omit<Challenge, 'id' | 'completed' | 'progress'>[] = [
       // Vocabulary Challenge
