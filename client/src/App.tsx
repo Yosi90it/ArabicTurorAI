@@ -18,6 +18,7 @@ import BookReader from "@/pages/BookReader";
 
 import VideoTrainer from "@/pages/VideoTrainer";
 import AlphabetTrainer from "@/pages/AlphabetTrainer";
+import DailyChallenge from "@/pages/DailyChallenge";
 import SimpleGoalTracker from "@/components/SimpleGoalTracker";
 import WeeklyPlan from "@/pages/WeeklyPlan";
 
@@ -94,8 +95,7 @@ function Router() {
 
             <Route path="/video-trainer" component={VideoTrainer} />
             <Route path="/alphabet-trainer" component={AlphabetTrainer} />
-
-  
+            <Route path="/daily-challenge" component={DailyChallenge} />
             <Route path="/weekly-plan" component={WeeklyPlan} />
             <Route path="/gamification" component={SimpleGoalTracker} />
             <Route path="/admin-panel" component={ProtectedAdminRoute} />

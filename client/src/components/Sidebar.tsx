@@ -7,6 +7,7 @@ import {
   Languages, 
   Settings,
   Trophy,
+  Target,
   FileText
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
@@ -44,8 +45,11 @@ const navigationItems = [
     label: "Alphabet Trainer",
     route: "/alphabet-trainer"
   },
-
-
+  {
+    icon: Target,
+    label: "Daily Challenge",
+    route: "/daily-challenge"
+  },
   {
     icon: Trophy,
     label: "Erfolge",
@@ -97,7 +101,7 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
                  item.route === "/flashcards" ? strings.flashcards :
                  item.route === "/video-trainer" ? strings.videoTrainer :
                  item.route === "/alphabet-trainer" ? strings.alphabetTrainer :
-
+                 item.route === "/daily-challenge" ? strings.dailyChallenge :
                  item.route === "/gamification" ? strings.achievements :
                  item.label}
               </span>
