@@ -156,7 +156,27 @@ const translations = {
     readyToGenerate: "Ready to generate your story?",
     clickGenerate: "Click 'Generate Story' to create a personalized Arabic story using your vocabulary!",
     generatedStory: "Generated Story",
-    wordsUsed: "Words used from your collection"
+    wordsUsed: "Words used from your collection",
+    
+    // VideoTrainer
+    videoPlayer: "Video Player",
+    transcript: "Transcript",
+    currentSegment: "Current Segment",
+    segmentCompleted: "Segment Completed",
+    segment: "Segment",
+    completedLowercase: "completed",
+    segments: "segments",
+    playSegment: "Play Segment",
+    markCompleted: "Mark Completed",
+    timestamp: "Timestamp",
+    segmentNumber: "Segment Number",
+    completed: "Completed",
+    loadingVideo: "Loading Video...",
+    
+    // Sidebar
+    sidebar: {
+      videoTrainer: "Video Trainer"
+    }
   },
   de: {
     // Landing Page
@@ -313,7 +333,27 @@ const translations = {
     englishTranslation: "Englische Übersetzung",
     previousPage: "Vorherige Seite",
     nextPage: "Nächste Seite",
-    achievements: "Erfolge"
+    achievements: "Erfolge",
+    
+    // VideoTrainer
+    videoPlayer: "Video-Player",
+    transcript: "Transkript",
+    currentSegment: "Aktuelles Segment",
+    segmentCompleted: "Segment abgeschlossen",
+    segment: "Segment",
+    completedLowercase: "abgeschlossen",
+    segments: "Segmente",
+    playSegment: "Segment abspielen",
+    markCompleted: "Als abgeschlossen markieren",
+    timestamp: "Zeitstempel",
+    segmentNumber: "Segment-Nummer",
+    completed: "Abgeschlossen",
+    loadingVideo: "Video wird geladen...",
+    
+    // Sidebar
+    sidebar: {
+      videoTrainer: "Video-Trainer"
+    }
   }
 };
 

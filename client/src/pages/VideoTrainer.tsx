@@ -200,7 +200,7 @@ export default function VideoTrainer() {
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
-                  {strings.sidebar.videoTrainer}
+                  {strings.videoTrainer}
                 </h1>
                 <p className="text-gray-600 dark:text-gray-300">
                   {listeningVideoData.description}
