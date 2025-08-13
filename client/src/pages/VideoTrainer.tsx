@@ -38,9 +38,11 @@ export default function VideoTrainer() {
   const [videoCurrentTime, setVideoCurrentTime] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [highlightedSegmentIndex, setHighlightedSegmentIndex] = useState(0);
+  const [isVideoReady, setIsVideoReady] = useState(false);
   
-  const videoRef = useRef<HTMLIFrameElement>(null);
+  const videoRef = useRef<HTMLDivElement>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const playerRef = useRef<any>(null);
   const { toast } = useToast();
   const { updateProgress } = useSimpleGamification();
   const { strings, lang } = useLanguage();
@@ -68,32 +70,105 @@ export default function VideoTrainer() {
     return 0;
   };
 
-  // Simulate video time tracking for highlighting
+  // Load YouTube API and setup player
   useEffect(() => {
-    intervalRef.current = setInterval(() => {
-      // In a real implementation, you would get the actual video time from YouTube API
-      // For now, we simulate by incrementing time
-      setVideoCurrentTime(prev => {
-        const newTime = prev + 1;
-        const newSegmentIndex = getCurrentSegmentFromTime(newTime);
-        if (newSegmentIndex !== highlightedSegmentIndex) {
-          setHighlightedSegmentIndex(newSegmentIndex);
+    const loadYouTubeAPI = () => {
+      if ((window as any).YT) {
+        initializePlayer();
+        return;
+      }
+      
+      const script = document.createElement('script');
+      script.src = 'https://www.youtube.com/iframe_api';
+      script.onload = () => {
+        (window as any).onYouTubeIframeAPIReady = initializePlayer;
+      };
+      document.body.appendChild(script);
+    };
+
+    const initializePlayer = () => {
+      if (!videoRef.current) return;
+      
+      const videoId = listeningVideoData.youtubeUrl.split('v=')[1];
+      
+      playerRef.current = new (window as any).YT.Player(videoRef.current, {
+        height: '100%',
+        width: '100%',
+        videoId: videoId,
+        playerVars: {
+          'autoplay': 0,
+          'controls': 1,
+          'rel': 0,
+          'modestbranding': 1,
+          'enablejsapi': 1
+        },
+        events: {
+          'onReady': onPlayerReady,
+          'onStateChange': onPlayerStateChange
         }
-        return newTime;
       });
-    }, 1000);
+    };
+
+    const onPlayerReady = (event: any) => {
+      setIsVideoReady(true);
+      // Start tracking video time
+      trackVideoTime();
+    };
+
+    const onPlayerStateChange = (event: any) => {
+      if (event.data === (window as any).YT.PlayerState.PLAYING) {
+        trackVideoTime();
+      } else if (event.data === (window as any).YT.PlayerState.PAUSED) {
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+        }
+      }
+    };
+
+    const trackVideoTime = () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+      
+      intervalRef.current = setInterval(() => {
+        if (playerRef.current && playerRef.current.getCurrentTime) {
+          const currentTime = playerRef.current.getCurrentTime();
+          setVideoCurrentTime(currentTime);
+          
+          const newSegmentIndex = getCurrentSegmentFromTime(currentTime);
+          if (newSegmentIndex !== highlightedSegmentIndex) {
+            setHighlightedSegmentIndex(newSegmentIndex);
+            setCurrentSegmentIndex(newSegmentIndex);
+          }
+        }
+      }, 500); // Check every 500ms for smoother updates
+    };
+
+    loadYouTubeAPI();
 
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
     };
-  }, [highlightedSegmentIndex]);
+  }, []);
 
-  // YouTube embed URL with autoplay and controls
-  const getYouTubeEmbedUrl = () => {
-    const videoId = listeningVideoData.youtubeUrl.split('v=')[1];
-    return `https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=0&controls=1&rel=0&modestbranding=1`;
+  // Jump to specific time when segment is clicked
+  const jumpToSegment = (segmentIndex: number) => {
+    setCurrentSegmentIndex(segmentIndex);
+    
+    if (playerRef.current && playerRef.current.seekTo) {
+      const timestamp = segments[segmentIndex].timestamp;
+      const seconds = timeToSeconds(timestamp);
+      playerRef.current.seekTo(seconds, true);
+    }
+  };
+
+  // Format time for display
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${minutes}:${secs.toString().padStart(2, '0')}`;
   };
 
   const nextSegment = () => {
@@ -248,15 +323,19 @@ export default function VideoTrainer() {
               </CardHeader>
               <CardContent>
                 <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
-                  <iframe
+                  <div
                     ref={videoRef}
-                    src={getYouTubeEmbedUrl()}
                     className="absolute top-0 left-0 w-full h-full rounded-lg"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    title="Arabic Listening Video"
+                    style={{ backgroundColor: '#000' }}
                   />
                 </div>
+                
+                {/* Video Time Display */}
+                {isVideoReady && (
+                  <div className="mt-2 text-center text-sm text-gray-600">
+                    {lang === 'de' ? 'Video-Zeit:' : 'Video Time:'} {formatTime(videoCurrentTime)}
+                  </div>
+                )}
                 
                 {/* Video Controls */}
                 <div className="mt-4 flex justify-center gap-4">
@@ -298,7 +377,7 @@ export default function VideoTrainer() {
                           ? 'bg-blue-50 border-blue-300 shadow-sm'
                           : 'bg-gray-50 border-gray-200 hover:bg-blue-50'
                       }`}
-                      onClick={() => setCurrentSegmentIndex(index)}
+                      onClick={() => jumpToSegment(index)}
                     >
                       <div className="flex items-center gap-2 mb-2">
                         <Badge variant="outline" className="text-xs">
