@@ -17,51 +17,129 @@ export const listeningVideoData = {
   segments: [
     {
       timestamp: "0:01",
-      arabic: "بِسْمِ اللهِ الْحَمْدُ للهِ وَالصَّلاةُ وَالسَّلامُ عَلَى رَسُولِ اللهِ وَعَلَى آلِهِ وَأَصْحَابِهِ أَجْمَعِينَ أَمَّا بَعْدُ",
-      german: "Im Namen Allahs, Lob sei Allah und Friede und Segen auf dem Gesandten Allahs und seiner Familie und allen seinen Gefährten. Danach:",
-      english: "In the name of Allah, praise be to Allah and peace and blessings upon the Messenger of Allah and his family and all his companions. After that:"
+      arabic: "بِسْمِ اللهِ الْحَمْدُ للهِ وَالصَّلاةُ وَالسَّلامُ عَلَى",
+      german: "Im Namen Allahs, Lob sei Allah und Friede und Segen auf",
+      english: "In the name of Allah, praise be to Allah and peace and blessings upon"
+    },
+    {
+      timestamp: "0:03",
+      arabic: "رَسُولِ اللهِ وَعَلَى آلِهِ وَأَصْحَابِهِ أَجْمَعِينَ أَمَّا",
+      german: "dem Gesandten Allahs und seiner Familie und allen seinen Gefährten. Danach:",
+      english: "the Messenger of Allah and his family and all his companions. After that:"
     },
     {
       timestamp: "0:06",
-      arabic: "السَّلامُ عَلَيْكُمْ وَرَحْمَةُ اللهِ وَبَرَكَاتُهُ أَهْلاً وَسَهْلاً وَمَرْحَباً بِكُمْ أَخَوَانِي وَأَخَوَاتِي طُلابَ اللُّغَةِ الْعَرَبِيَّةِ",
-      german: "Friede sei mit euch und Allahs Barmherzigkeit und Segen. Willkommen, meine Brüder und Schwestern, Studenten der arabischen Sprache",
-      english: "Peace be upon you and Allah's mercy and blessings. Welcome, my brothers and sisters, students of the Arabic language"
+      arabic: "بَعْدُ السَّلامُ عَلَيْكُمْ وَرَحْمَةُ اللهِ وَبَرَكَاتُهُ أَهْلاً",
+      german: "Friede sei mit euch und Allahs Barmherzigkeit und Segen. Willkommen",
+      english: "Peace be upon you and Allah's mercy and blessings. Welcome"
+    },
+    {
+      timestamp: "0:10",
+      arabic: "وَسَهْلاً وَمَرْحَباً بِكُمْ أَخَوَانِي وَأَخَوَاتِي طُلابَ",
+      german: "und herzlich willkommen, meine Brüder und Schwestern, Studenten",
+      english: "and warmly welcome, my brothers and sisters, students"
+    },
+    {
+      timestamp: "0:14",
+      arabic: "اللُّغَةِ",
+      german: "der Sprache",
+      english: "of the language"
     },
     {
       timestamp: "0:15",
-      arabic: "وَالْيَوْمَ أُرِيدُ أَنْ أَتَكَلَّمَ مَعَكُمْ فِي مَوْضُوعٍ مُهِمٍّ جِدّاً فِي تَعَلُّمِ اللُّغَةِ الْعَرَبِيَّةِ وَهُوَ الاسْتِمَاعُ",
-      german: "Und heute möchte ich mit euch über ein sehr wichtiges Thema beim Arabischlernen sprechen: das Hörverstehen",
-      english: "And today I want to talk with you about a very important topic in learning Arabic, which is listening"
+      arabic: "الْعَرَبِيَّةِ وَالْيَوْمَ أُرِيدُ",
+      german: "Arabisch. Und heute möchte ich",
+      english: "Arabic. And today I want"
+    },
+    {
+      timestamp: "0:18",
+      arabic: "أَنْ أَتَكَلَّمَ مَعَكُمْ فِي مَوْضُوعٍ مُهِمٍّ",
+      german: "mit euch über ein wichtiges Thema sprechen",
+      english: "to talk with you about an important topic"
+    },
+    {
+      timestamp: "0:24",
+      arabic: "جِدّاً فِي تَعَلُّمِ اللُّغَةِ",
+      german: "sehr wichtig beim Erlernen der Sprache",
+      english: "very important in learning the language"
+    },
+    {
+      timestamp: "0:27",
+      arabic: "الْعَرَبِيَّةِ وَهُوَ الاسْتِمَا",
+      german: "Arabisch, und das ist das Hörver-",
+      english: "Arabic, and that is listen-"
     },
     {
       timestamp: "0:30",
-      arabic: "مَا أَدْرَاكَ مَا الاسْتِمَاعُ؟ الاسْتِمَاعُ كَمَا فَهِمْتُمْ مِنَ الْكَلِمَةِ نَفْسِهَا هُوَ أَنْ تَسْتَمِعُوا إِلَى اللُّغَةِ",
-      german: "Was ist Hörverstehen? Hörverstehen ist, wie ihr aus dem Wort selbst verstanden habt, dass man der Sprache zuhört",
-      english: "What is listening? Listening, as you understood from the word itself, is to listen to the language"
+      arabic: "عُ الاسْتِمَاعُ وَمَا أَدْرَاكَ مَا",
+      german: "stehen. Das Hörverstehen, und was lässt dich wissen, was",
+      english: "ing. Listening, and what lets you know what"
+    },
+    {
+      timestamp: "0:35",
+      arabic: "الاسْتِمَاعُ الاسْتِمَاعُ كَمَا فَهِمْتُمْ مِنَ الْكَلِمَةِ",
+      german: "Hörverstehen ist? Hörverstehen ist, wie ihr aus dem Wort",
+      english: "listening is? Listening is, as you understood from the word"
+    },
+    {
+      timestamp: "0:41",
+      arabic: "نَفْسِهَا هُوَ أَنْ تَسْتَمِعُوا إِلَى اللُّغَةِ فَالاسْتِمَاعُ",
+      german: "selbst verstanden habt, dass man der Sprache zuhört. Das Hörverstehen",
+      english: "itself, that you listen to the language. Listening"
     },
     {
       timestamp: "0:45",
-      arabic: "فَالاسْتِمَاعُ مَصْدَرُ اسْتَمَعَ يَسْتَمِعُ اسْتِمَاعاً يَعْنِي أَنْ تَسْمَعُوا اللُّغَةَ",
-      german: "Hörverstehen ist ein Masdar (Verbalsubstantiv) von 'zuhören', das bedeutet, die Sprache zu hören",
-      english: "Listening is a verbal noun from 'to listen', meaning to hear the language"
+      arabic: "مَصْدَرُ اسْتَمَعَ يَسْتَمِعُ اسْتِمَاعاً يَعْنِي أَنْ تَسْمَعُوا",
+      german: "ist ein Masdar von 'zuhören', das bedeutet, dass ihr hört",
+      english: "is a verbal noun from 'to listen', meaning that you hear"
+    },
+    {
+      timestamp: "0:50",
+      arabic: "اللُّغَةَ",
+      german: "die Sprache",
+      english: "the language"
     },
     {
       timestamp: "0:53",
-      arabic: "وَالاسْتِمَاعُ إِحْدَى الْمَهَارَاتِ الأَرْبَعَةِ لِلُّغَةِ",
-      german: "Und Hörverstehen ist eine der vier Sprachfertigkeiten",
-      english: "And listening is one of the four language skills"
+      arabic: "وَالاسْتِمَاعُ إِحْدَى الْمَهَارَاتِ",
+      german: "Und Hörverstehen ist eine der Fertigkeiten",
+      english: "And listening is one of the skills"
+    },
+    {
+      timestamp: "0:57",
+      arabic: "الأَرْبَعَةِ لِلُّغَةِ",
+      german: "der vier Sprachfertigkeiten",
+      english: "of the four language skills"
+    },
+    {
+      timestamp: "1:00",
+      arabic: "فَالْمَهَارَاتُ",
+      german: "Die Fertigkeiten",
+      english: "The skills"
     },
     {
       timestamp: "1:01",
-      arabic: "فَالْمَهَارَاتُ اللُّغَوِيَّةُ هِيَ الاسْتِمَاعُ وَالْمُحَادَثَةُ وَالْقِرَاءَةُ وَالْكِتَابَةُ",
-      german: "Die Sprachfertigkeiten sind: Hörverstehen, Sprechen, Lesen und Schreiben",
-      english: "The language skills are: listening, speaking, reading, and writing"
+      arabic: "اللُّغَوِيَّةُ هِيَ",
+      german: "der Sprache sind",
+      english: "of language are"
+    },
+    {
+      timestamp: "1:05",
+      arabic: "الاسْتِمَاعُ",
+      german: "Hörverstehen",
+      english: "listening"
+    },
+    {
+      timestamp: "1:07",
+      arabic: "وَالْمُحَادَثَةُ وَالْقِرَاءَةُ",
+      german: "und Sprechen und Lesen",
+      english: "and speaking and reading"
     },
     {
       timestamp: "1:10",
-      arabic: "يَعْنِي الاسْتِمَاعُ هُوَ قُدْرَتُكَ عَلَى فَهْمِ كَلامٍ تَسْمَعُهُ",
-      german: "Das heißt, Hörverstehen ist deine Fähigkeit, gesprochene Sprache zu verstehen, die du hörst",
-      english: "Meaning listening is your ability to understand speech that you hear"
+      arabic: "وَالْكِتَابَةُ يَعْنِي الاسْتِمَاعُ هِيَ قُدْرَتُكَ عَلَى فَهْمِ",
+      german: "und Schreiben. Das heißt, Hörverstehen ist deine Fähigkeit zu verstehen",
+      english: "and writing. That is, listening is your ability to understand"
     },
     {
       timestamp: "1:20",

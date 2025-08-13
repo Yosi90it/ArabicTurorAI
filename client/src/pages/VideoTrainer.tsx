@@ -89,9 +89,13 @@ export default function VideoTrainer() {
     const initializePlayer = () => {
       if (!videoRef.current) return;
       
-      const videoId = listeningVideoData.youtubeUrl.split('v=')[1];
+      const videoId = listeningVideoData.youtubeUrl.split('v=')[1]?.split('&')[0];
       
-      playerRef.current = new (window as any).YT.Player(videoRef.current, {
+      // Create a unique div for the player
+      const playerId = 'youtube-player-' + Math.random().toString(36).substr(2, 9);
+      videoRef.current.innerHTML = `<div id="${playerId}"></div>`;
+      
+      playerRef.current = new (window as any).YT.Player(playerId, {
         height: '100%',
         width: '100%',
         videoId: videoId,
