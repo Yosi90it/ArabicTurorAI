@@ -66,14 +66,25 @@ export default function VideoTrainer() {
 
   // Load YouTube API and setup player
   useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://www.youtube.com/iframe_api';
-    script.async = true;
-    document.body.appendChild(script);
+    // Check if YouTube API is already loaded
+    if ((window as any).YT && (window as any).YT.Player) {
+      initializePlayer();
+    } else {
+      // Load YouTube API if not already loaded
+      if (!document.querySelector('script[src*="youtube.com/iframe_api"]')) {
+        const script = document.createElement('script');
+        script.src = 'https://www.youtube.com/iframe_api';
+        script.async = true;
+        document.body.appendChild(script);
+      }
 
-    // Global callback for YouTube API
-    (window as any).onYouTubeIframeAPIReady = () => {
-      if (videoRef.current) {
+      // Global callback for YouTube API
+      (window as any).onYouTubeIframeAPIReady = initializePlayer;
+    }
+
+    function initializePlayer() {
+      if (videoRef.current && (window as any).YT) {
+        console.log('Initializing YouTube player...');
         playerRef.current = new (window as any).YT.Player(videoRef.current, {
           height: '100%',
           width: '100%',
@@ -89,7 +100,8 @@ export default function VideoTrainer() {
             modestbranding: 1
           },
           events: {
-            onReady: () => {
+            onReady: (event: any) => {
+              console.log('YouTube player ready!');
               setIsVideoReady(true);
               // Start time tracking
               intervalRef.current = setInterval(() => {
@@ -100,7 +112,6 @@ export default function VideoTrainer() {
                     
                     // Update highlighted segment based on video time
                     const newSegmentIndex = getCurrentSegmentFromTime(currentTime);
-                    console.log(`Video time: ${currentTime}s, Segment: ${newSegmentIndex}, Current: ${currentSegmentIndex}`);
                     
                     if (newSegmentIndex !== currentSegmentIndex) {
                       console.log(`Switching to segment ${newSegmentIndex} at time ${currentTime}s`);
@@ -111,22 +122,38 @@ export default function VideoTrainer() {
                     console.log('Error getting current time:', error);
                   }
                 }
-              }, 500); // Check more frequently for better sync
+              }, 500);
             },
             onStateChange: (event: any) => {
-              // Handle play/pause state changes if needed
+              console.log('YouTube player state changed:', event.data);
+            },
+            onError: (event: any) => {
+              console.log('YouTube player error:', event.data);
             }
           }
         });
       }
-    };
+    }
 
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
     };
-  }, [highlightedSegmentIndex]);
+  }, []);
+
+  // Update segment highlighting when currentSegmentIndex changes
+  useEffect(() => {
+    if (transcriptRef.current && currentSegmentIndex >= 0) {
+      const highlightedElement = transcriptRef.current.querySelector(`[data-segment="${currentSegmentIndex}"]`);
+      if (highlightedElement) {
+        highlightedElement.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center' 
+        });
+      }
+    }
+  }, [currentSegmentIndex]);
 
   const jumpToSegment = (segmentIndex: number) => {
     if (playerRef.current && playerRef.current.seekTo) {
