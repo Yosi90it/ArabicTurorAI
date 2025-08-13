@@ -43,6 +43,7 @@ export default function VideoTrainer() {
   const videoRef = useRef<HTMLDivElement>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const playerRef = useRef<any>(null);
+  const transcriptRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const { updateProgress } = useSimpleGamification();
   const { strings, lang } = useLanguage();
@@ -143,6 +144,17 @@ export default function VideoTrainer() {
           if (newSegmentIndex !== highlightedSegmentIndex) {
             setHighlightedSegmentIndex(newSegmentIndex);
             setCurrentSegmentIndex(newSegmentIndex);
+            
+            // Auto-scroll to current segment
+            if (transcriptRef.current) {
+              const highlightedElement = transcriptRef.current.querySelector(`[data-segment="${newSegmentIndex}"]`);
+              if (highlightedElement) {
+                highlightedElement.scrollIntoView({ 
+                  behavior: 'smooth', 
+                  block: 'center' 
+                });
+              }
+            }
           }
         }
       }, 500); // Check every 500ms for smoother updates
@@ -370,15 +382,16 @@ export default function VideoTrainer() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="max-h-96 overflow-y-auto">
+                <div ref={transcriptRef} className="max-h-96 overflow-y-auto">
                   <div className="text-lg font-arabic leading-relaxed text-right" dir="rtl">
                     {segments.map((segment, index) => (
                       <span
                         key={index}
+                        data-segment={index}
                         className={`cursor-pointer transition-all duration-300 ${
                           index === highlightedSegmentIndex
-                            ? 'bg-yellow-200 px-1 py-0.5 rounded text-black font-semibold'
-                            : 'hover:bg-blue-100 px-1 py-0.5 rounded'
+                            ? 'bg-blue-200 text-blue-900 font-semibold'
+                            : 'hover:bg-gray-100'
                         }`}
                         onClick={() => jumpToSegment(index)}
                       >
@@ -438,7 +451,7 @@ export default function VideoTrainer() {
                     disabled={showAnswer}
                   >
                     <span className="mr-3 font-bold">{String.fromCharCode(65 + index)}.</span>
-                    {lang === 'de' ? option.german : option.english}
+                    {typeof option === 'string' ? option : (lang === 'de' ? (option as any).german : (option as any).english)}
                   </Button>
                 ))}
               </div>
@@ -464,9 +477,11 @@ export default function VideoTrainer() {
                       {lang === 'de' ? 'Richtige Antwort:' : 'Correct Answer:'}
                     </p>
                     <p>
-                      {lang === 'de' 
-                        ? currentQuestion.options[currentQuestion.correctAnswer].german
-                        : currentQuestion.options[currentQuestion.correctAnswer].english}
+                      {typeof currentQuestion.options[currentQuestion.correctAnswer] === 'string' 
+                        ? currentQuestion.options[currentQuestion.correctAnswer]
+                        : (lang === 'de' 
+                          ? (currentQuestion.options[currentQuestion.correctAnswer] as any).german
+                          : (currentQuestion.options[currentQuestion.correctAnswer] as any).english)}
                     </p>
                   </div>
                   
