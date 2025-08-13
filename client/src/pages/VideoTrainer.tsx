@@ -370,55 +370,33 @@ export default function VideoTrainer() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="max-h-96 overflow-y-auto space-y-3">
-                  {segments.map((segment, index) => (
-                    <div
-                      key={index}
-                      className={`p-4 rounded-lg border cursor-pointer transition-all ${
-                        index === highlightedSegmentIndex
-                          ? 'bg-blue-100 border-blue-500 shadow-md ring-2 ring-blue-300'
-                          : index === currentSegmentIndex
-                          ? 'bg-blue-50 border-blue-300 shadow-sm'
-                          : 'bg-gray-50 border-gray-200 hover:bg-blue-50'
-                      }`}
-                      onClick={() => jumpToSegment(index)}
-                    >
-                      <div className="flex items-center gap-2 mb-2">
-                        <Badge variant="outline" className="text-xs">
-                          {segment.timestamp}
-                        </Badge>
-                        {completedSegments.has(index) && (
-                          <CheckCircle className="w-4 h-4 text-green-600" />
-                        )}
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <div className="text-lg font-arabic leading-relaxed" dir="rtl">
-                          <ClickableText text={segment.arabic} />
-                        </div>
-                        
-                        {showTranslation && (
-                          <p className="text-sm text-gray-600">
-                            {lang === 'de' ? segment.german : segment.english}
-                          </p>
-                        )}
+                <div className="max-h-96 overflow-y-auto">
+                  <div className="text-lg font-arabic leading-relaxed text-right" dir="rtl">
+                    {segments.map((segment, index) => (
+                      <span
+                        key={index}
+                        className={`cursor-pointer transition-all duration-300 ${
+                          index === highlightedSegmentIndex
+                            ? 'bg-yellow-200 px-1 py-0.5 rounded text-black font-semibold'
+                            : 'hover:bg-blue-100 px-1 py-0.5 rounded'
+                        }`}
+                        onClick={() => jumpToSegment(index)}
+                      >
+                        <ClickableText text={segment.arabic} />{' '}
+                      </span>
+                    ))}
+                  </div>
+                  
+                  {/* Translation of current segment */}
+                  {highlightedSegmentIndex >= 0 && (
+                    <div className="mt-6 pt-4 border-t border-gray-200">
+                      <div className="text-center text-sm text-gray-600 italic">
+                        {lang === 'de' 
+                          ? segments[highlightedSegmentIndex]?.german 
+                          : segments[highlightedSegmentIndex]?.english}
                       </div>
                     </div>
-                  ))}
-                </div>
-                
-                {/* Translation Toggle */}
-                <div className="mt-4 pt-4 border-t">
-                  <Button 
-                    onClick={() => setShowTranslation(!showTranslation)}
-                    variant="outline"
-                    className="gap-2 w-full"
-                  >
-                    <Languages className="w-4 h-4" />
-                    {showTranslation 
-                      ? (lang === 'de' ? 'Übersetzungen ausblenden' : 'Hide Translations')
-                      : (lang === 'de' ? 'Übersetzungen anzeigen' : 'Show Translations')}
-                  </Button>
+                  )}
                 </div>
               </CardContent>
             </Card>
