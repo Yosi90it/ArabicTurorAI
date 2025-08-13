@@ -257,11 +257,7 @@ export default function VideoTrainer() {
                             el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                           }
                         } : undefined}
-                        className={`p-2 rounded-lg transition-all duration-500 ease-in-out cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 ${
-                          index === currentSegmentIndex 
-                            ? 'transform scale-105 bg-blue-50 dark:bg-blue-950/30' 
-                            : ''
-                        }`}
+                        className={`p-2 rounded-lg transition-all duration-300 ease-in-out cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800`}
                         onClick={() => jumpToSegment(index)}
                       >
                         <ClickableText 
