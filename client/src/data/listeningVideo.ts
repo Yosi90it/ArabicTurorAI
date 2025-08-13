@@ -29,13 +29,13 @@ export const listeningVideoData = {
     },
     {
       timestamp: "0:06",
-      arabic: "بَعْدُ السَّلامُ عَلَيْكُمْ وَرَحْمَةُ اللهِ وَبَرَكَاتُهُ أَهْلاً",
+      arabic: "بَعْدُ السَّلاَمُ عَلَيْكُمْ وَرَحْمَةُ اللهِ وَبَرَكَاتُهُ أَهْلاً",
       german: "Friede sei mit euch und Allahs Barmherzigkeit und Segen. Willkommen",
       english: "Peace be upon you and Allah's mercy and blessings. Welcome"
     },
     {
       timestamp: "0:10",
-      arabic: "وَسَهْلاً وَمَرْحَباً بِكُمْ أَخَوَانِي وَأَخَوَاتِي طُلابَ",
+      arabic: "وَسَهْلاً وَمَرْحَباً بِكُمْ أَخَوَانِي وَأَخَوَاتِي طُلاَّبَ",
       german: "und herzlich willkommen, meine Brüder und Schwestern, Studenten",
       english: "and warmly welcome, my brothers and sisters, students"
     },
@@ -65,25 +65,25 @@ export const listeningVideoData = {
     },
     {
       timestamp: "0:27",
-      arabic: "الْعَرَبِيَّةِ وَهُوَ الاسْتِمَا",
-      german: "Arabisch, und das ist das Hörver-",
-      english: "Arabic, and that is listen-"
+      arabic: "الْعَرَبِيَّةِ وَهُوَ الاِسْتِمَاعُ",
+      german: "Arabisch, und das ist das Hörverstehen",
+      english: "Arabic, and that is listening"
     },
     {
       timestamp: "0:30",
-      arabic: "عُ الاسْتِمَاعُ وَمَا أَدْرَاكَ مَا",
-      german: "stehen. Das Hörverstehen, und was lässt dich wissen, was",
-      english: "ing. Listening, and what lets you know what"
+      arabic: "مَا أَدْرَاكَ مَا الاِسْتِمَاعُ وَمَا أَدْرَاكَ مَا",
+      german: "Was lässt dich wissen, was Hörverstehen ist? Und was lässt dich wissen, was",
+      english: "What lets you know what listening is? And what lets you know what"
     },
     {
       timestamp: "0:35",
-      arabic: "الاسْتِمَاعُ الاسْتِمَاعُ كَمَا فَهِمْتُمْ مِنَ الْكَلِمَةِ",
+      arabic: "الاِسْتِمَاعُ الاِسْتِمَاعُ كَمَا فَهِمْتُمْ مِنَ الْكَلِمَةِ",
       german: "Hörverstehen ist? Hörverstehen ist, wie ihr aus dem Wort",
       english: "listening is? Listening is, as you understood from the word"
     },
     {
       timestamp: "0:41",
-      arabic: "نَفْسِهَا هُوَ أَنْ تَسْتَمِعُوا إِلَى اللُّغَةِ فَالاسْتِمَاعُ",
+      arabic: "نَفْسِهَا هُوَ أَنْ تَسْتَمِعُوا إِلَى اللُّغَةِ فَالاِسْتِمَاعُ",
       german: "selbst verstanden habt, dass man der Sprache zuhört. Das Hörverstehen",
       english: "itself, that you listen to the language. Listening"
     },
@@ -101,7 +101,7 @@ export const listeningVideoData = {
     },
     {
       timestamp: "0:53",
-      arabic: "وَالاسْتِمَاعُ إِحْدَى الْمَهَارَاتِ",
+      arabic: "وَالاِسْتِمَاعُ إِحْدَى الْمَهَارَاتِ",
       german: "Und Hörverstehen ist eine der Fertigkeiten",
       english: "And listening is one of the skills"
     },
@@ -125,7 +125,7 @@ export const listeningVideoData = {
     },
     {
       timestamp: "1:05",
-      arabic: "الاسْتِمَاعُ",
+      arabic: "الاِسْتِمَاعُ",
       german: "Hörverstehen",
       english: "listening"
     },
@@ -137,7 +137,7 @@ export const listeningVideoData = {
     },
     {
       timestamp: "1:10",
-      arabic: "وَالْكِتَابَةُ يَعْنِي الاسْتِمَاعُ هِيَ قُدْرَتُكَ عَلَى فَهْمِ",
+      arabic: "وَالْكِتَابَةُ يَعْنِي الاِسْتِمَاعُ هِيَ قُدْرَتُكَ عَلَى فَهْمِ",
       german: "und Schreiben. Das heißt, Hörverstehen ist deine Fähigkeit zu verstehen",
       english: "and writing. That is, listening is your ability to understand"
     },

@@ -278,14 +278,14 @@ export default function VideoTrainer() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-6">
+    <div className="max-w-7xl mx-auto p-3 md:p-6 space-y-4 md:space-y-6">
       {/* Header */}
       <div className="text-center space-y-4">
-        <h1 className="text-3xl font-bold text-gray-900">
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
           {lang === 'de' ? 'Video-Hörverständnis-Training' : 'Video Listening Comprehension Training'}
         </h1>
         <div className="space-y-2">
-          <h2 className="text-xl font-semibold" dir="rtl">
+          <h2 className="text-lg md:text-xl font-semibold" dir="rtl">
             {listeningVideoData.title}
           </h2>
           <p className="text-gray-600">
@@ -382,16 +382,16 @@ export default function VideoTrainer() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div ref={transcriptRef} className="max-h-96 overflow-y-auto">
-                  <div className="text-lg font-arabic leading-relaxed text-right" dir="rtl">
+                <div ref={transcriptRef} className="max-h-80 md:max-h-96 overflow-y-auto">
+                  <div className="text-base md:text-lg font-arabic leading-relaxed text-right px-2 md:px-0" dir="rtl">
                     {segments.map((segment, index) => (
                       <span
                         key={index}
                         data-segment={index}
-                        className={`cursor-pointer transition-all duration-300 ${
+                        className={`cursor-pointer transition-all duration-300 touch-manipulation ${
                           index === highlightedSegmentIndex
-                            ? 'bg-blue-200 text-blue-900 font-semibold'
-                            : 'hover:bg-gray-100'
+                            ? 'bg-blue-200 text-blue-900 font-semibold px-1 py-1 rounded'
+                            : 'hover:bg-gray-100 px-1 py-1 rounded'
                         }`}
                         onClick={() => jumpToSegment(index)}
                       >
