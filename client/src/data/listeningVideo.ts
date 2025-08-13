@@ -184,6 +184,144 @@ export const listeningVideoData = {
       english: "is sleeping and I'm talking with you"
     },
     {
+      timestamp: "2:18",
+      arabic: "نَعَمْ الِاسْتِمَاعُ كُنْتُ أُرِيدُ أَنْ أَتَكَلَّمَ مَعَكُمْ",
+      german: "Ja, das Hörverstehen. Ich wollte mit euch sprechen",
+      english: "Yes, listening. I wanted to talk with you"
+    },
+    {
+      timestamp: "2:23",
+      arabic: "فِي هَذَا الْمَوْضُوعِ مَا أَهَمِّيَّةُ الِاسْتِمَاعِ فِي تَعَلُّمِ اللُّغَةِ",
+      german: "über dieses Thema: Was ist die Bedeutung des Hörverstehens beim Erlernen der Sprache",
+      english: "about this topic: What is the importance of listening in learning the language"
+    },
+    {
+      timestamp: "2:31",
+      arabic: "الْعَرَبِيَّةِ أَسْتَطِيعُ أَنْ أَجْزِمَ أَنَّ الِاسْتِمَاعَ",
+      german: "Arabisch? Ich kann mit Gewissheit sagen, dass das Hörverstehen",
+      english: "Arabic? I can say with certainty that listening"
+    },
+    {
+      timestamp: "2:38",
+      arabic: "مِنْ أَهَمِّ الْمَهَارَاتِ",
+      german: "eine der wichtigsten Fertigkeiten ist",
+      english: "is one of the most important skills"
+    },
+    {
+      timestamp: "2:43",
+      arabic: "لِمَاذَا؟ لِأَنَّهُ فِي هَذَا الزَّمَانِ أَغْلَبُ",
+      german: "Warum? Weil in dieser Zeit die meisten",
+      english: "Why? Because in this time most"
+    },
+    {
+      timestamp: "2:49",
+      arabic: "الطُّلَّابِ يُرِيدُونَ أَنْ يَفْهَمُوا اللُّغَةَ",
+      german: "Studenten die Sprache verstehen wollen",
+      english: "students want to understand the language"
+    },
+    {
+      timestamp: "2:53",
+      arabic: "الْعَرَبِيَّةَ أَغْلَبُ الطُّلَّابِ لَا يُرِيدُونَ تَعَلُّمَ الْعَرَبِيَّةِ لِأَجْلِ",
+      german: "Arabisch. Die meisten Studenten wollen nicht Arabisch lernen um",
+      english: "Arabic. Most students don't want to learn Arabic for"
+    },
+    {
+      timestamp: "2:57",
+      arabic: "الْحَدِيثِ لِأَجْلِ الْكَلَامِ مَعَ الْعَرَبِ لِأَنَّهُمْ أَصْلًا لَا يُقَابِلُونَ الْعَرَبَ إِلَّا",
+      german: "das Sprechen, um mit Arabern zu sprechen, weil sie überhaupt keine Araber treffen außer",
+      english: "speaking, to talk with Arabs, because they don't meet Arabs at all except"
+    },
+    {
+      timestamp: "3:03",
+      arabic: "قَلِيلًا فَهُنَاكَ طُلَّابٌ يَتَعَلَّمُونَ الْعَرَبِيَّةَ وَلَمْ يَرَوْا شَخْصًا عَرَبِيًّا",
+      german: "selten. Es gibt Studenten, die Arabisch lernen und noch nie eine arabische Person gesehen haben",
+      english: "rarely. There are students learning Arabic who have never seen an Arab person"
+    },
+    {
+      timestamp: "3:08",
+      arabic: "فِي حَيَاتِهِمْ لِذَلِكَ لَا يَضُرُّهُمْ ضَعْفُهُمْ فِي الْمُحَادَثَةِ",
+      german: "in ihrem Leben. Deshalb schadet ihnen ihre Schwäche im Sprechen nicht",
+      english: "in their lives. Therefore their weakness in conversation doesn't harm them"
+    },
+    {
+      timestamp: "3:15",
+      arabic: "لَا يَضُرُّهُمْ وَثَانِيًا الْكِتَابَةُ أَيْضًا لَا يَحْتَاجُونَ إِلَيْهَا",
+      german: "schadet ihnen nicht. Und zweitens, das Schreiben brauchen sie auch nicht",
+      english: "doesn't harm them. And secondly, writing they also don't need"
+    },
+    {
+      timestamp: "3:23",
+      arabic: "كَثِيرًا لِأَنَّهُمْ لَا يَكْتُبُونَ بِالْعَرَبِيَّةِ أَيْنَ سَيَكْتُبُونَ؟",
+      german: "sehr, weil sie nicht auf Arabisch schreiben. Wo werden sie schreiben?",
+      english: "much, because they don't write in Arabic. Where will they write?"
+    },
+    {
+      timestamp: "3:31",
+      arabic: "الطَّالِبُ الَّذِي يَسْكُنُ فِي كَازَاخِسْتَانَ فِي قَرْيَةٍ صَغِيرَةٍ عِنْدَ الْجِبَالِ",
+      german: "Der Student, der in Kasachstan in einem kleinen Dorf bei den Bergen lebt",
+      english: "The student who lives in Kazakhstan in a small village by the mountains"
+    },
+    {
+      timestamp: "3:38",
+      arabic: "لِمَاذَا يَحْتَاجُ إِلَى مَهَارَةِ الْكِتَابَةِ؟ لَا",
+      german: "warum braucht er die Schreibfertigkeit? Nein",
+      english: "why does he need writing skills? No"
+    },
+    {
+      timestamp: "3:42",
+      arabic: "يَحْتَاجُ وَالْقِرَاءَةُ نَعَمْ يَحْتَاجُ إِلَيْهَا يَحْتَاجُ إِلَيْهَا بِشِدَّةٍ",
+      german: "er braucht sie nicht. Und das Lesen, ja, er braucht es, er braucht es dringend",
+      english: "he doesn't need it. And reading, yes, he needs it, he needs it urgently"
+    },
+    {
+      timestamp: "3:50",
+      arabic: "يَحْتَاجُ إِلَيْهَا لَكِنَّ الِاسْتِمَاعَ أَهَمُّ لَهُ لِمَاذَا؟",
+      german: "er braucht es, aber das Hörverstehen ist wichtiger für ihn. Warum?",
+      english: "he needs it, but listening is more important for him. Why?"
+    },
+    {
+      timestamp: "3:58",
+      arabic: "لِأَنَّهُ يَسْتَطِيعُ أَنْ يَسْتَمِعَ إِلَى آلَافِ الْمُحَاضَرَاتِ الْمَوْجُودَةِ عَلَى الْيُوتِيُوبِ",
+      german: "Weil er Tausenden von Vorlesungen auf YouTube zuhören kann",
+      english: "Because he can listen to thousands of lectures available on YouTube"
+    },
+    {
+      timestamp: "4:07",
+      arabic: "وَالِاسْتِمَاعُ أَسْهَلُ مِنَ الْقِرَاءَةِ لِأَنَّ الْقِرَاءَةَ تَحْتَاجُ إِلَى كِتَابٍ",
+      german: "Und das Hörverstehen ist einfacher als das Lesen, weil das Lesen ein Buch braucht",
+      english: "And listening is easier than reading because reading needs a book"
+    },
+    {
+      timestamp: "4:14",
+      arabic: "وَلِأَنَّ الْقِرَاءَةَ تَحْتَاجُ إِلَى أَشْيَاءَ كَثِيرَةٍ وَالْكُتُبُ قَدْ تَكُونُ غَيْرَ مُتَوَفِّرَةٍ",
+      german: "Und weil das Lesen viele Dinge braucht und die Bücher möglicherweise nicht verfügbar sind",
+      english: "And because reading needs many things and books may not be available"
+    },
+    {
+      timestamp: "4:23",
+      arabic: "فِي بَلَدِهِ لَا يُوجَدُ عِنْدَهُ كِتَابٌ وَحَتَّى إِذَا وُجِدَ",
+      german: "in seinem Land. Er hat kein Buch und selbst wenn es gibt",
+      english: "in his country. He doesn't have a book and even if there is"
+    },
+    {
+      timestamp: "4:31",
+      arabic: "فَالطَّالِبُ الْمُعَاصِرُ لِلْأَسَفِ الشَّدِيدِ لَا يَقْرَأُ مَنْ مِنَّا يَقْرَأُ؟ قَلِيلٌ جِدًّا",
+      german: "so liest der zeitgenössische Student leider nicht. Wer von uns liest? Sehr wenige",
+      english: "the contemporary student unfortunately doesn't read. Who among us reads? Very few"
+    },
+    {
+      timestamp: "4:41",
+      arabic: "أَغْلَبُ النَّاسِ فِي هَذَا الزَّمَانِ إِذَا وَاجَهَتْهُمْ مُشْكِلَةٌ",
+      german: "Die meisten Menschen in dieser Zeit, wenn sie ein Problem haben",
+      english: "Most people in this time, when they face a problem"
+    },
+    {
+      timestamp: "4:47",
+      arabic: "لَا يَبْحَثُونَ فِي الْكُتُبِ يَدْخُلُونَ الْيُوتِيُوبَ وَيَكْتُبُونَ كَيْفَ أَفْعَلُ كَذَا وَكَذَا",
+      german: "suchen sie nicht in Büchern, sie gehen auf YouTube und schreiben: Wie mache ich das und das",
+      english: "don't search in books, they go to YouTube and write: How do I do this and that"
+    },
+    {
       timestamp: "1:20",
       arabic: "والكتابة هي قدرتك على التعبير الكتابي",
       german: "Und Schreiben ist deine Fähigkeit zum schriftlichen Ausdruck",
