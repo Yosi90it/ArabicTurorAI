@@ -178,11 +178,11 @@ export default function VideoTrainer() {
     setCompletedSegments(newCompleted);
     
     // Update gamification progress
-    updateProgress('video_segment_completed', 10);
+    updateProgress('video', 10);
     
     toast({
-      title: strings.videoTrainer.segmentCompleted,
-      description: `${strings.videoTrainer.segment} ${segmentIndex + 1} ${strings.videoTrainer.completedLowercase}`,
+      title: strings.segmentCompleted,
+      description: `${strings.segment} ${segmentIndex + 1} ${strings.completedLowercase}`,
     });
   };
 
@@ -212,10 +212,10 @@ export default function VideoTrainer() {
             <div className="mb-6">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm text-gray-600 dark:text-gray-300">
-                  {strings.videoTrainer.progress}
+                  {strings.progress}
                 </span>
                 <Badge variant="secondary">
-                  {completedSegments.size}/{segments.length} {strings.videoTrainer.segments}
+                  {completedSegments.size}/{segments.length} {strings.segments}
                 </Badge>
               </div>
               <Progress value={progressPercentage} className="h-2" />
@@ -229,7 +229,7 @@ export default function VideoTrainer() {
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg font-semibold flex items-center gap-2">
                     <Play className="w-5 h-5" />
-                    {strings.videoTrainer.videoPlayer}
+                    {strings.videoPlayer}
                   </CardTitle>
                   <Button
                     variant="outline"
@@ -250,7 +250,7 @@ export default function VideoTrainer() {
                     <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
                       <div className="text-center">
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-                        <p className="text-gray-600 dark:text-gray-300">{strings.videoTrainer.loadingVideo}</p>
+                        <p className="text-gray-600 dark:text-gray-300">{strings.loadingVideo}</p>
                       </div>
                     </div>
                   )}
@@ -301,7 +301,7 @@ export default function VideoTrainer() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <BookOpen className="w-5 h-5" />
-                    {strings.videoTrainer.transcript}
+                    {strings.transcript}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -340,7 +340,7 @@ export default function VideoTrainer() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Target className="w-5 h-5" />
-                {strings.videoTrainer.currentSegment}
+                {strings.currentSegment}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -350,7 +350,7 @@ export default function VideoTrainer() {
                     {currentSegment?.timestamp}
                   </Badge>
                   <p className="text-sm text-gray-600 dark:text-gray-300">
-                    {strings.videoTrainer.timestamp}
+                    {strings.timestamp}
                   </p>
                 </div>
                 
@@ -359,7 +359,7 @@ export default function VideoTrainer() {
                     {currentSegmentIndex + 1}/{segments.length}
                   </div>
                   <p className="text-sm text-gray-600 dark:text-gray-300">
-                    {strings.videoTrainer.segmentNumber}
+                    {strings.segmentNumber}
                   </p>
                 </div>
                 
@@ -368,7 +368,7 @@ export default function VideoTrainer() {
                     {Math.round(progressPercentage)}%
                   </div>
                   <p className="text-sm text-gray-600 dark:text-gray-300">
-                    {strings.videoTrainer.completed}
+                    {strings.completed}
                   </p>
                 </div>
               </div>
