@@ -199,13 +199,18 @@ export default function VideoTrainer() {
             <Card className="overflow-hidden">
               <CardContent className="p-0">
                 <div className="relative aspect-video bg-black">
-                  <iframe
-                    src={`https://www.youtube.com/embed/${listeningVideoData.videoId}?enablejsapi=1&origin=${window.location.origin}`}
+                  <div 
+                    ref={videoRef}
                     className="w-full h-full"
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
                   />
+                  {!isVideoReady && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
+                      <div className="text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                        <p className="text-gray-600 dark:text-gray-300">Video wird geladen...</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
 
@@ -221,22 +226,26 @@ export default function VideoTrainer() {
                 >
                   <div className="text-right space-y-2">
                     {segments.map((segment, index) => (
-                      <span
+                      <div
                         key={index}
                         data-segment={index}
-                        className={`inline ${
-                          index === highlightedSegmentIndex
-                            ? 'bg-blue-200 dark:bg-blue-800 px-1 rounded'
-                            : ''
+                        ref={index === currentSegmentIndex ? (el) => {
+                          if (el && transcriptRef.current) {
+                            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                          }
+                        } : undefined}
+                        className={`p-2 rounded transition-all duration-300 cursor-pointer ${
+                          index === currentSegmentIndex
+                            ? 'bg-yellow-200 dark:bg-yellow-800 border-l-4 border-yellow-500'
+                            : 'hover:bg-gray-50 dark:hover:bg-gray-800'
                         }`}
                         onClick={() => jumpToSegment(index)}
                       >
                         <ClickableText 
                           text={segment.arabic}
-                          className="text-lg leading-relaxed font-arabic cursor-pointer"
+                          className="text-lg leading-relaxed font-arabic"
                         />
-                        {index < segments.length - 1 && ' '}
-                      </span>
+                      </div>
                     ))}
                   </div>
                 </div>
