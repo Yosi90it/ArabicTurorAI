@@ -5,7 +5,7 @@ export interface VideoSegment {
 }
 
 export const listeningVideoData = {
-  videoId: "dQw4w9WgXcQ",
+  videoId: "BIjWf1anHIU",
   title: "أهمية الاستماع في تعلم اللغة العربية",
   description: "محاضرة حول أهمية مهارة الاستماع في تعلم اللغة العربية وكيفية تطويرها",
   segments: [
