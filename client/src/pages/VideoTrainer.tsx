@@ -424,66 +424,7 @@ export default function VideoTrainer() {
             </Card>
           </div>
 
-          {/* Current Segment Display */}
-          {!isFullscreen && (
-            <Card className="max-w-4xl mx-auto">
-              <CardHeader className="text-center">
-                <CardTitle className="flex items-center justify-center gap-2">
-                  <Clock className="w-5 h-5" />
-                  {currentSegment.timestamp}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Large Arabic Display */}
-                <div className="text-center">
-                  <div 
-                    className="text-2xl md:text-3xl font-arabic leading-relaxed p-6 bg-blue-50 rounded-lg transition-colors"
-                    dir="rtl"
-                  >
-                    <ClickableText text={currentSegment.arabic} />
-                  </div>
-                </div>
 
-                {/* Translation Display */}
-                {showTranslation && (
-                  <div className="text-center p-4 bg-gray-50 rounded-lg">
-                    <p className="text-lg text-gray-700">
-                      {getTranslation()}
-                    </p>
-                  </div>
-                )}
-
-                {/* Navigation */}
-                <div className="flex justify-between items-center">
-                  <Button 
-                    onClick={prevSegment} 
-                    variant="outline" 
-                    className="gap-2"
-                    disabled={currentSegmentIndex === 0}
-                  >
-                    <SkipBack className="w-4 h-4" />
-                    {lang === 'de' ? 'Vorheriges Segment' : 'Previous Segment'}
-                  </Button>
-                  
-                  <div className="text-sm text-gray-600">
-                    {lang === 'de' 
-                      ? `Segment ${currentSegmentIndex + 1} von ${segments.length}`
-                      : `Segment ${currentSegmentIndex + 1} of ${segments.length}`}
-                  </div>
-                  
-                  <Button 
-                    onClick={nextSegment} 
-                    variant="outline" 
-                    className="gap-2"
-                    disabled={currentSegmentIndex === segments.length - 1}
-                  >
-                    {lang === 'de' ? 'Nächstes Segment' : 'Next Segment'}
-                    <SkipForward className="w-4 h-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          )}
         </>
       ) : (
         /* Quiz Section */
