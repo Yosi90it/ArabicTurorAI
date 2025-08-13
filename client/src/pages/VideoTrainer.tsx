@@ -222,7 +222,7 @@ export default function VideoTrainer() {
             </div>
           </div>
 
-          <div className={`grid ${isFullscreen ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-2'} gap-8`}>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Video Player */}
             <Card className="overflow-hidden">
               <CardHeader className="pb-4">
@@ -231,17 +231,11 @@ export default function VideoTrainer() {
                     <Play className="w-5 h-5" />
                     {strings.videoPlayer}
                   </CardTitle>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={toggleFullscreen}
-                  >
-                    {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
-                  </Button>
+
                 </div>
               </CardHeader>
               <CardContent className="p-0">
-                <div className={`relative ${isFullscreen ? 'h-[70vh]' : 'aspect-video'} bg-black`}>
+                <div className="relative aspect-video bg-black">
                   <div 
                     ref={videoRef}
                     className="w-full h-full"
@@ -296,95 +290,44 @@ export default function VideoTrainer() {
             </Card>
 
             {/* Transcript */}
-            {!isFullscreen && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <BookOpen className="w-5 h-5" />
-                    {strings.transcript}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div 
-                    ref={transcriptRef}
-                    className="h-[400px] overflow-y-auto pr-2"
-                  >
-                    <div className="text-right space-y-2">
-                      {segments.map((segment, index) => (
-                        <span
-                          key={index}
-                          data-segment={index}
-                          className={`inline ${
-                            index === highlightedSegmentIndex
-                              ? 'bg-blue-200 dark:bg-blue-800 px-1 rounded'
-                              : ''
-                          }`}
-                          onClick={() => jumpToSegment(index)}
-                        >
-                          <ClickableText 
-                            text={segment.arabic}
-                            className="text-lg leading-relaxed font-arabic cursor-pointer"
-                          />
-                          {index < segments.length - 1 && ' '}
-                        </span>
-                      ))}
-                    </div>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <BookOpen className="w-5 h-5" />
+                  {strings.transcript}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div 
+                  ref={transcriptRef}
+                  className="h-[400px] overflow-y-auto pr-2"
+                >
+                  <div className="text-right space-y-2">
+                    {segments.map((segment, index) => (
+                      <span
+                        key={index}
+                        data-segment={index}
+                        className={`inline ${
+                          index === highlightedSegmentIndex
+                            ? 'bg-blue-200 dark:bg-blue-800 px-1 rounded'
+                            : ''
+                        }`}
+                        onClick={() => jumpToSegment(index)}
+                      >
+                        <ClickableText 
+                          text={segment.arabic}
+                          className="text-lg leading-relaxed font-arabic cursor-pointer"
+                        />
+                        {index < segments.length - 1 && ' '}
+                      </span>
+                    ))}
                   </div>
-                </CardContent>
-              </Card>
-            )}
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
-          {/* Current Segment Info */}
-          <Card className="mt-8">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Target className="w-5 h-5" />
-                {strings.currentSegment}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="text-center">
-                  <Badge variant="outline" className="mb-2">
-                    {currentSegment?.timestamp}
-                  </Badge>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">
-                    {strings.timestamp}
-                  </p>
-                </div>
-                
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-2">
-                    {currentSegmentIndex + 1}/{segments.length}
-                  </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">
-                    {strings.segmentNumber}
-                  </p>
-                </div>
-                
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-green-600 dark:text-green-400 mb-2">
-                    {Math.round(progressPercentage)}%
-                  </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">
-                    {strings.completed}
-                  </p>
-                </div>
-              </div>
 
-              {currentSegment && (
-                <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                  <div className="text-right">
-                    <ClickableText 
-                      text={currentSegment.arabic}
-                      className="text-xl leading-relaxed font-arabic"
-                    />
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
         </div>
       </div>
     </div>
