@@ -15,17 +15,20 @@ import {
   BookOpen,
   Languages,
   Clock,
-  Target
+  Target,
+  Maximize,
+  Minimize
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useSimpleGamification } from "@/contexts/SimpleGamificationContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { listeningVideoData, videoQuestions, type VideoSegment } from "@/data/listeningVideo";
+import ClickableText from "@/components/ClickableText";
 
 export default function VideoTrainer() {
   const [currentSegmentIndex, setCurrentSegmentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [showTranslation, setShowTranslation] = useState(false);
+  const [showTranslation, setShowTranslation] = useState(true);
   const [showQuiz, setShowQuiz] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
@@ -34,8 +37,10 @@ export default function VideoTrainer() {
   const [completedSegments, setCompletedSegments] = useState<Set<number>>(new Set());
   const [playbackRate, setPlaybackRate] = useState(1.0);
   const [filterDifficulty, setFilterDifficulty] = useState<'all' | 'beginner' | 'intermediate' | 'advanced'>('all');
+  const [videoCurrentTime, setVideoCurrentTime] = useState(0);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   
-  const audioRef = useRef<HTMLAudioElement>(null);
+  const videoRef = useRef<HTMLIFrameElement>(null);
   const { toast } = useToast();
   const { updateProgress } = useSimpleGamification();
   const { strings, currentLanguage } = useLanguage();
@@ -46,6 +51,31 @@ export default function VideoTrainer() {
 
   const currentSegment = filteredSegments[currentSegmentIndex];
   const currentQuestion = videoQuestions[currentQuestionIndex];
+
+  // Convert timestamp to seconds
+  const timeToSeconds = (timeStr: string): number => {
+    const parts = timeStr.split(':');
+    const minutes = parseInt(parts[0]);
+    const seconds = parseInt(parts[1]);
+    return minutes * 60 + seconds;
+  };
+
+  // Find current segment based on video time
+  const getCurrentSegmentFromTime = (currentTime: number): number => {
+    for (let i = filteredSegments.length - 1; i >= 0; i--) {
+      const segmentTime = timeToSeconds(filteredSegments[i].timestamp);
+      if (currentTime >= segmentTime) {
+        return i;
+      }
+    }
+    return 0;
+  };
+
+  // YouTube embed URL with autoplay and controls
+  const getYouTubeEmbedUrl = () => {
+    const videoId = listeningVideoData.youtubeUrl.split('v=')[1];
+    return `https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=0&controls=1&rel=0&modestbranding=1`;
+  };
 
   // Text-to-Speech function
   const playAudio = (text: string, rate: number = playbackRate) => {
@@ -197,7 +227,7 @@ export default function VideoTrainer() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6 space-y-6">
+    <div className="max-w-7xl mx-auto p-6 space-y-6">
       {/* Header */}
       <div className="text-center space-y-4">
         <h1 className="text-3xl font-bold text-gray-900">
@@ -212,14 +242,6 @@ export default function VideoTrainer() {
               ? listeningVideoData.descriptionGerman 
               : listeningVideoData.descriptionEnglish}
           </p>
-          <Button 
-            variant="outline" 
-            className="gap-2"
-            onClick={() => window.open(listeningVideoData.youtubeUrl, '_blank')}
-          >
-            <ExternalLink className="w-4 h-4" />
-            {currentLanguage === 'de' ? 'Original Video ansehen' : 'Watch Original Video'}
-          </Button>
         </div>
       </div>
 
@@ -282,132 +304,245 @@ export default function VideoTrainer() {
 
       {!showQuiz ? (
         <>
-          {/* Main Content */}
-          <Card className="mx-auto max-w-4xl">
-            <CardHeader className="text-center">
-              <CardTitle className="flex items-center justify-center gap-2">
-                <Clock className="w-5 h-5" />
-                {currentSegment.timestamp}
-                <Badge className={getDifficultyColor(currentSegment.difficulty)}>
-                  {getDifficultyLabel(currentSegment.difficulty)}
-                </Badge>
-              </CardTitle>
-              <Progress 
-                value={(currentSegmentIndex + 1) / filteredSegments.length * 100} 
-                className="w-full" 
-              />
-              <p className="text-sm text-gray-600">
-                {currentLanguage === 'de' 
-                  ? `Segment ${currentSegmentIndex + 1} von ${filteredSegments.length}`
-                  : `Segment ${currentSegmentIndex + 1} of ${filteredSegments.length}`}
-              </p>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Arabic Text */}
-              <div className="text-center">
-                <div 
-                  className="text-2xl md:text-3xl font-arabic leading-relaxed p-6 bg-blue-50 rounded-lg cursor-pointer hover:bg-blue-100 transition-colors"
-                  onClick={() => playAudio(currentSegment.arabic)}
-                  dir="rtl"
-                >
-                  {currentSegment.arabic}
+          {/* Video and Transcript Layout */}
+          <div className={`grid gap-6 ${isFullscreen ? 'grid-cols-1' : 'lg:grid-cols-2'}`}>
+            {/* Video Player */}
+            <Card className={isFullscreen ? 'col-span-full' : ''}>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    <Video className="w-5 h-5" />
+                    {currentLanguage === 'de' ? 'Video-Player' : 'Video Player'}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsFullscreen(!isFullscreen)}
+                    className="gap-2"
+                  >
+                    {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
+                    {isFullscreen 
+                      ? (currentLanguage === 'de' ? 'Verkleinern' : 'Minimize')
+                      : (currentLanguage === 'de' ? 'Vollbild' : 'Fullscreen')}
+                  </Button>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+                  <iframe
+                    ref={videoRef}
+                    src={getYouTubeEmbedUrl()}
+                    className="absolute top-0 left-0 w-full h-full rounded-lg"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    title="Arabic Listening Video"
+                  />
                 </div>
-              </div>
+                
+                {/* Video Controls */}
+                <div className="mt-4 flex justify-center gap-4">
+                  <Button 
+                    onClick={() => window.open(listeningVideoData.youtubeUrl, '_blank')}
+                    variant="outline"
+                    className="gap-2"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    {currentLanguage === 'de' ? 'YouTube öffnen' : 'Open in YouTube'}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
 
-              {/* Audio Controls */}
-              <div className="flex justify-center gap-4">
-                <Button 
-                  onClick={() => playAudio(currentSegment.arabic, 0.75)}
-                  variant="outline"
-                  className="gap-2"
-                >
-                  <Volume2 className="w-4 h-4" />
-                  {currentLanguage === 'de' ? 'Langsam' : 'Slow'}
-                </Button>
+            {/* Interactive Transcript */}
+            <Card className={isFullscreen ? 'hidden' : ''}>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <BookOpen className="w-5 h-5" />
+                  {currentLanguage === 'de' ? 'Interaktives Transkript' : 'Interactive Transcript'}
+                </CardTitle>
+                <div className="flex items-center gap-2">
+                  <Progress 
+                    value={(currentSegmentIndex + 1) / filteredSegments.length * 100} 
+                    className="flex-1" 
+                  />
+                  <Badge className={getDifficultyColor(currentSegment.difficulty)}>
+                    {getDifficultyLabel(currentSegment.difficulty)}
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="max-h-96 overflow-y-auto space-y-3">
+                  {filteredSegments.map((segment, index) => (
+                    <div
+                      key={index}
+                      className={`p-4 rounded-lg border cursor-pointer transition-all ${
+                        index === currentSegmentIndex
+                          ? 'bg-blue-100 border-blue-500 shadow-md'
+                          : 'bg-gray-50 border-gray-200 hover:bg-blue-50'
+                      }`}
+                      onClick={() => setCurrentSegmentIndex(index)}
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge variant="outline" className="text-xs">
+                          {segment.timestamp}
+                        </Badge>
+                        <Badge className={`text-xs ${getDifficultyColor(segment.difficulty)}`}>
+                          {getDifficultyLabel(segment.difficulty)}
+                        </Badge>
+                        {completedSegments.has(index) && (
+                          <CheckCircle className="w-4 h-4 text-green-600" />
+                        )}
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <div className="text-lg font-arabic leading-relaxed" dir="rtl">
+                          <ClickableText text={segment.arabic} />
+                        </div>
+                        
+                        {showTranslation && (
+                          <p className="text-sm text-gray-600">
+                            {currentLanguage === 'de' ? segment.german : segment.english}
+                          </p>
+                        )}
+                      </div>
+                      
+                      <div className="mt-2 flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            playAudio(segment.arabic);
+                          }}
+                          className="gap-1"
+                        >
+                          <Volume2 className="w-3 h-3" />
+                          {currentLanguage === 'de' ? 'Anhören' : 'Listen'}
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
                 
-                <Button 
-                  onClick={isPlaying ? pauseAudio : () => playAudio(currentSegment.arabic)}
-                  className="gap-2"
-                  size="lg"
-                >
-                  {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-                  {currentLanguage === 'de' ? 'Wiedergabe' : 'Play'}
-                </Button>
-                
-                <Button 
-                  onClick={() => playAudio(currentSegment.arabic, 1.25)}
-                  variant="outline"
-                  className="gap-2"
-                >
-                  <Volume2 className="w-4 h-4" />
-                  {currentLanguage === 'de' ? 'Schnell' : 'Fast'}
-                </Button>
-              </div>
+                {/* Translation Toggle */}
+                <div className="mt-4 pt-4 border-t">
+                  <Button 
+                    onClick={() => setShowTranslation(!showTranslation)}
+                    variant="outline"
+                    className="gap-2 w-full"
+                  >
+                    <Languages className="w-4 h-4" />
+                    {showTranslation 
+                      ? (currentLanguage === 'de' ? 'Übersetzungen ausblenden' : 'Hide Translations')
+                      : (currentLanguage === 'de' ? 'Übersetzungen anzeigen' : 'Show Translations')}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
-              {/* Translation */}
-              <div className="text-center">
-                <Button 
-                  onClick={() => setShowTranslation(!showTranslation)}
-                  variant="outline"
-                  className="gap-2 mb-4"
-                >
-                  <Languages className="w-4 h-4" />
-                  {showTranslation 
-                    ? (currentLanguage === 'de' ? 'Übersetzung ausblenden' : 'Hide Translation')
-                    : (currentLanguage === 'de' ? 'Übersetzung anzeigen' : 'Show Translation')}
-                </Button>
-                
+          {/* Current Segment Display */}
+          {!isFullscreen && (
+            <Card className="max-w-4xl mx-auto">
+              <CardHeader className="text-center">
+                <CardTitle className="flex items-center justify-center gap-2">
+                  <Clock className="w-5 h-5" />
+                  {currentSegment.timestamp}
+                  <Badge className={getDifficultyColor(currentSegment.difficulty)}>
+                    {getDifficultyLabel(currentSegment.difficulty)}
+                  </Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Large Arabic Display */}
+                <div className="text-center">
+                  <div 
+                    className="text-2xl md:text-3xl font-arabic leading-relaxed p-6 bg-blue-50 rounded-lg transition-colors"
+                    dir="rtl"
+                  >
+                    <ClickableText text={currentSegment.arabic} />
+                  </div>
+                  <Button 
+                    onClick={() => playAudio(currentSegment.arabic)}
+                    variant="outline"
+                    size="sm"
+                    className="mt-2 gap-2"
+                  >
+                    <Volume2 className="w-4 h-4" />
+                    {currentLanguage === 'de' ? 'Segment anhören' : 'Listen to Segment'}
+                  </Button>
+                </div>
+
+                {/* Translation Display */}
                 {showTranslation && (
-                  <div className="p-4 bg-gray-50 rounded-lg">
+                  <div className="text-center p-4 bg-gray-50 rounded-lg">
                     <p className="text-lg text-gray-700">
                       {getTranslation()}
                     </p>
                   </div>
                 )}
-              </div>
 
-              {/* Navigation */}
-              <div className="flex justify-between items-center">
-                <Button 
-                  onClick={prevSegment} 
-                  variant="outline" 
-                  className="gap-2"
-                  disabled={currentSegmentIndex === 0}
-                >
-                  <SkipBack className="w-4 h-4" />
-                  {currentLanguage === 'de' ? 'Zurück' : 'Previous'}
-                </Button>
-                
-                <div className="flex gap-2">
+                {/* Audio Controls */}
+                <div className="flex justify-center gap-4">
                   <Button 
-                    onClick={() => playAudio(currentSegment.arabic, 0.5)}
+                    onClick={() => playAudio(currentSegment.arabic, 0.75)}
                     variant="outline"
                     className="gap-2"
                   >
-                    <RotateCcw className="w-4 h-4" />
-                    {currentLanguage === 'de' ? 'Wiederholen' : 'Repeat'}
+                    <Volume2 className="w-4 h-4" />
+                    {currentLanguage === 'de' ? 'Langsam' : 'Slow'}
                   </Button>
                   
-                  {completedSegments.has(currentSegmentIndex) && (
-                    <Badge variant="secondary" className="gap-1">
-                      <CheckCircle className="w-3 h-3" />
-                      {currentLanguage === 'de' ? 'Abgeschlossen' : 'Completed'}
-                    </Badge>
-                  )}
+                  <Button 
+                    onClick={() => playAudio(currentSegment.arabic)}
+                    className="gap-2"
+                    size="lg"
+                  >
+                    <Play className="w-5 h-5" />
+                    {currentLanguage === 'de' ? 'Anhören' : 'Listen'}
+                  </Button>
+                  
+                  <Button 
+                    onClick={() => playAudio(currentSegment.arabic, 1.25)}
+                    variant="outline"
+                    className="gap-2"
+                  >
+                    <Volume2 className="w-4 h-4" />
+                    {currentLanguage === 'de' ? 'Schnell' : 'Fast'}
+                  </Button>
                 </div>
-                
-                <Button 
-                  onClick={nextSegment} 
-                  variant="outline" 
-                  className="gap-2"
-                  disabled={currentSegmentIndex === filteredSegments.length - 1}
-                >
-                  {currentLanguage === 'de' ? 'Weiter' : 'Next'}
-                  <SkipForward className="w-4 h-4" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+
+                {/* Navigation */}
+                <div className="flex justify-between items-center">
+                  <Button 
+                    onClick={prevSegment} 
+                    variant="outline" 
+                    className="gap-2"
+                    disabled={currentSegmentIndex === 0}
+                  >
+                    <SkipBack className="w-4 h-4" />
+                    {currentLanguage === 'de' ? 'Vorheriges Segment' : 'Previous Segment'}
+                  </Button>
+                  
+                  <div className="text-sm text-gray-600">
+                    {currentLanguage === 'de' 
+                      ? `Segment ${currentSegmentIndex + 1} von ${filteredSegments.length}`
+                      : `Segment ${currentSegmentIndex + 1} of ${filteredSegments.length}`}
+                  </div>
+                  
+                  <Button 
+                    onClick={nextSegment} 
+                    variant="outline" 
+                    className="gap-2"
+                    disabled={currentSegmentIndex === filteredSegments.length - 1}
+                  >
+                    {currentLanguage === 'de' ? 'Nächstes Segment' : 'Next Segment'}
+                    <SkipForward className="w-4 h-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </>
       ) : (
         <>
