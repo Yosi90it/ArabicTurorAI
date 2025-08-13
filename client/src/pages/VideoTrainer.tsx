@@ -17,7 +17,8 @@ import {
   Clock,
   Target,
   Maximize,
-  Minimize
+  Minimize,
+  Monitor
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useSimpleGamification } from "@/contexts/SimpleGamificationContext";
@@ -311,7 +312,7 @@ export default function VideoTrainer() {
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
                   <span className="flex items-center gap-2">
-                    <Video className="w-5 h-5" />
+                    <Monitor className="w-5 h-5" />
                     {currentLanguage === 'de' ? 'Video-Player' : 'Video Player'}
                   </span>
                   <Button
