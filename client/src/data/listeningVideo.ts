@@ -2,9 +2,8 @@
 export interface VideoSegment {
   timestamp: string;
   arabic: string;
-  german?: string;
-  english?: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  german: string;
+  english: string;
 }
 
 export const listeningVideoData = {
@@ -18,59 +17,51 @@ export const listeningVideoData = {
   segments: [
     {
       timestamp: "0:01",
-      arabic: "بسم الله الحمد لله والصلاة والسلام على رسول الله وعلى آله وأصحابه أجمعين أما بعد",
+      arabic: "بِسْمِ اللهِ الْحَمْدُ للهِ وَالصَّلاةُ وَالسَّلامُ عَلَى رَسُولِ اللهِ وَعَلَى آلِهِ وَأَصْحَابِهِ أَجْمَعِينَ أَمَّا بَعْدُ",
       german: "Im Namen Allahs, Lob sei Allah und Friede und Segen auf dem Gesandten Allahs und seiner Familie und allen seinen Gefährten. Danach:",
-      english: "In the name of Allah, praise be to Allah and peace and blessings upon the Messenger of Allah and his family and all his companions. After that:",
-      difficulty: "intermediate"
+      english: "In the name of Allah, praise be to Allah and peace and blessings upon the Messenger of Allah and his family and all his companions. After that:"
     },
     {
       timestamp: "0:06",
-      arabic: "السلام عليكم ورحمة الله وبركاته أهلاً وسهلاً ومرحباً بكم أخواني وأخواتي طلاب اللغة العربية",
+      arabic: "السَّلامُ عَلَيْكُمْ وَرَحْمَةُ اللهِ وَبَرَكَاتُهُ أَهْلاً وَسَهْلاً وَمَرْحَباً بِكُمْ أَخَوَانِي وَأَخَوَاتِي طُلابَ اللُّغَةِ الْعَرَبِيَّةِ",
       german: "Friede sei mit euch und Allahs Barmherzigkeit und Segen. Willkommen, meine Brüder und Schwestern, Studenten der arabischen Sprache",
-      english: "Peace be upon you and Allah's mercy and blessings. Welcome, my brothers and sisters, students of the Arabic language",
-      difficulty: "beginner"
+      english: "Peace be upon you and Allah's mercy and blessings. Welcome, my brothers and sisters, students of the Arabic language"
     },
     {
       timestamp: "0:15",
-      arabic: "واليوم أريد أن أتكلم معكم في موضوع مهم جداً في تعلم اللغة العربية وهو الاستماع",
+      arabic: "وَالْيَوْمَ أُرِيدُ أَنْ أَتَكَلَّمَ مَعَكُمْ فِي مَوْضُوعٍ مُهِمٍّ جِدّاً فِي تَعَلُّمِ اللُّغَةِ الْعَرَبِيَّةِ وَهُوَ الاسْتِمَاعُ",
       german: "Und heute möchte ich mit euch über ein sehr wichtiges Thema beim Arabischlernen sprechen: das Hörverstehen",
-      english: "And today I want to talk with you about a very important topic in learning Arabic, which is listening",
-      difficulty: "beginner"
+      english: "And today I want to talk with you about a very important topic in learning Arabic, which is listening"
     },
     {
       timestamp: "0:30",
-      arabic: "ما أدراك ما الاستماع؟ الاستماع كما فهمتم من الكلمة نفسها هو أن تستمع إلى اللغة",
+      arabic: "مَا أَدْرَاكَ مَا الاسْتِمَاعُ؟ الاسْتِمَاعُ كَمَا فَهِمْتُمْ مِنَ الْكَلِمَةِ نَفْسِهَا هُوَ أَنْ تَسْتَمِعُوا إِلَى اللُّغَةِ",
       german: "Was ist Hörverstehen? Hörverstehen ist, wie ihr aus dem Wort selbst verstanden habt, dass man der Sprache zuhört",
-      english: "What is listening? Listening, as you understood from the word itself, is to listen to the language",
-      difficulty: "beginner"
+      english: "What is listening? Listening, as you understood from the word itself, is to listen to the language"
     },
     {
       timestamp: "0:45",
-      arabic: "فالاستماع مصدر استمع يستمع استماعاً يعني أن تسمع اللغة",
+      arabic: "فَالاسْتِمَاعُ مَصْدَرُ اسْتَمَعَ يَسْتَمِعُ اسْتِمَاعاً يَعْنِي أَنْ تَسْمَعُوا اللُّغَةَ",
       german: "Hörverstehen ist ein Masdar (Verbalsubstantiv) von 'zuhören', das bedeutet, die Sprache zu hören",
-      english: "Listening is a verbal noun from 'to listen', meaning to hear the language",
-      difficulty: "intermediate"
+      english: "Listening is a verbal noun from 'to listen', meaning to hear the language"
     },
     {
       timestamp: "0:53",
-      arabic: "والاستماع إحدى المهارات الأربعة للغة",
+      arabic: "وَالاسْتِمَاعُ إِحْدَى الْمَهَارَاتِ الأَرْبَعَةِ لِلُّغَةِ",
       german: "Und Hörverstehen ist eine der vier Sprachfertigkeiten",
-      english: "And listening is one of the four language skills",
-      difficulty: "beginner"
+      english: "And listening is one of the four language skills"
     },
     {
       timestamp: "1:01",
-      arabic: "فالمهارات اللغوية هي الاستماع والمحادثة والقراءة والكتابة",
+      arabic: "فَالْمَهَارَاتُ اللُّغَوِيَّةُ هِيَ الاسْتِمَاعُ وَالْمُحَادَثَةُ وَالْقِرَاءَةُ وَالْكِتَابَةُ",
       german: "Die Sprachfertigkeiten sind: Hörverstehen, Sprechen, Lesen und Schreiben",
-      english: "The language skills are: listening, speaking, reading, and writing",
-      difficulty: "beginner"
+      english: "The language skills are: listening, speaking, reading, and writing"
     },
     {
       timestamp: "1:10",
-      arabic: "يعني الاستماع هو قدرتك على فهم كلام تسمعه",
+      arabic: "يَعْنِي الاسْتِمَاعُ هُوَ قُدْرَتُكَ عَلَى فَهْمِ كَلامٍ تَسْمَعُهُ",
       german: "Das heißt, Hörverstehen ist deine Fähigkeit, gesprochene Sprache zu verstehen, die du hörst",
-      english: "Meaning listening is your ability to understand speech that you hear",
-      difficulty: "beginner"
+      english: "Meaning listening is your ability to understand speech that you hear"
     },
     {
       timestamp: "1:20",
