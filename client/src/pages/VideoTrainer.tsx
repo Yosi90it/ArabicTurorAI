@@ -307,65 +307,28 @@ export default function VideoTrainer() {
                 <CardContent>
                   <div 
                     ref={transcriptRef}
-                    className="h-[400px] overflow-y-auto space-y-4 pr-2"
+                    className="h-[400px] overflow-y-auto pr-2"
                   >
-                    {segments.map((segment, index) => (
-                      <div
-                        key={index}
-                        data-segment={index}
-                        className={`p-4 rounded-lg border cursor-pointer transition-all duration-300 ${
-                          index === highlightedSegmentIndex
-                            ? 'bg-blue-100 dark:bg-blue-900/20 border-blue-300 dark:border-blue-600 shadow-md'
-                            : completedSegments.has(index)
-                            ? 'bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-800'
-                            : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'
-                        }`}
-                        onClick={() => jumpToSegment(index)}
-                      >
-                        <div className="flex items-center justify-between mb-2">
-                          <Badge variant="outline" className="text-xs">
-                            {segment.timestamp}
-                          </Badge>
-                          {completedSegments.has(index) && (
-                            <CheckCircle className="w-4 h-4 text-green-500" />
-                          )}
-                        </div>
-                        
-                        <div className="text-right mb-3">
+                    <div className="text-right space-y-2">
+                      {segments.map((segment, index) => (
+                        <span
+                          key={index}
+                          data-segment={index}
+                          className={`inline ${
+                            index === highlightedSegmentIndex
+                              ? 'bg-blue-200 dark:bg-blue-800 px-1 rounded'
+                              : ''
+                          }`}
+                          onClick={() => jumpToSegment(index)}
+                        >
                           <ClickableText 
                             text={segment.arabic}
-                            className="text-lg leading-relaxed font-arabic"
+                            className="text-lg leading-relaxed font-arabic cursor-pointer"
                           />
-                        </div>
-
-                        <div className="flex gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              jumpToSegment(index);
-                            }}
-                          >
-                            <Play className="w-3 h-3 mr-1" />
-                            {strings.videoTrainer.playSegment}
-                          </Button>
-                          {!completedSegments.has(index) && (
-                            <Button
-                              variant="default"
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                markSegmentCompleted(index);
-                              }}
-                            >
-                              <CheckCircle className="w-3 h-3 mr-1" />
-                              {strings.videoTrainer.markCompleted}
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    ))}
+                          {index < segments.length - 1 && ' '}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
