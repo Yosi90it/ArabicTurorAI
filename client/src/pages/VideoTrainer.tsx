@@ -23,17 +23,11 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useSimpleGamification } from "@/contexts/SimpleGamificationContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { listeningVideoData, videoQuestions, type VideoSegment } from "@/data/listeningVideo";
+import { listeningVideoData, type VideoSegment } from "@/data/listeningVideo";
 import ClickableText from "@/components/ClickableText";
 
 export default function VideoTrainer() {
   const [currentSegmentIndex, setCurrentSegmentIndex] = useState(0);
-  const [showTranslation, setShowTranslation] = useState(true);
-  const [showQuiz, setShowQuiz] = useState(false);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
-  const [showAnswer, setShowAnswer] = useState(false);
-  const [quizScore, setQuizScore] = useState(0);
   const [completedSegments, setCompletedSegments] = useState<Set<number>>(new Set());
   const [videoCurrentTime, setVideoCurrentTime] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -50,7 +44,6 @@ export default function VideoTrainer() {
 
   const segments = listeningVideoData.segments;
   const currentSegment = segments[currentSegmentIndex];
-  const currentQuestion = videoQuestions[currentQuestionIndex];
 
   // Convert timestamp to seconds
   const timeToSeconds = (timeStr: string): number => {
@@ -73,429 +66,364 @@ export default function VideoTrainer() {
 
   // Load YouTube API and setup player
   useEffect(() => {
-    const loadYouTubeAPI = () => {
-      if ((window as any).YT) {
-        initializePlayer();
-        return;
-      }
-      
-      const script = document.createElement('script');
-      script.src = 'https://www.youtube.com/iframe_api';
-      script.onload = () => {
-        (window as any).onYouTubeIframeAPIReady = initializePlayer;
-      };
-      document.body.appendChild(script);
-    };
+    const script = document.createElement('script');
+    script.src = 'https://www.youtube.com/iframe_api';
+    script.async = true;
+    document.body.appendChild(script);
 
-    const initializePlayer = () => {
-      if (!videoRef.current) return;
-      
-      const videoId = listeningVideoData.youtubeUrl.split('v=')[1]?.split('&')[0];
-      
-      // Create a unique div for the player
-      const playerId = 'youtube-player-' + Math.random().toString(36).substr(2, 9);
-      videoRef.current.innerHTML = `<div id="${playerId}"></div>`;
-      
-      playerRef.current = new (window as any).YT.Player(playerId, {
-        height: '100%',
-        width: '100%',
-        videoId: videoId,
-        playerVars: {
-          'autoplay': 0,
-          'controls': 1,
-          'rel': 0,
-          'modestbranding': 1,
-          'enablejsapi': 1
-        },
-        events: {
-          'onReady': onPlayerReady,
-          'onStateChange': onPlayerStateChange
-        }
-      });
-    };
-
-    const onPlayerReady = (event: any) => {
-      setIsVideoReady(true);
-      // Start tracking video time
-      trackVideoTime();
-    };
-
-    const onPlayerStateChange = (event: any) => {
-      if (event.data === (window as any).YT.PlayerState.PLAYING) {
-        trackVideoTime();
-      } else if (event.data === (window as any).YT.PlayerState.PAUSED) {
-        if (intervalRef.current) {
-          clearInterval(intervalRef.current);
-        }
-      }
-    };
-
-    const trackVideoTime = () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-      
-      intervalRef.current = setInterval(() => {
-        if (playerRef.current && playerRef.current.getCurrentTime) {
-          const currentTime = playerRef.current.getCurrentTime();
-          setVideoCurrentTime(currentTime);
-          
-          const newSegmentIndex = getCurrentSegmentFromTime(currentTime);
-          if (newSegmentIndex !== highlightedSegmentIndex) {
-            setHighlightedSegmentIndex(newSegmentIndex);
-            setCurrentSegmentIndex(newSegmentIndex);
-            
-            // Auto-scroll to current segment
-            if (transcriptRef.current) {
-              const highlightedElement = transcriptRef.current.querySelector(`[data-segment="${newSegmentIndex}"]`);
-              if (highlightedElement) {
-                highlightedElement.scrollIntoView({ 
-                  behavior: 'smooth', 
-                  block: 'center' 
-                });
-              }
+    // Global callback for YouTube API
+    (window as any).onYouTubeIframeAPIReady = () => {
+      if (videoRef.current) {
+        playerRef.current = new (window as any).YT.Player(videoRef.current, {
+          height: '100%',
+          width: '100%',
+          videoId: listeningVideoData.videoId,
+          playerVars: {
+            autoplay: 0,
+            controls: 1,
+            rel: 0,
+            showinfo: 0,
+            fs: 1,
+            cc_load_policy: 0,
+            iv_load_policy: 3,
+            modestbranding: 1
+          },
+          events: {
+            onReady: () => {
+              setIsVideoReady(true);
+              // Start time tracking
+              intervalRef.current = setInterval(() => {
+                if (playerRef.current && playerRef.current.getCurrentTime) {
+                  const currentTime = playerRef.current.getCurrentTime();
+                  setVideoCurrentTime(currentTime);
+                  
+                  // Update highlighted segment based on video time
+                  const newSegmentIndex = getCurrentSegmentFromTime(currentTime);
+                  if (newSegmentIndex !== highlightedSegmentIndex) {
+                    setHighlightedSegmentIndex(newSegmentIndex);
+                    setCurrentSegmentIndex(newSegmentIndex);
+                    
+                    // Auto-scroll to current segment
+                    if (transcriptRef.current) {
+                      const highlightedElement = transcriptRef.current.querySelector(`[data-segment="${newSegmentIndex}"]`);
+                      if (highlightedElement) {
+                        highlightedElement.scrollIntoView({ 
+                          behavior: 'smooth', 
+                          block: 'center' 
+                        });
+                      }
+                    }
+                  }
+                }
+              }, 1000);
+            },
+            onStateChange: (event: any) => {
+              // Handle play/pause state changes if needed
             }
           }
-        }
-      }, 500); // Check every 500ms for smoother updates
+        });
+      }
     };
-
-    loadYouTubeAPI();
 
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
     };
-  }, []);
+  }, [highlightedSegmentIndex]);
 
-  // Jump to specific time when segment is clicked
   const jumpToSegment = (segmentIndex: number) => {
-    setCurrentSegmentIndex(segmentIndex);
-    
     if (playerRef.current && playerRef.current.seekTo) {
-      const timestamp = segments[segmentIndex].timestamp;
-      const seconds = timeToSeconds(timestamp);
-      playerRef.current.seekTo(seconds, true);
+      const targetTime = timeToSeconds(segments[segmentIndex].timestamp);
+      playerRef.current.seekTo(targetTime, true);
+      setCurrentSegmentIndex(segmentIndex);
+      setHighlightedSegmentIndex(segmentIndex);
     }
   };
 
-  // Format time for display
-  const formatTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${minutes}:${secs.toString().padStart(2, '0')}`;
+  const playPause = () => {
+    if (playerRef.current) {
+      const state = playerRef.current.getPlayerState();
+      if (state === 1) { // Playing
+        playerRef.current.pauseVideo();
+      } else {
+        playerRef.current.playVideo();
+      }
+    }
   };
 
-  const nextSegment = () => {
+  const skipForward = () => {
     if (currentSegmentIndex < segments.length - 1) {
-      setCurrentSegmentIndex(prev => prev + 1);
-      setShowTranslation(false);
-      
-      // Mark current segment as completed
-      const newCompleted = new Set(completedSegments);
-      newCompleted.add(currentSegmentIndex);
-      setCompletedSegments(newCompleted);
-      
-      updateProgress('video');
+      jumpToSegment(currentSegmentIndex + 1);
     }
   };
 
-  const prevSegment = () => {
+  const skipBackward = () => {
     if (currentSegmentIndex > 0) {
-      setCurrentSegmentIndex(currentSegmentIndex - 1);
-      setShowTranslation(false);
+      jumpToSegment(currentSegmentIndex - 1);
     }
   };
 
-  const startQuiz = () => {
-    setShowQuiz(true);
-    setCurrentQuestionIndex(0);
-    setQuizScore(0);
-    setSelectedAnswer(null);
-    setShowAnswer(false);
+  const restartSegment = () => {
+    jumpToSegment(currentSegmentIndex);
   };
 
-  const selectAnswer = (answerIndex: number) => {
-    setSelectedAnswer(answerIndex);
+  const toggleFullscreen = () => {
+    setIsFullscreen(!isFullscreen);
   };
 
-  const checkAnswer = () => {
-    if (selectedAnswer === null) return;
+  const markSegmentCompleted = (segmentIndex: number) => {
+    const newCompleted = new Set(completedSegments);
+    newCompleted.add(segmentIndex);
+    setCompletedSegments(newCompleted);
     
-    setShowAnswer(true);
-    const isCorrect = selectedAnswer === currentQuestion.correctAnswer;
+    // Update gamification progress
+    updateProgress('video_segment_completed', 10);
     
-    if (isCorrect) {
-      setQuizScore(prev => prev + 1);
-      updateProgress('video');
-      toast({
-        title: "Richtig! ✅",
-        description: "Gut gemacht!",
-      });
-    } else {
-      toast({
-        title: "Leider falsch ❌", 
-        description: "Versuchen Sie es nochmal!",
-        variant: "destructive"
-      });
-    }
+    toast({
+      title: strings.videoTrainer.segmentCompleted,
+      description: `${strings.videoTrainer.segment} ${segmentIndex + 1} ${strings.videoTrainer.completedLowercase}`,
+    });
   };
 
-  const nextQuestion = () => {
-    if (currentQuestionIndex < videoQuestions.length - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
-      setSelectedAnswer(null);
-      setShowAnswer(false);
-    } else {
-      // Quiz completed
-      toast({
-        title: "Quiz abgeschlossen! 🎉",
-        description: `Sie haben ${quizScore} von ${videoQuestions.length} Fragen richtig beantwortet!`,
-      });
-      setShowQuiz(false);
-    }
-  };
-
-  const getTranslation = () => {
-    return lang === 'de' ? currentSegment.german : currentSegment.english;
-  };
-
-  if (!currentSegment) {
-    return (
-      <div className="max-w-4xl mx-auto p-6">
-        <Card>
-          <CardContent className="text-center p-8">
-            <p className="text-gray-500">
-              {lang === 'de' 
-                ? 'Keine Segmente verfügbar.' 
-                : 'No segments available.'}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  const progressPercentage = (completedSegments.size / segments.length) * 100;
 
   return (
-    <div className="max-w-7xl mx-auto p-3 md:p-6 space-y-4 md:space-y-6">
-      {/* Header */}
-      <div className="text-center space-y-4">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-          {lang === 'de' ? 'Video-Hörverständnis-Training' : 'Video Listening Comprehension Training'}
-        </h1>
-        <div className="space-y-2">
-          <h2 className="text-lg md:text-xl font-semibold" dir="rtl">
-            {listeningVideoData.title}
-          </h2>
-          <p className="text-gray-600">
-            {lang === 'de' 
-              ? listeningVideoData.descriptionGerman 
-              : listeningVideoData.descriptionEnglish}
-          </p>
-        </div>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900">
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-7xl mx-auto">
+          {/* Header */}
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                <Monitor className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+                  {strings.sidebar.videoTrainer}
+                </h1>
+                <p className="text-gray-600 dark:text-gray-300">
+                  {listeningVideoData.description}
+                </p>
+              </div>
+            </div>
 
-      {/* Quiz Button */}
-      <Card className="mx-auto max-w-4xl">
-        <CardContent className="pt-6">
-          <div className="flex justify-center">
-            <Button 
-              onClick={startQuiz}
-              className="gap-2"
-              size="lg"
-            >
-              <Target className="w-4 h-4" />
-              {lang === 'de' ? 'Quiz starten' : 'Start Quiz'}
-            </Button>
+            {/* Progress */}
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm text-gray-600 dark:text-gray-300">
+                  {strings.videoTrainer.progress}
+                </span>
+                <Badge variant="secondary">
+                  {completedSegments.size}/{segments.length} {strings.videoTrainer.segments}
+                </Badge>
+              </div>
+              <Progress value={progressPercentage} className="h-2" />
+            </div>
           </div>
-        </CardContent>
-      </Card>
 
-      {!showQuiz ? (
-        <>
-          {/* Video and Transcript Layout */}
-          <div className={`grid gap-6 ${isFullscreen ? 'grid-cols-1' : 'lg:grid-cols-2'}`}>
+          <div className={`grid ${isFullscreen ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-2'} gap-8`}>
             {/* Video Player */}
-            <Card className={isFullscreen ? 'col-span-full' : ''}>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span className="flex items-center gap-2">
-                    <Monitor className="w-5 h-5" />
-                    {lang === 'de' ? 'Video-Player' : 'Video Player'}
-                  </span>
+            <Card className="overflow-hidden">
+              <CardHeader className="pb-4">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                    <Play className="w-5 h-5" />
+                    {strings.videoTrainer.videoPlayer}
+                  </CardTitle>
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setIsFullscreen(!isFullscreen)}
-                    className="gap-2"
+                    onClick={toggleFullscreen}
                   >
                     {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
-                    {isFullscreen 
-                      ? (lang === 'de' ? 'Verkleinern' : 'Minimize')
-                      : (lang === 'de' ? 'Vollbild' : 'Fullscreen')}
                   </Button>
-                </CardTitle>
+                </div>
               </CardHeader>
-              <CardContent>
-                <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
-                  <div
+              <CardContent className="p-0">
+                <div className={`relative ${isFullscreen ? 'h-[70vh]' : 'aspect-video'} bg-black`}>
+                  <div 
                     ref={videoRef}
-                    className="absolute top-0 left-0 w-full h-full rounded-lg"
-                    style={{ backgroundColor: '#000' }}
+                    className="w-full h-full"
                   />
-                </div>
-                
-                {/* Video Time Display */}
-                {isVideoReady && (
-                  <div className="mt-2 text-center text-sm text-gray-600">
-                    {lang === 'de' ? 'Video-Zeit:' : 'Video Time:'} {formatTime(videoCurrentTime)}
-                  </div>
-                )}
-                
-                {/* Video Controls */}
-                <div className="mt-4 flex justify-center gap-4">
-                  <Button 
-                    onClick={() => window.open(listeningVideoData.youtubeUrl, '_blank')}
-                    variant="outline"
-                    className="gap-2"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                    {lang === 'de' ? 'YouTube öffnen' : 'Open in YouTube'}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Interactive Transcript */}
-            <Card className={isFullscreen ? 'hidden' : ''}>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BookOpen className="w-5 h-5" />
-                  {lang === 'de' ? 'Interaktives Transkript' : 'Interactive Transcript'}
-                </CardTitle>
-                <div className="flex items-center gap-2">
-                  <Progress 
-                    value={(currentSegmentIndex + 1) / segments.length * 100} 
-                    className="flex-1" 
-                  />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div ref={transcriptRef} className="max-h-80 md:max-h-96 overflow-y-auto">
-                  <div className="text-base md:text-lg font-arabic leading-relaxed text-right px-2 md:px-0" dir="rtl">
-                    {segments.map((segment, index) => (
-                      <span
-                        key={index}
-                        data-segment={index}
-                        className={`cursor-pointer transition-all duration-300 touch-manipulation inline-block ${
-                          index === highlightedSegmentIndex
-                            ? 'bg-blue-200 text-blue-900 font-semibold px-1 py-0.5 rounded mx-0.5'
-                            : 'hover:bg-gray-100 px-1 py-0.5 rounded mx-0.5'
-                        }`}
-                        onClick={() => jumpToSegment(index)}
-                      >
-                        <ClickableText text={segment.arabic} />{' '}
-                      </span>
-                    ))}
-                  </div>
-                  
-                  {/* Translation of current segment */}
-                  {highlightedSegmentIndex >= 0 && (
-                    <div className="mt-6 pt-4 border-t border-gray-200">
-                      <div className="text-center text-sm text-gray-600 italic">
-                        {lang === 'de' 
-                          ? segments[highlightedSegmentIndex]?.german 
-                          : segments[highlightedSegmentIndex]?.english}
+                  {!isVideoReady && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
+                      <div className="text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                        <p className="text-gray-600 dark:text-gray-300">{strings.videoTrainer.loadingVideo}</p>
                       </div>
                     </div>
                   )}
                 </div>
+
+                {/* Video Controls */}
+                <div className="p-4 bg-gray-50 dark:bg-gray-800 border-t">
+                  <div className="flex items-center justify-center gap-4">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={skipBackward}
+                      disabled={currentSegmentIndex === 0}
+                    >
+                      <SkipBack className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={playPause}
+                      disabled={!isVideoReady}
+                    >
+                      <Play className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={restartSegment}
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={skipForward}
+                      disabled={currentSegmentIndex === segments.length - 1}
+                    >
+                      <SkipForward className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
               </CardContent>
             </Card>
+
+            {/* Transcript */}
+            {!isFullscreen && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BookOpen className="w-5 h-5" />
+                    {strings.videoTrainer.transcript}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div 
+                    ref={transcriptRef}
+                    className="h-[400px] overflow-y-auto space-y-4 pr-2"
+                  >
+                    {segments.map((segment, index) => (
+                      <div
+                        key={index}
+                        data-segment={index}
+                        className={`p-4 rounded-lg border cursor-pointer transition-all duration-300 ${
+                          index === highlightedSegmentIndex
+                            ? 'bg-blue-100 dark:bg-blue-900/20 border-blue-300 dark:border-blue-600 shadow-md'
+                            : completedSegments.has(index)
+                            ? 'bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-800'
+                            : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'
+                        }`}
+                        onClick={() => jumpToSegment(index)}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <Badge variant="outline" className="text-xs">
+                            {segment.timestamp}
+                          </Badge>
+                          {completedSegments.has(index) && (
+                            <CheckCircle className="w-4 h-4 text-green-500" />
+                          )}
+                        </div>
+                        
+                        <div className="text-right mb-3">
+                          <ClickableText 
+                            text={segment.arabic}
+                            className="text-lg leading-relaxed font-arabic"
+                          />
+                        </div>
+
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              jumpToSegment(index);
+                            }}
+                          >
+                            <Play className="w-3 h-3 mr-1" />
+                            {strings.videoTrainer.playSegment}
+                          </Button>
+                          {!completedSegments.has(index) && (
+                            <Button
+                              variant="default"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                markSegmentCompleted(index);
+                              }}
+                            >
+                              <CheckCircle className="w-3 h-3 mr-1" />
+                              {strings.videoTrainer.markCompleted}
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
 
-
-        </>
-      ) : (
-        /* Quiz Section */
-        <Card className="mx-auto max-w-4xl">
-          <CardHeader>
-            <CardTitle className="text-center">
-              {lang === 'de' ? 'Hörverständnis-Quiz' : 'Listening Comprehension Quiz'}
-            </CardTitle>
-            <div className="flex items-center justify-between">
-              <Badge variant="outline">
-                {lang === 'de' 
-                  ? `Frage ${currentQuestionIndex + 1} von ${videoQuestions.length}`
-                  : `Question ${currentQuestionIndex + 1} of ${videoQuestions.length}`}
-              </Badge>
-              <Badge variant="secondary">
-                {lang === 'de' ? `Punkte: ${quizScore}` : `Score: ${quizScore}`}
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="text-center">
-              <h3 className="text-xl font-semibold mb-4" dir="rtl">
-                {currentQuestion.question}
-              </h3>
-              
-              <div className="space-y-3">
-                {currentQuestion.options.map((option, index) => (
-                  <Button
-                    key={index}
-                    variant={selectedAnswer === index ? "default" : "outline"}
-                    className="w-full text-left justify-start p-4 h-auto"
-                    onClick={() => selectAnswer(index)}
-                    disabled={showAnswer}
-                  >
-                    <span className="mr-3 font-bold">{String.fromCharCode(65 + index)}.</span>
-                    {typeof option === 'string' ? option : (lang === 'de' ? (option as any).german : (option as any).english)}
-                  </Button>
-                ))}
+          {/* Current Segment Info */}
+          <Card className="mt-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Target className="w-5 h-5" />
+                {strings.videoTrainer.currentSegment}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="text-center">
+                  <Badge variant="outline" className="mb-2">
+                    {currentSegment?.timestamp}
+                  </Badge>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                    {strings.videoTrainer.timestamp}
+                  </p>
+                </div>
+                
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-2">
+                    {currentSegmentIndex + 1}/{segments.length}
+                  </div>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                    {strings.videoTrainer.segmentNumber}
+                  </p>
+                </div>
+                
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600 dark:text-green-400 mb-2">
+                    {Math.round(progressPercentage)}%
+                  </div>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                    {strings.videoTrainer.completed}
+                  </p>
+                </div>
               </div>
-              
-              {selectedAnswer !== null && !showAnswer && (
-                <Button onClick={checkAnswer} className="mt-4" size="lg">
-                  {lang === 'de' ? 'Antwort prüfen' : 'Check Answer'}
-                </Button>
-              )}
-              
-              {showAnswer && (
-                <div className="mt-4 space-y-3">
-                  <div className={`p-4 rounded-lg ${
-                    selectedAnswer === currentQuestion.correctAnswer 
-                      ? 'bg-green-100 text-green-800' 
-                      : 'bg-red-100 text-red-800'
-                  }`}>
-                    {selectedAnswer === currentQuestion.correctAnswer ? '✅ Richtig!' : '❌ Falsch!'}
+
+              {currentSegment && (
+                <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                  <div className="text-right">
+                    <ClickableText 
+                      text={currentSegment.arabic}
+                      className="text-xl leading-relaxed font-arabic"
+                    />
                   </div>
-                  
-                  <div className="p-4 bg-blue-50 rounded-lg">
-                    <p className="font-semibold mb-2">
-                      {lang === 'de' ? 'Richtige Antwort:' : 'Correct Answer:'}
-                    </p>
-                    <p>
-                      {typeof currentQuestion.options[currentQuestion.correctAnswer] === 'string' 
-                        ? currentQuestion.options[currentQuestion.correctAnswer]
-                        : (lang === 'de' 
-                          ? (currentQuestion.options[currentQuestion.correctAnswer] as any).german
-                          : (currentQuestion.options[currentQuestion.correctAnswer] as any).english)}
-                    </p>
-                  </div>
-                  
-                  <Button onClick={nextQuestion} size="lg">
-                    {currentQuestionIndex < videoQuestions.length - 1 
-                      ? (lang === 'de' ? 'Nächste Frage' : 'Next Question')
-                      : (lang === 'de' ? 'Quiz beenden' : 'Finish Quiz')}
-                  </Button>
                 </div>
               )}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }
