@@ -388,10 +388,10 @@ export default function VideoTrainer() {
                       <span
                         key={index}
                         data-segment={index}
-                        className={`cursor-pointer transition-all duration-300 touch-manipulation ${
+                        className={`cursor-pointer transition-all duration-300 touch-manipulation inline-block ${
                           index === highlightedSegmentIndex
-                            ? 'bg-blue-200 text-blue-900 font-semibold px-1 py-1 rounded'
-                            : 'hover:bg-gray-100 px-1 py-1 rounded'
+                            ? 'bg-blue-200 text-blue-900 font-semibold px-1 py-0.5 rounded mx-0.5'
+                            : 'hover:bg-gray-100 px-1 py-0.5 rounded mx-0.5'
                         }`}
                         onClick={() => jumpToSegment(index)}
                       >

@@ -1,0 +1,71 @@
+WEBVTT
+
+0:01 --> 0:03
+<div class="line">
+  <span class="word">بِسْمِ</span> <span class="word">اللهِ</span> <span class="word">وَالْحَمْدُ</span> <span class="word">لِلَّهِ</span> <span class="word">وَالصَّلَاةُ</span> <span class="word">وَالسَّلَامُ</span> <span class="word">عَلَى</span>
+</div>
+
+0:03 --> 0:06
+<div class="line">
+  <span class="word">رَسُولِ</span> <span class="word">اللَّهِ</span> <span class="word">وَعَلَى</span> <span class="word">آلِهِ</span> <span class="word">وَأَصْحَابِهِ</span> <span class="word">أَجْمَعِينَ</span> <span class="word">أَمَّا</span>
+</div>
+
+0:06 --> 0:10
+<div class="line">
+  <span class="word">بَعْدُ</span> <span class="word">السَّلَامُ</span> <span class="word">عَلَيْكُمْ</span> <span class="word">وَرَحْمَةُ</span> <span class="word">اللَّهِ</span> <span class="word">وَبَرَكَاتُهُ</span> <span class="word">أَهْلًا</span>
+</div>
+
+0:10 --> 0:15
+<div class="line">
+  <span class="word">وَسَهْلًا</span> <span class="word">وَمَرْحَبًا</span> <span class="word">بِكُمْ</span> <span class="word">إِخْوَانِي</span> <span class="word">وَأَخَوَاتِي</span> <span class="word">طُلَّابَ</span>
+</div>
+
+0:15 --> 0:18
+<div class="line">
+  <span class="word">اللُّغَةِ</span> <span class="word">الْعَرَبِيَّةِ</span> <span class="word">وَالْيَوْمَ</span> <span class="word">أُرِيدُ</span>
+</div>
+
+0:18 --> 0:24
+<div class="line">
+  <span class="word">أَنْ</span> <span class="word">أَتَكَلَّمَ</span> <span class="word">مَعَكُمْ</span> <span class="word">فِي</span> <span class="word">مَوْضُوعٍ</span> <span class="word">مُهِمٍّ</span>
+</div>
+
+0:24 --> 0:30
+<div class="line">
+  <span class="word">جِدًّا</span> <span class="word">فِي</span> <span class="word">تَعَلُّمِ</span> <span class="word">اللُّغَةِ</span> <span class="word">الْعَرَبِيَّةِ</span> <span class="word">وَهُوَ</span> <span class="word">الِاسْتِمَاعُ</span>
+</div>
+
+0:30 --> 0:35
+<div class="line">
+  <span class="word">وَمَا</span> <span class="word">أَدْرَاكَ</span> <span class="word">مَا</span> <span class="word">الِاسْتِمَاعُ</span>
+</div>
+
+0:35 --> 0:41
+<div class="line">
+  <span class="word">الِاسْتِمَاعُ</span> <span class="word">كَمَا</span> <span class="word">فَهِمْتُمْ</span> <span class="word">مِنَ</span> <span class="word">الْكَلِمَةِ</span>
+</div>
+
+0:41 --> 0:45
+<div class="line">
+  <span class="word">نَفْسِهَا</span> <span class="word">هُوَ</span> <span class="word">أَنْ</span> <span class="word">تَسْتَمِعَ</span> <span class="word">إِلَى</span> <span class="word">اللُّغَةِ</span>
+</div>
+
+0:45 --> 0:50
+<div class="line">
+  <span class="word">فَالِاسْتِمَاعُ</span> <span class="word">مَصْدَرُ</span> <span class="word">اسْتَمَعَ</span> <span class="word">يَسْتَمِعُ</span> <span class="word">اسْتِمَاعًا</span> <span class="word">يَعْنِي</span> <span class="word">أَنْ</span> <span class="word">تَسْمَعَ</span>
+</div>
+
+0:50 --> 0:53
+<div class="line">
+  <span class="word">اللُّغَةَ</span>
+</div>
+
+0:53 --> 0:57
+<div class="line">
+  <span class="word">وَالِاسْتِمَاعُ</span> <span class="word">إِحْدَى</span> <span class="word">الْمَهَارَاتِ</span>
+</div>
+
+0:57 --> 1:01
+<div class="line">
+  <span class="word">الْأَرْبَعِ</span> <span class="word">لِلُّغَةِ</span>
+</div>

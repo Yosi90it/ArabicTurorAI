@@ -1,0 +1,194 @@
+1:01 --> 1:05
+<div class="line">
+  <span class="word">الْمَهَارَاتُ</span> <span class="word">اللُّغَوِيَّةُ</span> <span class="word">هِـيَ</span>
+</div>
+
+1:05 --> 1:07
+<div class="line">
+  <span class="word">الِاسْتِمَاعُ</span>
+</div>
+
+1:07 --> 1:10
+<div class="line">
+  <span class="word">وَالْمُحَادَثَةُ</span> <span class="word">وَالْقِرَاءَةُ</span>
+</div>
+
+1:10 --> 1:16
+<div class="line">
+  <span class="word">وَالْكِتَابَةُ</span> <span class="word">يَعْنِي</span> <span class="word">الِاسْتِمَاعُ</span> <span class="word">هِـيَ</span> <span class="word">قُدْرَتُكَ</span> <span class="word">عَلَى</span> <span class="word">فَهْمِ</span>
+</div>
+
+1:16 --> 1:20
+<div class="line">
+  <span class="word">كَلَامٍ</span> <span class="word">تَسْمَعُهُ</span>
+</div>
+
+1:20 --> 1:25
+<div class="line">
+  <span class="word">وَالْكِتَابَةُ</span> <span class="word">قُدْرَتُكَ</span> <span class="word">عَلَى</span> <span class="word">التَّعْبِيرِ</span> <span class="word">الْكِتَابِيِّ</span>
+</div>
+
+1:25 --> 1:31
+<div class="line">
+  <span class="word">وَالْقِرَاءَةُ</span> <span class="word">قُدْرَتُكَ</span> <span class="word">عَلَى</span> <span class="word">فَهْمِ</span> <span class="word">كَلَامٍ</span> <span class="word">مَقْرُوءٍ</span> <span class="word">أَوْ</span> <span class="word">كَلَامٍ</span>
+</div>
+
+1:31 --> 1:37
+<div class="line">
+  <span class="word">تَقْرَؤُهُ</span> <span class="word">وَالْمُحَادَثَةُ</span> <span class="word">قُدْرَتُكَ</span> <span class="word">عَلَى</span> <span class="word">التَّعْبِيرِ</span>
+</div>
+
+1:37 --> 1:45
+<div class="line">
+  <span class="word">الشَّفَهِيِّ</span> <span class="word">شَفَهِيٌّ</span> <span class="word">شَفَوِيٌّ</span> <span class="word">شَفَوِيٌّ</span>
+</div>
+
+1:45 --> 1:53
+<div class="line">
+  <span class="word">شَفَةٌ</span> <span class="word">شَفَوِيٌّ</span> <span class="word">شَفَهِيٌّ</span> <span class="word">صَرَاحَةً</span> <span class="word">أَنَا</span> <span class="word">الآنَ</span>
+</div>
+
+1:53 --> 1:59
+<div class="line">
+  <span class="word">قَدْ</span> <span class="word">أَشْكَلَتْ</span> <span class="word">عَلَيَّ</span> <span class="word">هَذِهِ</span> <span class="word">الْكَلِمَةُ</span> <span class="word">شَفَهِيٌّ</span>
+</div>
+
+1:59 --> 2:05
+<div class="line">
+  <span class="word">شَفَوِيٌّ</span> <span class="word">عَلَى</span> <span class="word">كُلِّ</span> <span class="word">حَالٍ</span> <span class="word">الآنَ</span> <span class="word">السَّاعَةُ</span> <span class="word">الرَّابِعَةُ</span>
+</div>
+
+2:05 --> 2:12
+<div class="line">
+  <span class="word">لَيْلًا</span> <span class="word">وَأَنَا</span> <span class="word">أَجْلِسُ</span> <span class="word">فِي</span> <span class="word">هَذِهِ</span> <span class="word">الْغُرْفَةِ</span> <span class="word">وَالْجَمِيعُ</span>
+</div>
+
+2:12 --> 2:18
+<div class="line">
+  <span class="word">نَائِمٌ</span> <span class="word">وَأَنَا</span> <span class="word">أَتَكَلَّمُ</span> <span class="word">مَعَكُمْ</span>
+</div>
+
+2:18 --> 2:23
+<div class="line">
+  <span class="word">نَعَمْ</span> <span class="word">الِاسْتِمَاعُ</span> <span class="word">كُنْتُ</span> <span class="word">أُرِيدُ</span> <span class="word">أَنْ</span> <span class="word">أَتَكَلَّمَ</span> <span class="word">مَعَكُمْ</span>
+</div>
+
+2:23 --> 2:31
+<div class="line">
+  <span class="word">فِي</span> <span class="word">هَذَا</span> <span class="word">الْمَوْضُوعِ</span> <span class="word">مَا</span> <span class="word">أَهَمِّيَّةُ</span> <span class="word">الِاسْتِمَاعِ</span> <span class="word">فِي</span> <span class="word">تَعَلُّمِ</span> <span class="word">اللُّغَةِ</span>
+</div>
+
+2:31 --> 2:38
+<div class="line">
+  <span class="word">الْعَرَبِيَّةِ</span> <span class="word">أَسْتَطِيعُ</span> <span class="word">أَنْ</span> <span class="word">أَجْزِمَ</span> <span class="word">أَنَّ</span> <span class="word">الِاسْتِمَاعَ</span>
+</div>
+
+2:38 --> 2:43
+<div class="line">
+  <span class="word">مِنْ</span> <span class="word">أَهَمِّ</span>
+  <span class="word">الْمَهَارَاتِ</span>
+</div>
+
+2:43 --> 2:49
+<div class="line">
+  <span class="word">لِمَاذَا؟</span> <span class="word">لِأَنَّهُ</span> <span class="word">فِي</span> <span class="word">هَذَا</span> <span class="word">الزَّمَانِ</span> <span class="word">أَغْلَبُ</span>
+</div>
+
+2:49 --> 2:53
+<div class="line">
+  <span class="word">الطُّلَّابِ</span> <span class="word">يُرِيدُونَ</span> <span class="word">أَنْ</span> <span class="word">يَفْهَمُوا</span> <span class="word">اللُّغَةَ</span>
+</div>
+
+2:53 --> 2:57
+<div class="line">
+  <span class="word">الْعَرَبِيَّةَ</span> <span class="word">أَغْلَبُ</span>
+  <span class="word">الطُّلَّابِ</span> <span class="word">لَا</span> <span class="word">يُرِيدُونَ</span> <span class="word">تَعَلُّمَ</span> <span class="word">الْعَرَبِيَّةِ</span> <span class="word">لِأَجْلِ</span>
+</div>
+
+2:57 --> 3:03
+<div class="line">
+  <span class="word">الْحَدِيثِ</span> <span class="word">لِأَجْلِ</span> <span class="word">الْكَلَامِ</span> <span class="word">مَعَ</span> <span class="word">الْعَرَبِ</span> <span class="word">لِأَنَّهُمْ</span> <span class="word">أَصْلًا</span> <span class="word">لَا</span> <span class="word">يُقَابِلُونَ</span> <span class="word">الْعَرَبَ</span> <span class="word">إِلَّا</span>
+</div>
+
+3:03 --> 3:08
+<div class="line">
+  <span class="word">قَلِيلًا</span> <span class="word">فَهُنَاكَ</span> <span class="word">طُلَّابٌ</span> <span class="word">يَتَعَلَّمُونَ</span>
+  <span class="word">الْعَرَبِيَّةَ</span> <span class="word">وَلَمْ</span> <span class="word">يَرَوْا</span> <span class="word">شَخْصًا</span> <span class="word">عَرَبِيًّا</span>
+</div>
+
+3:08 --> 3:15
+<div class="line">
+  <span class="word">فِي</span> <span class="word">حَيَاتِهِمْ</span> <span class="word">لِذَلِكَ</span> <span class="word">لَا</span> <span class="word">يَضُرُّهُمْ</span> <span class="word">ضَعْفُهُمْ</span> <span class="word">فِي</span>
+  <span class="word">الْمُحَادَثَةِ</span>
+</div>
+
+3:15 --> 3:23
+<div class="line">
+  <span class="word">لَا</span> <span class="word">يَضُرُّهُمْ</span> <span class="word">وَثَانِيًا</span> <span class="word">الْكِتَابَةُ</span> <span class="word">أَيْضًا</span> <span class="word">لَا</span> <span class="word">يَحْتَاجُونَ</span> <span class="word">إِلَيْهَا</span>
+</div>
+
+3:23 --> 3:31
+<div class="line">
+  <span class="word">كَثِيرًا</span> <span class="word">لِأَنَّهُمْ</span> <span class="word">لَا</span> <span class="word">يَكْتُبُونَ</span> <span class="word">بِالْعَرَبِيَّةِ</span> <span class="word">أَيْنَ</span> <span class="word">سَيَكْتُبُونَ؟</span>
+</div>
+
+3:31 --> 3:38
+<div class="line">
+  <span class="word">الطَّالِبُ</span> <span class="word">الَّذِي</span> <span class="word">يَسْكُنُ</span> <span class="word">فِي</span> <span class="word">كَازَاخِسْتَانَ</span> <span class="word">فِي</span> <span class="word">قَرْيَةٍ</span> <span class="word">صَغِيرَةٍ</span> <span class="word">عِنْدَ</span> <span class="word">الْجِبَالِ</span>
+</div>
+
+3:38 --> 3:42
+<div class="line">
+  <span class="word">لِمَاذَا</span> <span class="word">يَحْتَاجُ</span> <span class="word">إِلَى</span> <span class="word">مَهَارَةِ</span> <span class="word">الْكِتَابَةِ؟</span> <span class="word">لَا</span>
+</div>
+
+3:42 --> 3:50
+<div class="line">
+  <span class="word">يَحْتَاجُ</span> <span class="word">وَالْقِرَاءَةُ</span> <span class="word">نَعَمْ</span> <span class="word">يَحْتَاجُ</span> <span class="word">إِلَيْهَا</span> <span class="word">يَحْتَاجُ</span> <span class="word">إِلَيْهَا</span> <span class="word">بِشِدَّةٍ</span>
+</div>
+
+3:50 --> 3:58
+<div class="line">
+  <span class="word">يَحْتَاجُ</span> <span class="word">إِلَيْهَا</span> <span class="word">لَكِنَّ</span> <span class="word">الِاسْتِمَاعَ</span> <span class="word">أَهَمُّ</span> <span class="word">لَهُ</span> <span class="word">لِمَاذَا؟</span>
+</div>
+
+3:58 --> 4:07
+<div class="line">
+  <span class="word">لِأَنَّهُ</span> <span class="word">يَسْتَطِيعُ</span> <span class="word">أَنْ</span> <span class="word">يَسْتَمِعَ</span> <span class="word">إِلَى</span> <span class="word">آلَافِ</span> <span class="word">الْمُحَاضَرَاتِ</span>
+  <span class="word">الْمَوْجُودَةِ</span> <span class="word">عَلَى</span> <span class="word">الْيُوتِيُوبِ</span>
+</div>
+
+4:07 --> 4:14
+<div class="line">
+  <span class="word">وَالِاسْتِمَاعُ</span> <span class="word">أَسْهَلُ</span> <span class="word">مِنَ</span> <span class="word">الْقِرَاءَةِ</span> <span class="word">لِأَنَّ</span> <span class="word">الْقِرَاءَةَ</span> <span class="word">تَحْتَاجُ</span> <span class="word">إِلَى</span> <span class="word">كِتَابٍ</span>
+</div>
+
+4:14 --> 4:23
+<div class="line">
+  <span class="word">وَلِأَنَّ</span> <span class="word">الْقِرَاءَةَ</span> <span class="word">تَحْتَاجُ</span> <span class="word">إِلَى</span> <span class="word">أَشْيَاءَ</span> <span class="word">كَثِيرَةٍ</span> <span class="word">وَالْكُتُبُ</span> <span class="word">قَدْ</span> <span class="word">تَكُونُ</span> <span class="word">غَيْرَ</span> <span class="word">مُتَوَفِّرَةٍ</span>
+</div>
+
+4:23 --> 4:31
+<div class="line">
+  <span class="word">فِي</span> <span class="word">بَلَدِهِ</span> <span class="word">لَا</span> <span class="word">يُوجَدُ</span> <span class="word">عِنْدَهُ</span> <span class="word">كِتَابٌ</span> <span class="word">وَحَتَّى</span> <span class="word">إِذَا</span> <span class="word">وُجِدَ</span>
+</div>
+
+4:31 --> 4:41
+<div class="line">
+  <span class="word">فَالطَّالِبُ</span> <span class="word">الْمُعَاصِرُ</span> <span class="word">لِلْأَسَفِ</span> <span class="word">الشَّدِيدِ</span> <span class="word">لَا</span> <span class="word">يَقْرَأُ</span> <span class="word">مَنْ</span> <span class="word">مِنَّا</span> <span class="word">يَقْرَأُ؟</span> <span class="word">قَلِيلٌ</span> <span class="word">جِدًّا</span>
+</div>
+
+4:41 --> 4:47
+<div class="line">
+  <span class="word">أَغْلَبُ</span> <span class="word">النَّاسِ</span> <span class="word">فِي</span> <span class="word">هَذَا</span> <span class="word">الزَّمَانِ</span> <span class="word">إِذَا</span> <span class="word">وَاجَهَتْهُمْ</span> <span class="word">مُشْكِلَةٌ</span>
+</div>
+
+4:47 --> 4:55
+<div class="line">
+  <span class="word">لَا</span> <span class="word">يَبْحَثُونَ</span> <span class="word">فِي</span> <span class="word">الْكُتُبِ</span> <span class="word">يَدْخُلُونَ</span> <span class="word">الْيُوتِيُوبَ</span> <span class="word">وَيَكْتُبُونَ</span> <span class="word">كَيْفَ</span> <span class="word">أَفْعَلُ</span> <span class="word">كَذَا</span> <span class="word">وَكَذَا</span>
+</div>
+
+4:55 --> 5:04
+<div class="line">
+  <span class="word">كَيْفَ</span> <span class="word">؟</span> <span class="word">أَيْنَ</span> <span class="word">؟</span> <span class="word">لِمَاذَا</span> <span class="word">؟</span> <span class="word">أَوْ</span> <span class="word">يَسْأَلُونَ</span> <span class="word">الذَّكَاءَ</span> <span class="word">الِاصْطِنَاعِيَّ</span> <span class="word">يَا</span> <span class="word">شَاتْ</span> <span class="word">جِيبِيتِي</span> <span class="word">مَا</span> <span class="word">مَعْنَى</span> <span class="word">هَذَا؟</span>
+</div>

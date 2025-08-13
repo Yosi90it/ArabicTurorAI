@@ -17,141 +17,171 @@ export const listeningVideoData = {
   segments: [
     {
       timestamp: "0:01",
-      arabic: "بسم الله الحمد لله والصلاه والسلام على",
+      arabic: "بِسْمِ اللهِ وَالْحَمْدُ لِلَّهِ وَالصَّلَاةُ وَالسَّلَامُ عَلَى",
       german: "Im Namen Allahs, Lob sei Allah und Friede und Segen auf",
       english: "In the name of Allah, praise be to Allah and peace and blessings upon"
     },
     {
       timestamp: "0:03",
-      arabic: "رسول الله وعلى اله واصحابه اجمعين اما",
+      arabic: "رَسُولِ اللَّهِ وَعَلَى آلِهِ وَأَصْحَابِهِ أَجْمَعِينَ أَمَّا",
       german: "dem Gesandten Allahs und seiner Familie und allen seinen Gefährten. Danach:",
       english: "the Messenger of Allah and his family and all his companions. After that:"
     },
     {
       timestamp: "0:06",
-      arabic: "بعد السلام عليكم ورحمه الله وبركاته اهلا",
+      arabic: "بَعْدُ السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ أَهْلًا",
       german: "Friede sei mit euch und Allahs Barmherzigkeit und Segen. Willkommen",
       english: "Peace be upon you and Allah's mercy and blessings. Welcome"
     },
     {
       timestamp: "0:10",
-      arabic: "وسهلا ومرحبا بكم اخواني واخواتي طلاب",
+      arabic: "وَسَهْلًا وَمَرْحَبًا بِكُمْ إِخْوَانِي وَأَخَوَاتِي طُلَّابَ",
       german: "und herzlich willkommen, meine Brüder und Schwestern, Studenten",
       english: "and warmly welcome, my brothers and sisters, students"
     },
     {
-      timestamp: "0:14",
-      arabic: "اللغه",
-      german: "der Sprache",
-      english: "of the language"
-    },
-    {
       timestamp: "0:15",
-      arabic: "العربيه واليوم اريد",
-      german: "Arabisch. Und heute möchte ich",
-      english: "Arabic. And today I want"
+      arabic: "اللُّغَةِ الْعَرَبِيَّةِ وَالْيَوْمَ أُرِيدُ",
+      german: "der arabischen Sprache. Und heute möchte ich",
+      english: "of the Arabic language. And today I want"
     },
     {
       timestamp: "0:18",
-      arabic: "ان اتكلم معكم في موضوع مهم",
+      arabic: "أَنْ أَتَكَلَّمَ مَعَكُمْ فِي مَوْضُوعٍ مُهِمٍّ",
       german: "mit euch über ein wichtiges Thema sprechen",
       english: "to talk with you about an important topic"
     },
     {
       timestamp: "0:24",
-      arabic: "جدا في تعلم اللغه",
-      german: "sehr wichtig beim Erlernen der Sprache",
-      english: "very important in learning the language"
-    },
-    {
-      timestamp: "0:27",
-      arabic: "العربيه وهو الاستم",
-      german: "Arabisch, und das ist das Hörver-",
-      english: "Arabic, and that is listen-"
+      arabic: "جِدًّا فِي تَعَلُّمِ اللُّغَةِ الْعَرَبِيَّةِ وَهُوَ الِاسْتِمَاعُ",
+      german: "sehr wichtig beim Erlernen der arabischen Sprache, und das ist das Hörverstehen",
+      english: "very important in learning the Arabic language, and that is listening"
     },
     {
       timestamp: "0:30",
-      arabic: "ماع الاستماع وما ادراك ما",
-      german: "stehen. Das Hörverstehen, und was lässt dich wissen, was",
-      english: "ing. Listening, and what lets you know what"
+      arabic: "وَمَا أَدْرَاكَ مَا الِاسْتِمَاعُ",
+      german: "Und was lässt dich wissen, was Hörverstehen ist?",
+      english: "And what lets you know what listening is?"
     },
     {
       timestamp: "0:35",
-      arabic: "الاستماع الاستماع كما فهمتم من الكلمه",
-      german: "Hörverstehen ist? Hörverstehen ist, wie ihr aus dem Wort",
-      english: "listening is? Listening is, as you understood from the word"
+      arabic: "الِاسْتِمَاعُ كَمَا فَهِمْتُمْ مِنَ الْكَلِمَةِ",
+      german: "Hörverstehen ist, wie ihr aus dem Wort",
+      english: "Listening is, as you understood from the word"
     },
     {
       timestamp: "0:41",
-      arabic: "نفسها هو ان تستمع الى اللغه فالاستماع",
-      german: "selbst verstanden habt, dass man der Sprache zuhört. Das Hörverstehen",
-      english: "itself, that you listen to the language. Listening"
+      arabic: "نَفْسِهَا هُوَ أَنْ تَسْتَمِعَ إِلَى اللُّغَةِ",
+      german: "selbst verstanden habt, dass man der Sprache zuhört",
+      english: "itself, that you listen to the language"
     },
     {
       timestamp: "0:45",
-      arabic: "مصدر استمع يستمع استماعا يعني ان تسمع",
-      german: "ist ein Masdar von 'zuhören', das bedeutet, dass ihr hört",
-      english: "is a verbal noun from 'to listen', meaning that you hear"
+      arabic: "فَالِاسْتِمَاعُ مَصْدَرُ اسْتَمَعَ يَسْتَمِعُ اسْتِمَاعًا يَعْنِي أَنْ تَسْمَعَ",
+      german: "Das Hörverstehen ist ein Masdar von 'zuhören', das bedeutet, dass ihr hört",
+      english: "Listening is a verbal noun from 'to listen', meaning that you hear"
     },
     {
       timestamp: "0:50",
-      arabic: "اللغه",
+      arabic: "اللُّغَةَ",
       german: "die Sprache",
       english: "the language"
     },
     {
       timestamp: "0:53",
-      arabic: "والاستماع احدى المهارات",
+      arabic: "وَالِاسْتِمَاعُ إِحْدَى الْمَهَارَاتِ",
       german: "Und Hörverstehen ist eine der Fertigkeiten",
       english: "And listening is one of the skills"
     },
     {
       timestamp: "0:57",
-      arabic: "الاربعه للغه",
+      arabic: "الْأَرْبَعِ لِلُّغَةِ",
       german: "der vier Sprachfertigkeiten",
       english: "of the four language skills"
     },
     {
-      timestamp: "1:00",
-      arabic: "فالهارات",
-      german: "Die Fertigkeiten",
-      english: "The skills"
-    },
-    {
       timestamp: "1:01",
-      arabic: "اللغويه هي",
-      german: "der Sprache sind",
-      english: "of language are"
+      arabic: "الْمَهَارَاتُ اللُّغَوِيَّةُ هِـيَ",
+      german: "Die Sprachfertigkeiten sind",
+      english: "The language skills are"
     },
     {
       timestamp: "1:05",
-      arabic: "الاستماع",
+      arabic: "الِاسْتِمَاعُ",
       german: "Hörverstehen",
       english: "listening"
     },
     {
       timestamp: "1:07",
-      arabic: "والمحادثه والقراءه",
+      arabic: "وَالْمُحَادَثَةُ وَالْقِرَاءَةُ",
       german: "und Sprechen und Lesen",
       english: "and speaking and reading"
     },
     {
       timestamp: "1:10",
-      arabic: "والكتابه يعني الاستماع هي قدرتك على فهم",
+      arabic: "وَالْكِتَابَةُ يَعْنِي الِاسْتِمَاعُ هِـيَ قُدْرَتُكَ عَلَى فَهْمِ",
       german: "und Schreiben. Das heißt, Hörverstehen ist deine Fähigkeit zu verstehen",
       english: "and writing. That is, listening is your ability to understand"
     },
     {
       timestamp: "1:16",
-      arabic: "كلام",
-      german: "Sprache",
-      english: "speech"
+      arabic: "كَلَامٍ تَسْمَعُهُ",
+      german: "Sprache, die du hörst",
+      english: "speech that you hear"
     },
     {
-      timestamp: "1:18",
-      arabic: "تسمعه",
-      german: "die du hörst",
-      english: "that you hear"
+      timestamp: "1:20",
+      arabic: "وَالْكِتَابَةُ قُدْرَتُكَ عَلَى التَّعْبِيرِ الْكِتَابِيِّ",
+      german: "Und Schreiben ist deine Fähigkeit zum schriftlichen Ausdruck",
+      english: "And writing is your ability for written expression"
+    },
+    {
+      timestamp: "1:25",
+      arabic: "وَالْقِرَاءَةُ قُدْرَتُكَ عَلَى فَهْمِ كَلَامٍ مَقْرُوءٍ أَوْ كَلَامٍ",
+      german: "Und Lesen ist deine Fähigkeit, gelesenen Text oder Text zu verstehen",
+      english: "And reading is your ability to understand read text or text"
+    },
+    {
+      timestamp: "1:31",
+      arabic: "تَقْرَؤُهُ وَالْمُحَادَثَةُ قُدْرَتُكَ عَلَى التَّعْبِيرِ",
+      german: "den du liest. Und Sprechen ist deine Fähigkeit zum Ausdruck",
+      english: "that you read. And speaking is your ability for expression"
+    },
+    {
+      timestamp: "1:37",
+      arabic: "الشَّفَهِيِّ شَفَهِيٌّ شَفَوِيٌّ شَفَوِيٌّ",
+      german: "mündlich, mündlich, mündlich, mündlich",
+      english: "oral, oral, oral, oral"
+    },
+    {
+      timestamp: "1:45",
+      arabic: "شَفَةٌ شَفَوِيٌّ شَفَهِيٌّ صَرَاحَةً أَنَا الآنَ",
+      german: "Lippe, mündlich, mündlich. Ehrlich gesagt, ich bin jetzt",
+      english: "lip, oral, oral. Frankly, I am now"
+    },
+    {
+      timestamp: "1:53",
+      arabic: "قَدْ أَشْكَلَتْ عَلَيَّ هَذِهِ الْكَلِمَةُ شَفَهِيٌّ",
+      german: "verwirrt über dieses Wort 'mündlich'",
+      english: "confused about this word 'oral'"
+    },
+    {
+      timestamp: "1:59",
+      arabic: "شَفَوِيٌّ عَلَى كُلِّ حَالٍ الآنَ السَّاعَةُ الرَّابِعَةُ",
+      german: "mündlich. Auf jeden Fall ist es jetzt vier Uhr",
+      english: "oral. In any case, it's now four o'clock"
+    },
+    {
+      timestamp: "2:05",
+      arabic: "لَيْلًا وَأَنَا أَجْلِسُ فِي هَذِهِ الْغُرْفَةِ وَالْجَمِيعُ",
+      german: "nachts und ich sitze in diesem Raum und alle",
+      english: "at night and I'm sitting in this room and everyone"
+    },
+    {
+      timestamp: "2:12",
+      arabic: "نَائِمٌ وَأَنَا أَتَكَلَّمُ مَعَكُمْ",
+      german: "schlafen und ich spreche mit euch",
+      english: "is sleeping and I'm talking with you"
     },
     {
       timestamp: "1:20",
