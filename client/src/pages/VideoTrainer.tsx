@@ -152,7 +152,7 @@ export default function VideoTrainer() {
                 const container = transcriptRef.current;
                 const elementTop = (highlightedElement as HTMLElement).offsetTop;
                 const containerHeight = container.clientHeight;
-                const scrollTop = elementTop - (containerHeight / 4); // Position at top quarter instead of center
+                const scrollTop = elementTop - (containerHeight / 2.5); // Position slightly above center for better visibility
                 
                 container.scrollTo({
                   top: Math.max(0, scrollTop),
