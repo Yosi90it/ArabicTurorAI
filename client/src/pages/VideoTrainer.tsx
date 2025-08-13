@@ -145,13 +145,18 @@ export default function VideoTrainer() {
             setHighlightedSegmentIndex(newSegmentIndex);
             setCurrentSegmentIndex(newSegmentIndex);
             
-            // Auto-scroll to current segment
+            // Auto-scroll to current segment with better positioning
             if (transcriptRef.current) {
               const highlightedElement = transcriptRef.current.querySelector(`[data-segment="${newSegmentIndex}"]`);
               if (highlightedElement) {
-                highlightedElement.scrollIntoView({ 
-                  behavior: 'smooth', 
-                  block: 'center' 
+                const container = transcriptRef.current;
+                const elementTop = (highlightedElement as HTMLElement).offsetTop;
+                const containerHeight = container.clientHeight;
+                const scrollTop = elementTop - (containerHeight / 4); // Position at top quarter instead of center
+                
+                container.scrollTo({
+                  top: Math.max(0, scrollTop),
+                  behavior: 'smooth'
                 });
               }
             }
