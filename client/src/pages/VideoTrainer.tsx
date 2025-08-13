@@ -197,15 +197,6 @@ export default function VideoTrainer() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Video Player */}
             <Card className="overflow-hidden">
-              <CardHeader className="pb-4">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                    <Play className="w-5 h-5" />
-                    {strings.videoPlayer}
-                  </CardTitle>
-
-                </div>
-              </CardHeader>
               <CardContent className="p-0">
                 <div className="relative aspect-video bg-black">
                   <iframe
@@ -217,53 +208,12 @@ export default function VideoTrainer() {
                   />
                 </div>
 
-                {/* Video Controls */}
-                <div className="p-4 bg-gray-50 dark:bg-gray-800 border-t">
-                  <div className="flex items-center justify-center gap-4">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={skipBackward}
-                      disabled={currentSegmentIndex === 0}
-                    >
-                      <SkipBack className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={playPause}
-                      disabled={!isVideoReady}
-                    >
-                      <Play className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={restartSegment}
-                    >
-                      <RotateCcw className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={skipForward}
-                      disabled={currentSegmentIndex === segments.length - 1}
-                    >
-                      <SkipForward className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
+
               </CardContent>
             </Card>
 
             {/* Transcript */}
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BookOpen className="w-5 h-5" />
-                  {strings.transcript}
-                </CardTitle>
-              </CardHeader>
               <CardContent>
                 <div 
                   ref={transcriptRef}
