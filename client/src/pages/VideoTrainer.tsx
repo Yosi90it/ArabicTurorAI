@@ -262,10 +262,10 @@ export default function VideoTrainer() {
                       >
                         <ClickableText 
                           text={segment.arabic}
-                          className={`leading-relaxed font-arabic transition-all duration-500 ease-in-out ${
+                          className={`text-lg leading-relaxed font-arabic transition-all duration-300 ease-in-out ${
                             index === currentSegmentIndex
-                              ? 'text-xl font-bold text-blue-600 dark:text-blue-400 drop-shadow-sm'
-                              : 'text-lg font-normal text-gray-700 dark:text-gray-300'
+                              ? 'font-bold text-blue-600 dark:text-blue-400'
+                              : 'font-normal text-gray-700 dark:text-gray-300'
                           }`}
                         />
                       </div>
