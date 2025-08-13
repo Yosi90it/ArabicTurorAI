@@ -257,15 +257,19 @@ export default function VideoTrainer() {
                             el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                           }
                         } : undefined}
-                        className={`p-1 rounded transition-all duration-300 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800`}
+                        className={`p-2 rounded-lg transition-all duration-500 ease-in-out cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 ${
+                          index === currentSegmentIndex 
+                            ? 'transform scale-105 bg-blue-50 dark:bg-blue-950/30' 
+                            : ''
+                        }`}
                         onClick={() => jumpToSegment(index)}
                       >
                         <ClickableText 
                           text={segment.arabic}
-                          className={`leading-relaxed font-arabic transition-all duration-300 ${
+                          className={`leading-relaxed font-arabic transition-all duration-500 ease-in-out ${
                             index === currentSegmentIndex
-                              ? 'text-xl font-bold text-blue-600 dark:text-blue-400'
-                              : 'text-lg font-normal'
+                              ? 'text-xl font-bold text-blue-600 dark:text-blue-400 drop-shadow-sm'
+                              : 'text-lg font-normal text-gray-700 dark:text-gray-300'
                           }`}
                         />
                       </div>
