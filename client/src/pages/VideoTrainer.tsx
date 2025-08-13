@@ -234,16 +234,16 @@ export default function VideoTrainer() {
                             el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                           }
                         } : undefined}
-                        className={`p-2 rounded transition-all duration-300 cursor-pointer ${
-                          index === currentSegmentIndex
-                            ? 'bg-yellow-200 dark:bg-yellow-800 border-l-4 border-yellow-500'
-                            : 'hover:bg-gray-50 dark:hover:bg-gray-800'
-                        }`}
+                        className={`p-1 rounded transition-all duration-300 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800`}
                         onClick={() => jumpToSegment(index)}
                       >
                         <ClickableText 
                           text={segment.arabic}
-                          className="text-lg leading-relaxed font-arabic"
+                          className={`leading-relaxed font-arabic transition-all duration-300 ${
+                            index === currentSegmentIndex
+                              ? 'text-xl font-bold text-blue-600 dark:text-blue-400'
+                              : 'text-lg font-normal'
+                          }`}
                         />
                       </div>
                     ))}
