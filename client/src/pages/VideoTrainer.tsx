@@ -93,29 +93,25 @@ export default function VideoTrainer() {
               setIsVideoReady(true);
               // Start time tracking
               intervalRef.current = setInterval(() => {
-                if (playerRef.current && playerRef.current.getCurrentTime) {
-                  const currentTime = playerRef.current.getCurrentTime();
-                  setVideoCurrentTime(currentTime);
-                  
-                  // Update highlighted segment based on video time
-                  const newSegmentIndex = getCurrentSegmentFromTime(currentTime);
-                  if (newSegmentIndex !== highlightedSegmentIndex) {
-                    setHighlightedSegmentIndex(newSegmentIndex);
-                    setCurrentSegmentIndex(newSegmentIndex);
+                if (playerRef.current && typeof playerRef.current.getCurrentTime === 'function') {
+                  try {
+                    const currentTime = playerRef.current.getCurrentTime();
+                    setVideoCurrentTime(currentTime);
                     
-                    // Auto-scroll to current segment
-                    if (transcriptRef.current) {
-                      const highlightedElement = transcriptRef.current.querySelector(`[data-segment="${newSegmentIndex}"]`);
-                      if (highlightedElement) {
-                        highlightedElement.scrollIntoView({ 
-                          behavior: 'smooth', 
-                          block: 'center' 
-                        });
-                      }
+                    // Update highlighted segment based on video time
+                    const newSegmentIndex = getCurrentSegmentFromTime(currentTime);
+                    console.log(`Video time: ${currentTime}s, Segment: ${newSegmentIndex}, Current: ${currentSegmentIndex}`);
+                    
+                    if (newSegmentIndex !== currentSegmentIndex) {
+                      console.log(`Switching to segment ${newSegmentIndex} at time ${currentTime}s`);
+                      setCurrentSegmentIndex(newSegmentIndex);
+                      setHighlightedSegmentIndex(newSegmentIndex);
                     }
+                  } catch (error) {
+                    console.log('Error getting current time:', error);
                   }
                 }
-              }, 1000);
+              }, 500); // Check more frequently for better sync
             },
             onStateChange: (event: any) => {
               // Handle play/pause state changes if needed
