@@ -62,11 +62,11 @@ function BookContent({ content, tashkeelEnabled, interlinearEnabled, onWordClick
           
           switch (tagName) {
             case 'h1':
-              return <h1 key={Math.random()} className="text-3xl font-bold mb-6 text-purple-800">{children}</h1>;
+              return <h1 key={Math.random()} className="text-3xl font-bold mb-6 text-blue-800">{children}</h1>;
             case 'h2':
-              return <h2 key={Math.random()} className="text-2xl font-semibold mb-4 text-purple-700 mt-8">{children}</h2>;
+              return <h2 key={Math.random()} className="text-2xl font-semibold mb-4 text-blue-700 mt-8">{children}</h2>;
             case 'h3':
-              return <h3 key={Math.random()} className="text-xl font-medium mb-3 text-purple-600 mt-6">{children}</h3>;
+              return <h3 key={Math.random()} className="text-xl font-medium mb-3 text-blue-600 mt-6">{children}</h3>;
             case 'p':
               return <p key={Math.random()} className="mb-4 text-lg">{children}</p>;
             case 'div':
@@ -74,7 +74,7 @@ function BookContent({ content, tashkeelEnabled, interlinearEnabled, onWordClick
               const className = style.includes('text-align: center') ? 'text-center mb-6' : 'mb-4';
               return <div key={Math.random()} className={className}>{children}</div>;
             case 'strong':
-              return <strong key={Math.random()} className="font-bold text-purple-800">{children}</strong>;
+              return <strong key={Math.random()} className="font-bold text-blue-800">{children}</strong>;
             default:
               return <span key={Math.random()}>{children}</span>;
           }
@@ -256,7 +256,7 @@ export default function BookReader() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8">
+    <div className="min-h-screen bg-white py-8">
       {/* Book Library - Above the content */}
       <Card className="mb-6">
         <CardHeader>

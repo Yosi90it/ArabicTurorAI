@@ -491,7 +491,7 @@ export default function AiChat() {
                 title="Tashkeel anzeigen/ausblenden"
               >
                 {tashkeelEnabled ? (
-                  <ToggleRight className="w-5 h-5 text-purple-600" />
+                  <ToggleRight className="w-5 h-5 text-orange-600" />
                 ) : (
                   <ToggleLeft className="w-5 h-5 text-gray-400" />
                 )}
@@ -513,7 +513,7 @@ export default function AiChat() {
                       }`}
                     >
                       {message.sender === "AI" && (
-                        <div className="w-8 h-8 bg-primary-purple rounded-full flex items-center justify-center text-white text-sm font-bold">
+                        <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
                           AI
                         </div>
                       )}
@@ -531,7 +531,7 @@ export default function AiChat() {
                                   style={{display: 'inline-block', margin: '0 2px', textAlign: 'center', verticalAlign: 'top'}}
                                 >
                                   <span
-                                    className="clickable-word cursor-pointer hover:bg-purple-100 px-1 rounded transition-colors"
+                                    className="clickable-word cursor-pointer hover:bg-blue-100 px-1 rounded transition-colors"
                                     onClick={(e) => handleWordClick(word, e)}
                                     style={{display: 'block'}}
                                   >
@@ -594,7 +594,7 @@ export default function AiChat() {
                       <Badge
                         key={index}
                         variant="outline"
-                        className="cursor-pointer hover:bg-purple-50"
+                        className="cursor-pointer hover:bg-orange-50"
                         onClick={() => handleSuggestionClick(suggestion)}
                       >
                         {suggestion}

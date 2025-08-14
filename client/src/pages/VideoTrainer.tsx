@@ -289,7 +289,7 @@ export default function VideoTrainer() {
                           text={formatText(segment.arabic)}
                           className={`text-lg leading-relaxed font-arabic transition-all duration-300 ease-in-out ${
                             index === currentSegmentIndex
-                              ? 'font-bold text-blue-600 dark:text-blue-400'
+                              ? 'font-bold text-green-600 dark:text-green-400'
                               : 'font-normal text-gray-700 dark:text-gray-300'
                           }`}
                         />

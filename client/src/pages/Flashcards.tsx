@@ -347,12 +347,12 @@ Antworte im JSON-Format:
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-6">
+    <div className="min-h-screen bg-white py-6">
       {/* Modern Header */}
       <div className="mb-8">
         <div className="flex items-center gap-4 mb-4">
-          <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center">
-            <BookOpen className="w-6 h-6 text-white" />
+          <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center">
+            <RotateCcw className="w-6 h-6 text-white" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Flashcards</h1>
@@ -368,11 +368,11 @@ Antworte im JSON-Format:
 
       <Tabs defaultValue="flashcards" className="w-full">
         <TabsList className="grid w-full grid-cols-2 bg-white rounded-xl p-1 shadow-sm border">
-          <TabsTrigger value="flashcards" className="flex items-center gap-2 data-[state=active]:bg-orange-500 data-[state=active]:text-white rounded-lg">
-            <BookOpen className="w-4 h-4" />
+          <TabsTrigger value="flashcards" className="flex items-center gap-2 data-[state=active]:bg-purple-500 data-[state=active]:text-white rounded-lg">
+            <RotateCcw className="w-4 h-4" />
 {strings.flashcards} ({allFlashcards.length})
           </TabsTrigger>
-          <TabsTrigger value="stories" className="flex items-center gap-2 data-[state=active]:bg-orange-500 data-[state=active]:text-white rounded-lg">
+          <TabsTrigger value="stories" className="flex items-center gap-2 data-[state=active]:bg-purple-500 data-[state=active]:text-white rounded-lg">
             <Sparkles className="w-4 h-4" />
 {strings.storyGenerator}
           </TabsTrigger>
@@ -384,7 +384,7 @@ Antworte im JSON-Format:
             <div className="flex flex-wrap gap-2 justify-center">
               <Badge 
                 variant={selectedCategory === 'all' ? 'default' : 'outline'}
-                className="text-xs px-2 py-1 cursor-pointer hover:bg-purple-100"
+                className="text-xs px-2 py-1 cursor-pointer hover:bg-green-100"
                 onClick={() => {
                   setSelectedCategory('all');
                   setCurrentCardIndex(0);

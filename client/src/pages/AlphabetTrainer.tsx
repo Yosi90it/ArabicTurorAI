@@ -215,7 +215,7 @@ export default function AlphabetTrainer() {
   const content = getCurrentContent();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 py-8">
+    <div className="min-h-screen bg-white py-8">
 
       <div className="max-w-6xl mx-auto px-6 space-y-6">
 
@@ -269,7 +269,7 @@ export default function AlphabetTrainer() {
               {/* Large Display */}
               <div className="text-center space-y-4">
                 <div 
-                  className="text-9xl font-arabic mb-4 cursor-pointer hover:text-blue-600 transition-colors p-4 bg-gray-50 rounded-xl"
+                  className="text-9xl font-arabic mb-4 cursor-pointer hover:text-orange-600 transition-colors p-4 bg-gray-50 rounded-xl"
                   onClick={() => playAudio(content.arabic)}
                   dir="rtl"
                 >
@@ -284,14 +284,14 @@ export default function AlphabetTrainer() {
 
               {/* Letter Forms Display (only for letters phase) */}
               {currentPhase === 'letters' && (
-                <div className="bg-blue-50 p-6 rounded-lg space-y-4">
+                <div className="bg-orange-50 p-6 rounded-lg space-y-4">
                   <h4 className="font-semibold text-center">Alle Formen von {currentLetter.name}:</h4>
                   <div className="grid grid-cols-4 gap-4">
                     {(['isolated', 'initial', 'medial', 'final'] as LetterForm[]).map((form) => (
                       <div 
                         key={form}
                         className={`text-center p-4 rounded-lg cursor-pointer transition-colors ${
-                          currentForm === form ? 'bg-blue-200 border-2 border-blue-400' : 'bg-white hover:bg-blue-100'
+                          currentForm === form ? 'bg-orange-200 border-2 border-orange-400' : 'bg-white hover:bg-orange-100'
                         }`}
                         onClick={() => {
                           setCurrentForm(form);
@@ -310,14 +310,14 @@ export default function AlphabetTrainer() {
 
               {/* Vowel Marks Display (only for vowels phase) */}
               {currentPhase === 'vowels' && (
-                <div className="bg-purple-50 p-6 rounded-lg space-y-4">
+                <div className="bg-green-50 p-6 rounded-lg space-y-4">
                   <h4 className="font-semibold text-center">Vokalzeichen:</h4>
                   <div className="grid grid-cols-3 gap-4">
                     {vowelMarks.map((vowel, index) => (
                       <div 
                         key={index}
                         className={`text-center p-4 rounded-lg cursor-pointer transition-colors ${
-                          currentVowel === index ? 'bg-purple-200 border-2 border-purple-400' : 'bg-white hover:bg-purple-100'
+                          currentVowel === index ? 'bg-green-200 border-2 border-green-400' : 'bg-white hover:bg-green-100'
                         }`}
                         onClick={() => {
                           setCurrentVowel(index);

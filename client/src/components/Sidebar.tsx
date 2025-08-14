@@ -105,7 +105,7 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
             onClick={onLinkClick}
             className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer ${
               isActive("/learn")
-                ? "bg-orange-100 text-orange-700"
+                ? "bg-green-100 text-green-700"
                 : "text-gray-700 hover:bg-gray-100"
             }`}
           >
@@ -130,7 +130,15 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
                 onClick={onLinkClick}
                 className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer ${
                   isActive(item.route)
-                    ? "bg-orange-100 text-orange-700"
+                    ? `${
+                        item.route === "/ai-chat" ? "bg-purple-100 text-purple-700" :
+                        item.route === "/book-reader" ? "bg-blue-100 text-blue-700" :
+                        item.route === "/video-trainer" ? "bg-green-100 text-green-700" :
+                        item.route === "/flashcards" ? "bg-purple-100 text-purple-700" :
+                        item.route === "/alphabet-trainer" ? "bg-orange-100 text-orange-700" :
+                        item.route === "/daily-challenge" ? "bg-blue-100 text-blue-700" :
+                        "bg-orange-100 text-orange-700"
+                      }`
                     : "text-gray-700 hover:bg-gray-100"
                 }`}
               >
@@ -148,7 +156,7 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
               onClick={onLinkClick}
               className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer ${
                 isActive("/admin-panel")
-                  ? "bg-orange-100 text-orange-700"
+                  ? "bg-gray-100 text-gray-700"
                   : "text-gray-700 hover:bg-gray-100"
               }`}
             >
@@ -164,7 +172,7 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
             onClick={onLinkClick}
             className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer ${
               isActive("/weekly-plan")
-                ? "bg-orange-100 text-orange-700"
+                ? "bg-gray-100 text-gray-700"
                 : "text-gray-700 hover:bg-gray-100"
             }`}
           >
