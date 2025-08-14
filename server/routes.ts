@@ -203,36 +203,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       let grammar = "noun"; // Default
       
-      // Use OpenAI to determine word type if available and word is Arabic
-      if (process.env.OPENAI_API_KEY && /[\u0600-\u06FF]/.test(word)) {
-        try {
-          const OpenAI = (await import("openai")).default;
-          const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-          
-          const completion = await openai.chat.completions.create({
-            model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-            messages: [
-              {
-                role: "system",
-                content: "Du bist ein arabischer Grammatikexperte. Analysiere das gegebene arabische Wort und bestimme seine Wortart. Antworte nur mit einem Wort: 'verb', 'noun', 'adjective', 'adverb', 'preposition', 'pronoun', oder 'particle'."
-              },
-              {
-                role: "user",
-                content: `Analysiere dieses arabische Wort: ${word}`
-              }
-            ],
-            temperature: 0.1,
-            max_tokens: 10
-          });
-
-          const grammarType = completion.choices[0].message.content?.trim().toLowerCase();
-          if (grammarType && ['verb', 'noun', 'adjective', 'adverb', 'preposition', 'pronoun', 'particle'].includes(grammarType)) {
-            grammar = grammarType;
-            console.log(`OpenAI grammar analysis: ${word} → ${grammar}`);
-          }
-        } catch (aiError) {
-          console.log('OpenAI grammar analysis failed, using default:', aiError);
+      // Skip OpenAI grammar analysis to improve speed when quota is exhausted
+      // Use basic pattern-based grammar detection instead
+      if (/[\u0600-\u06FF]/.test(word)) {
+        // Simple Arabic grammar pattern detection
+        if (word.includes('يُ') || word.includes('يَ') || word.includes('أُ') || word.includes('تُ')) {
+          grammar = 'verb';
+        } else if (word.includes('الْ')) {
+          grammar = 'noun';
+        } else if (word.length <= 3 && (word.includes('مِن') || word.includes('إلى') || word.includes('في'))) {
+          grammar = 'preposition';
+        } else {
+          grammar = 'noun'; // Default for most Arabic words
         }
+        console.log(`Pattern-based grammar: ${word} → ${grammar}`);
       }
       
       res.json({ 
