@@ -76,116 +76,150 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
   };
 
   return (
-    <aside className="w-64 bg-primary-purple text-white shadow-lg flex flex-col">
-      {/* Logo/Header */}
-      <div className="p-6 border-b border-white/20">
-        <h1 className="text-2xl font-bold">ArabicAI</h1>
-        <p className="text-hover-lavender text-sm mt-1">{strings.learnArabicWithAI}</p>
+    <div className="h-full flex flex-col bg-white">
+      {/* Brand Header */}
+      <div className="p-6 border-b border-gray-200">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center">
+            <span className="text-white font-bold text-lg">ع</span>
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-gray-900">ArabLearn</h1>
+            <p className="text-gray-600 text-sm">Arabisch Lernen</p>
+          </div>
+        </div>
       </div>
 
-      {/* Navigation Menu */}
-      <nav className="flex-1 p-4 space-y-2">
-        {navigationItems.map((item) => (
-          <Link key={item.route} href={item.route}>
-            <button
-              className={`w-full flex items-center space-x-3 p-3 rounded-2xl transition-all duration-200 ${
-                isActive(item.route)
-                  ? "bg-active-purple shadow-lg"
-                  : "hover:bg-white/20 hover:shadow-md"
-              }`}
-            >
-              <item.icon className="w-5 h-5" />
-              <span className="font-medium">
-                {item.route === "/book-reader" ? strings.bookReader :
-                 item.route === "/ai-chat" ? strings.aiChat :
-                 item.route === "/flashcards" ? strings.flashcards :
-                 item.route === "/video-trainer" ? strings.videoTrainer :
-                 item.route === "/alphabet-trainer" ? strings.alphabetTrainer :
-                 item.route === "/daily-challenge" ? strings.dailyChallenge :
-                 item.route === "/gamification" ? strings.achievements :
-                 item.label}
-              </span>
-            </button>
-          </Link>
-        ))}
-        
-        {/* Admin Link - Only show if logged in as admin */}
+      {/* Learning Areas Label */}
+      <div className="px-6 py-4">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-semibold text-gray-600 uppercase tracking-wide">LERNBEREICHE</span>
+        </div>
+      </div>
+
+      {/* Navigation Links */}
+      <nav className="flex-1 px-3 space-y-2">
+        {/* Dashboard Link */}
+        <Link href="/learn">
+          <div
+            onClick={onLinkClick}
+            className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer ${
+              isActive("/learn")
+                ? "bg-orange-100 text-orange-700"
+                : "text-gray-700 hover:bg-gray-100"
+            }`}
+          >
+            <Trophy size={18} />
+            <span className="font-medium">Dashboard</span>
+          </div>
+        </Link>
+
+        {navigationItems.map((item) => {
+          const Icon = item.icon;
+          const germanLabel = item.label === "AI Chat" ? "KI Chat" : 
+                             item.label === "Book Reader" ? "Bücher" :
+                             item.label === "Video Trainer" ? "Videos" :
+                             item.label === "Alphabet Trainer" ? "Alphabet" :
+                             item.label === "Daily Challenge" ? "Tägliche Herausforderung" :
+                             item.label === "Flashcards" ? "Flashcards" :
+                             item.label === "Erfolge" ? "Erfolge" : item.label;
+          
+          return (
+            <Link key={item.route} href={item.route}>
+              <div
+                onClick={onLinkClick}
+                className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer ${
+                  isActive(item.route)
+                    ? "bg-orange-100 text-orange-700"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                <Icon size={18} />
+                <span className="font-medium">{germanLabel}</span>
+              </div>
+            </Link>
+          );
+        })}
+
+        {/* Admin Panel - only show for admins */}
         {isAdmin && (
           <Link href="/admin-panel">
-            <button
-              className={`w-full flex items-center space-x-3 p-3 rounded-2xl transition-all duration-200 ${
+            <div
+              onClick={onLinkClick}
+              className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer ${
                 isActive("/admin-panel")
-                  ? "bg-active-purple shadow-lg"
-                  : "hover:bg-white/20 hover:shadow-md"
+                  ? "bg-orange-100 text-orange-700"
+                  : "text-gray-700 hover:bg-gray-100"
               }`}
             >
-              <span className="text-xl">🔧</span>
+              <Settings size={18} />
               <span className="font-medium">Admin</span>
-            </button>
+            </div>
           </Link>
         )}
+
+        {/* Weekly Plan */}
+        <Link href="/weekly-plan">
+          <div
+            onClick={onLinkClick}
+            className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer ${
+              isActive("/weekly-plan")
+                ? "bg-orange-100 text-orange-700"
+                : "text-gray-700 hover:bg-gray-100"
+            }`}
+          >
+            <FileText size={18} />
+            <span className="font-medium">{strings.weeklyPlan}</span>
+          </div>
+        </Link>
       </nav>
 
-      {/* Gamification Widget */}
-      {isAuthenticated && (
-        <div className="p-4 border-t border-white/20">
-          <div className="bg-white/10 rounded-2xl p-4 mb-4">
-            <div className="flex items-center justify-between mb-3">
-              <div>
-                <span className="text-sm font-medium">{strings.level} {stats.level}</span>
-                <p className="text-xs text-hover-lavender">{stats.totalPoints} {strings.points}</p>
-              </div>
-              <div className="text-right">
-                <span className="text-xs text-hover-lavender">🔥 {stats.currentStreak}</span>
-              </div>
+      {/* User Status */}
+      <div className="p-4 border-t border-gray-200">
+        <div className="bg-white rounded-xl p-4 border">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+              <span className="text-white font-medium text-xs">L</span>
             </div>
-            <Progress 
-              value={getCurrentLevelProgress()} 
-              className="h-2 bg-white/20"
-            />
-            <p className="text-xs text-hover-lavender mt-1">
-{getNextLevelPoints() - stats.totalPoints} {strings.toLevel} {stats.level + 1}
-            </p>
-            
-            {/* Weekly Goal Mini Display */}
-            <div className="mt-3 pt-3 border-t border-white/20">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-medium">{strings.weeklyGoal}</span>
-                <span className="text-xs text-hover-lavender">
-                  {stats.weeklyWordsLearned || 0}/{stats.weeklyWordGoal || 10}
-                </span>
-              </div>
-              <Progress 
-                value={Math.min(((stats.weeklyWordsLearned || 0) / (stats.weeklyWordGoal || 10)) * 100, 100)} 
-                className="h-1 bg-white/20"
-              />
-              {(stats.weeklyWordsLearned || 0) >= (stats.weeklyWordGoal || 10) && (
-                <p className="text-xs text-green-400 mt-1">🎯 Ziel erreicht!</p>
-              )}
+            <div>
+              <p className="font-medium text-gray-900 text-sm">Lernender</p>
+              <p className="text-xs text-gray-600">Auf dem Weg zur Meisterschaft</p>
             </div>
           </div>
-        </div>
-      )}
 
-      {/* Tashkeel Toggle */}
-      <div className="p-4 border-t border-white/20">
-        <div className="bg-white/10 rounded-2xl p-4 mb-4">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <span className="text-sm font-medium">Tashkeel</span>
-              <p className="text-xs text-hover-lavender">Arabic diacritics</p>
-            </div>
-            <Switch 
+          {/* Tashkeel Toggle */}
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-gray-600 text-sm font-medium">
+              {strings.showTashkeel}
+            </span>
+            <Switch
               checked={tashkeelEnabled}
               onCheckedChange={setTashkeelEnabled}
-              className="data-[state=checked]:bg-active-purple"
+              className="data-[state=checked]:bg-orange-500"
             />
           </div>
 
+          {/* Progress */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-gray-600 text-xs">{strings.level} {stats.level}</span>
+              <span className="text-gray-600 text-xs">
+                {getCurrentLevelProgress()}/{getNextLevelPoints()} XP
+              </span>
+            </div>
+            
+            <Progress 
+              value={(getCurrentLevelProgress() / getNextLevelPoints()) * 100} 
+              className="h-2 bg-gray-200"
+            />
+            
+            <div className="flex justify-between text-xs text-gray-500">
+              <span>{stats.points} {strings.totalPoints}</span>
+              <span>{stats.streak} {strings.dayStreak}</span>
+            </div>
+          </div>
         </div>
       </div>
-
-
-    </aside>
+    </div>
   );
 }

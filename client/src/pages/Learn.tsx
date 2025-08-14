@@ -29,7 +29,7 @@ export default function Learn() {
   const { user, trialStatus } = useAuth();
   const { isTrialActive } = useTrial();
   const { strings } = useLanguage();
-  const { flashcards } = useFlashcards();
+  const { userFlashcards } = useFlashcards();
 
   console.log('Learn page - trialStatus:', trialStatus, 'isTrialActive:', isTrialActive, 'user:', user);
 
@@ -41,7 +41,7 @@ export default function Learn() {
   }
 
   // Calculate statistics
-  const learnedWords = flashcards.length;
+  const learnedWords = userFlashcards.length;
   const collectedPhrases = 0; // Can be enhanced later
   const weeklyProgress = 75; // Mock data - can be enhanced
   const booksRead = 1; // Mock data

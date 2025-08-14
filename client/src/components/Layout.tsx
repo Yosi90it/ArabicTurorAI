@@ -9,12 +9,12 @@ export default function Layout({ children }: LayoutProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
-    <div className="flex h-screen bg-white relative">
+    <div className="flex h-screen bg-gray-50 relative">
       {/* Mobile Hamburger Button */}
       <div className="sm:hidden absolute top-4 left-4 z-30">
         <button
           onClick={() => setDrawerOpen(true)}
-          className="p-2 bg-purple-700 text-white rounded-lg"
+          className="p-2 bg-orange-500 text-white rounded-xl"
         >
           &#9776;
         </button>
@@ -32,7 +32,7 @@ export default function Layout({ children }: LayoutProps) {
       <div
         className={`
           fixed top-0 left-0 h-full z-30
-          w-64 bg-purple-700 text-white
+          w-64 bg-white border-r border-gray-200
           transform transition-transform duration-300
           ${drawerOpen ? 'translate-x-0' : '-translate-x-full'}
           sm:relative sm:translate-x-0
@@ -43,7 +43,7 @@ export default function Layout({ children }: LayoutProps) {
 
       {/* Main Content Area */}
       <main className="flex-1 overflow-y-auto scrollbar-hide">
-        <div className="container mx-auto px-4 max-w-7xl">
+        <div className="container mx-auto px-6 max-w-7xl">
           {children}
         </div>
       </main>

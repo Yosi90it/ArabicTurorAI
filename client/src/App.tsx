@@ -80,9 +80,11 @@ function Router() {
         </div>
       </Route>
       
-      {/* Protected learning routes */}
+      {/* Protected learning routes with layout */}
       <Route path="/learn">
-        <ProtectedLearningRoute />
+        <Layout>
+          <ProtectedLearningRoute />
+        </Layout>
       </Route>
       
       {/* All other routes with layout */}
