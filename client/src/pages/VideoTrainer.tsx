@@ -325,7 +325,7 @@ export default function VideoTrainer() {
                         {wordByWordEnabled ? (
                           <div className="space-y-3">
                             {/* Word-by-word display with translations */}
-                            <div className="text-right space-y-2">
+                            <div className="text-right space-y-2 dir-rtl">
                               {(() => {
                                 const arabicWords = formatText(segment.arabic).split(' ');
                                 const germanWords = (segment.german || '').split(' ');
@@ -336,11 +336,11 @@ export default function VideoTrainer() {
                                   const germanWord = germanWords[wordIndex] || '';
                                   
                                   return (
-                                    <div key={wordIndex} className="inline-block mx-2 mb-2 text-center">
+                                    <div key={wordIndex} className="inline-block mx-2 mb-2 text-right">
                                       <div className="mb-1">
                                         <ClickableText 
                                           text={arabicWord}
-                                          className={`text-lg font-arabic transition-all duration-300 ease-in-out ${
+                                          className={`text-lg font-arabic transition-all duration-300 ease-in-out text-right ${
                                             index === currentSegmentIndex
                                               ? 'font-bold text-green-600 dark:text-green-400'
                                               : 'font-normal text-gray-700 dark:text-gray-300'

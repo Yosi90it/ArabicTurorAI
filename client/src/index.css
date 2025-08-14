@@ -134,5 +134,9 @@
     text-align: right !important;
   }
   
+  .dir-rtl {
+    direction: rtl !important;
+  }
+  
 
 }
