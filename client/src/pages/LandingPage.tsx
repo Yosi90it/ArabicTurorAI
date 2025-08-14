@@ -153,27 +153,30 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <div className="flex items-center">
-              <div className="text-2xl font-bold text-purple-600">ArabicAI</div>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center">
+                <span className="text-white font-bold text-lg">ع</span>
+              </div>
+              <div className="text-2xl font-bold text-orange-600">ArabicAI</div>
             </div>
 
             {/* Desktop Menu */}
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="text-gray-700 hover:text-purple-600 transition-colors">{strings.features}</a>
-              <a href="#testimonials" className="text-gray-700 hover:text-purple-600 transition-colors">{strings.testimonials}</a>
-              <a href="#pricing" className="text-gray-700 hover:text-purple-600 transition-colors">{strings.pricing}</a>
+              <a href="#features" className="text-gray-700 hover:text-orange-600 transition-colors font-medium">{strings.features}</a>
+              <a href="#testimonials" className="text-gray-700 hover:text-orange-600 transition-colors font-medium">{strings.testimonials}</a>
+              <a href="#pricing" className="text-gray-700 hover:text-orange-600 transition-colors font-medium">{strings.pricing}</a>
               {!isAuthenticated ? (
                 <div className="flex items-center space-x-4">
                   <Button 
                     onClick={() => setLocation('/login')}
                     variant="outline" 
-                    className="text-purple-600 border-purple-600 hover:bg-purple-50"
+                    className="text-orange-600 border-orange-600 hover:bg-orange-50 font-medium"
                   >
                     {strings.login}
                   </Button>
                   <Button 
                     onClick={handleStartFree}
-                    className="bg-purple-600 hover:bg-purple-700 text-white"
+                    className="bg-orange-500 hover:bg-orange-600 text-white font-medium px-6"
                   >
                     {strings.startFree}
                   </Button>
@@ -181,7 +184,7 @@ export default function LandingPage() {
               ) : (
                 <Button 
                   onClick={() => setLocation('/learn')}
-                  className="bg-purple-600 hover:bg-purple-700 text-white"
+                  className="bg-orange-500 hover:bg-orange-600 text-white font-medium px-6"
                 >
                   {strings.startLearning}
                 </Button>
@@ -205,21 +208,21 @@ export default function LandingPage() {
           {mobileMenuOpen && (
             <div className="md:hidden border-t border-gray-200 py-4">
               <div className="flex flex-col space-y-4">
-                <a href="#features" className="text-gray-700 hover:text-purple-600 transition-colors">{strings.features}</a>
-                <a href="#testimonials" className="text-gray-700 hover:text-purple-600 transition-colors">{strings.testimonials}</a>
-                <a href="#pricing" className="text-gray-700 hover:text-purple-600 transition-colors">{strings.pricing}</a>
+                <a href="#features" className="text-gray-700 hover:text-orange-600 transition-colors font-medium">{strings.features}</a>
+                <a href="#testimonials" className="text-gray-700 hover:text-orange-600 transition-colors font-medium">{strings.testimonials}</a>
+                <a href="#pricing" className="text-gray-700 hover:text-orange-600 transition-colors font-medium">{strings.pricing}</a>
                 {!isAuthenticated ? (
                   <div className="flex flex-col space-y-2">
                     <Button 
                       onClick={() => setLocation('/login')}
                       variant="outline" 
-                      className="w-full text-purple-600 border-purple-600"
+                      className="w-full text-orange-600 border-orange-600 hover:bg-orange-50"
                     >
                       {strings.login}
                     </Button>
                     <Button 
                       onClick={handleStartFree}
-                      className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                      className="w-full bg-orange-500 hover:bg-orange-600 text-white"
                     >
                       {strings.startFree}
                     </Button>
@@ -227,7 +230,7 @@ export default function LandingPage() {
                 ) : (
                   <Button 
                     onClick={() => setLocation('/learn')}
-                    className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                    className="w-full bg-orange-500 hover:bg-orange-600 text-white"
                   >
                     {strings.startLearning}
                   </Button>
@@ -239,47 +242,47 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-purple-600 via-purple-700 to-blue-800 text-white overflow-hidden pt-16">
-        <div className="absolute inset-0 bg-black/20"></div>
+      <section className="relative bg-gradient-to-br from-orange-500 via-orange-600 to-red-600 text-white overflow-hidden pt-16">
+        <div className="absolute inset-0 bg-black/10"></div>
         <div className="relative max-w-7xl mx-auto px-4 py-20 sm:py-32">
           <div className="text-center">
             <Badge className="mb-6 bg-white/20 text-white border-white/30 hover:bg-white/30">
-              🚀 AI-Powered Arabic Learning Platform
+              🚀 KI-gestütztes Arabisch Lernen
             </Badge>
             <h1 className="text-5xl sm:text-7xl font-bold mb-6 leading-tight">
-              Master Arabic with
-              <span className="block bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
-                Artificial Intelligence
+              Lerne Arabisch mit
+              <span className="block bg-gradient-to-r from-yellow-200 to-white bg-clip-text text-transparent">
+                Künstlicher Intelligenz
               </span>
             </h1>
-            <p className="text-xl sm:text-2xl mb-8 text-purple-100 max-w-3xl mx-auto leading-relaxed">
-              Transform your Arabic learning journey with personalized AI tutoring, interactive content, 
-              and cultural immersion designed for modern learners.
+            <p className="text-xl sm:text-2xl mb-8 text-orange-100 max-w-3xl mx-auto leading-relaxed">
+              Revolutioniere dein Arabisch-Lernen mit personalisiertem KI-Tutoring, interaktiven Inhalten 
+              und kultureller Immersion für moderne Lernende.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button 
                 onClick={handleStartFree}
-                className="bg-white text-purple-700 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-2xl shadow-2xl"
+                className="bg-white text-orange-700 hover:bg-orange-50 px-8 py-4 text-lg font-semibold rounded-2xl shadow-2xl"
               >
                 {isTrialActive ? strings.startLearning : strings.startFree}
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
               <Button 
                 onClick={() => setShowDemoModal(true)}
-                className="bg-purple-500 hover:bg-purple-600 text-white border-2 border-white/30 px-8 py-4 text-lg font-semibold rounded-2xl shadow-2xl transition-all duration-200"
+                className="bg-orange-400 hover:bg-orange-500 text-white border-2 border-white/30 px-8 py-4 text-lg font-semibold rounded-2xl shadow-2xl transition-all duration-200"
               >
-                Watch Demo
+                Demo ansehen
                 <Play className="ml-2 w-5 h-5" />
               </Button>
             </div>
             <div className="mt-8 text-center">
-              <p className="text-purple-200 mb-2">Already have an account?</p>
+              <p className="text-orange-200 mb-2">Bereits registriert?</p>
               <Button 
                 onClick={() => setLocation('/login')}
                 variant="link" 
-                className="text-white underline hover:text-purple-200 text-lg"
+                className="text-white underline hover:text-orange-200 text-lg"
               >
-                Sign in here
+                Hier anmelden
               </Button>
             </div>
             <div className="mt-12 flex items-center justify-center gap-8 text-purple-200">
@@ -297,26 +300,26 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 bg-gray-50">
+      <section id="features" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-bold text-gray-800 mb-6">
-              Why Choose ArabicAI?
+            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
+              Warum ArabicAI wählen?
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Experience the future of language learning with cutting-edge AI technology
-              and proven pedagogical methods.
+              Erlebe die Zukunft des Sprachenlernens mit modernster KI-Technologie 
+              und bewährten pädagogischen Methoden.
             </p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature, index) => (
-              <Card key={index} className="group hover:shadow-2xl transition-all duration-300 border-0 bg-white rounded-2xl">
+              <Card key={index} className="group hover:shadow-2xl transition-all duration-300 border border-gray-200 bg-white rounded-2xl">
                 <CardContent className="p-8">
-                  <div className="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-purple-200 transition-colors">
-                    <feature.icon className="w-8 h-8 text-purple-600" />
+                  <div className="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-orange-200 transition-colors shadow-lg">
+                    <feature.icon className="w-8 h-8 text-orange-600" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">{feature.title}</h3>
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">{feature.title}</h3>
                   <p className="text-gray-600 leading-relaxed">{feature.description}</p>
                 </CardContent>
               </Card>
@@ -326,20 +329,20 @@ export default function LandingPage() {
       </section>
 
       {/* Testimonials Section */}
-      <section id="testimonials" className="py-20 bg-white">
+      <section id="testimonials" className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-bold text-gray-800 mb-6">
-              Loved by Learners Worldwide
+            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
+              Geliebt von Lernenden weltweit
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Join thousands of successful Arabic learners who transformed their skills with ArabicAI.
+              Schließe dich tausenden erfolgreichen Arabisch-Lernenden an, die ihre Fähigkeiten mit ArabicAI transformiert haben.
             </p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
-              <Card key={index} className="border-0 bg-gradient-to-br from-purple-50 to-blue-50 rounded-2xl">
+              <Card key={index} className="border border-gray-200 bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl shadow-lg">
                 <CardContent className="p-8">
                   <div className="flex items-center mb-4">
                     {[...Array(testimonial.rating)].map((_, i) => (
@@ -350,7 +353,7 @@ export default function LandingPage() {
                     "{testimonial.content}"
                   </blockquote>
                   <div className="flex items-center">
-                    <div className="w-12 h-12 bg-purple-200 rounded-full flex items-center justify-center mr-4 text-2xl">
+                    <div className="w-12 h-12 bg-orange-200 rounded-full flex items-center justify-center mr-4 text-2xl">
                       {testimonial.avatar}
                     </div>
                     <div>
