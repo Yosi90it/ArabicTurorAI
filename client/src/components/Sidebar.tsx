@@ -98,8 +98,9 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
       </div>
 
       {/* Navigation Links */}
-      <nav className="flex-1 px-3 space-y-2 overflow-y-auto scrollbar-hide">
-        {/* Dashboard Link */}
+      <div className="flex-1 relative">
+        <nav className="h-full px-3 space-y-2 overflow-y-auto pb-4 custom-scrollbar" style={{scrollbarWidth: 'thin', scrollbarColor: '#e5e7eb #f9fafb'}}>
+          {/* Dashboard Link */}
         <Link href="/learn">
           <div
             onClick={onLinkClick}
@@ -180,7 +181,24 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
             <span className="font-medium">{strings.weeklyPlan}</span>
           </div>
         </Link>
-      </nav>
+        </nav>
+        
+        {/* Scroll Indicators */}
+        <div className="absolute top-0 left-0 right-0 h-6 bg-gradient-to-b from-white via-white/50 to-transparent pointer-events-none z-10"></div>
+        <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-white via-white/50 to-transparent pointer-events-none z-10"></div>
+        
+        {/* Scroll hint dots */}
+        <div className="absolute top-2 right-2 flex flex-col gap-1 pointer-events-none z-20">
+          <div className="w-1 h-1 bg-gray-400 rounded-full opacity-60"></div>
+          <div className="w-1 h-1 bg-gray-400 rounded-full opacity-40"></div>
+          <div className="w-1 h-1 bg-gray-400 rounded-full opacity-20"></div>
+        </div>
+        <div className="absolute bottom-2 right-2 flex flex-col gap-1 pointer-events-none z-20">
+          <div className="w-1 h-1 bg-gray-400 rounded-full opacity-20"></div>
+          <div className="w-1 h-1 bg-gray-400 rounded-full opacity-40"></div>
+          <div className="w-1 h-1 bg-gray-400 rounded-full opacity-60"></div>
+        </div>
+      </div>
 
       {/* User Status */}
       <div className="p-4 border-t border-gray-200 flex-shrink-0">
@@ -222,8 +240,8 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
             />
             
             <div className="flex justify-between text-xs text-gray-500">
-              <span>{stats.points} {strings.totalPoints}</span>
-              <span>{stats.streak} {strings.dayStreak}</span>
+              <span>{stats.totalPoints || 0} {strings.totalPoints}</span>
+              <span>{stats.currentStreak || 0} {strings.dayStreak}</span>
             </div>
           </div>
         </div>

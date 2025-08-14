@@ -74,6 +74,22 @@
     display: none;
   }
   
+  /* Custom thin scrollbar styling */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #f9fafb;
+    border-radius: 3px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #e5e7eb;
+    border-radius: 3px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #d1d5db;
+  }
+  
   .progress-gradient {
     background: linear-gradient(90deg, var(--primary-purple) 0%, var(--hover-lavender) 100%);
   }
