@@ -328,32 +328,107 @@ export default function VideoTrainer() {
                             <div className="text-right space-y-2 dir-rtl">
                               {(() => {
                                 const arabicWords = formatText(segment.arabic).split(' ');
-                                const germanWords = (segment.german || '').split(' ');
-                                const maxWords = Math.max(arabicWords.length, germanWords.length);
                                 
-                                return Array.from({ length: maxWords }, (_, wordIndex) => {
-                                  const arabicWord = arabicWords[wordIndex] || '';
-                                  const germanWord = germanWords[wordIndex] || '';
+                                // Erstelle eine intelligentere Wort-zu-Wort-Zuordnung
+                                const getWordTranslations = (arabicWords: string[], germanSentence: string) => {
+                                  const translations: { [key: string]: string } = {
+                                    // Häufige islamische Ausdrücke
+                                    'بِسْمِ': 'Im Namen',
+                                    'اللهِ': 'Allahs',
+                                    'اللَّهِ': 'Allahs',
+                                    'وَالْحَمْدُ': 'und Lob',
+                                    'لِلَّهِ': 'Allah',
+                                    'وَالصَّلَاةُ': 'und Segen',
+                                    'وَالسَّلَامُ': 'und Frieden',
+                                    'عَلَى': 'auf',
+                                    'رَسُولِ': 'Gesandten',
+                                    'وَعَلَى': 'und auf',
+                                    'آلِهِ': 'Familie',
+                                    'وَأَصْحَابِهِ': 'Gefährten',
+                                    'أَجْمَعِينَ': 'alle',
+                                    'أَمَّا': 'nun',
+                                    'بَعْدُ': 'danach',
+                                    'السَّلَامُ': 'Friede',
+                                    'عَلَيْكُمْ': 'mit euch',
+                                    'وَرَحْمَةُ': 'Barmherzigkeit',
+                                    'وَبَرَكَاتُهُ': 'Segen',
+                                    'أَهْلًا': 'Willkommen',
+                                    'وَسَهْلًا': 'herzlich',
+                                    'وَمَرْحَبًا': 'willkommen',
+                                    'بِكُمْ': 'euch',
+                                    'إِخْوَانِي': 'Brüder',
+                                    'وَأَخَوَاتِي': 'Schwestern',
+                                    'طُلَّابَ': 'Studenten',
+                                    'اللُّغَةِ': 'Sprache',
+                                    'الْعَرَبِيَّةِ': 'arabischen',
+                                    'وَالْيَوْمَ': 'heute',
+                                    'أُرِيدُ': 'möchte',
+                                    'أَنْ': 'ich',
+                                    'أَتَكَلَّمَ': 'sprechen',
+                                    'مَعَكُمْ': 'mit euch',
+                                    'فِي': 'über',
+                                    'مَوْضُوعٍ': 'Thema',
+                                    'مُهِمٍّ': 'wichtiges',
+                                    'جِدًّا': 'sehr',
+                                    'تَعَلُّمِ': 'Erlernen',
+                                    'وَهُوَ': 'das ist',
+                                    'الِاسْتِمَاعُ': 'Zuhören',
+                                    'وَمَا': 'was',
+                                    'أَدْرَاكَ': 'wissen',
+                                    'مَا': 'was',
+                                    'كَمَا': 'wie',
+                                    'فَهِمْتُمْ': 'verstanden',
+                                    'مِنَ': 'aus',
+                                    'الْكَلِمَةِ': 'Wort',
+                                    'نَفْسِهَا': 'selbst',
+                                    'هُوَ': 'bedeutet',
+                                    'تَسْتَمِعَ': 'zuhört',
+                                    'إِلَى': 'der',
+                                    'فَالِاسْتِمَاعُ': 'Zuhören',
+                                    'مَصْدَرُ': 'Verbalnomen',
+                                    'اسْتَمَعَ': 'zuhören',
+                                    'يَسْتَمِعُ': 'hört zu',
+                                    'اسْتِمَاعًا': 'Zuhören',
+                                    'يَعْنِي': 'bedeutet',
+                                    'تَسْمَعَ': 'hört',
+                                    'وَالِاسْتِمَاعُ': 'Zuhören',
+                                    'إِحْدَى': 'eine von',
+                                    'الْمَهَارَاتِ': 'Fähigkeiten'
+                                  };
+                                  
+                                  return arabicWords.map(word => {
+                                    // Entferne Diakritika für bessere Suche
+                                    const cleanWord = word.replace(/[\u064B-\u0652\u0670\u0640]/g, '');
+                                    return translations[word] || translations[cleanWord] || '';
+                                  });
+                                };
+                                
+                                const wordTranslations = getWordTranslations(arabicWords, segment.german || '');
+                                
+                                return arabicWords.map((arabicWord, wordIndex) => {
+                                  const translation = wordTranslations[wordIndex];
                                   
                                   return (
-                                    <div key={wordIndex} className="inline-block mx-2 mb-2 text-right">
+                                    <div key={wordIndex} className="inline-block mx-1 mb-3 text-center">
                                       <div className="mb-1">
                                         <ClickableText 
                                           text={arabicWord}
-                                          className={`text-lg font-arabic transition-all duration-300 ease-in-out text-right ${
+                                          className={`text-lg font-arabic transition-all duration-300 ease-in-out ${
                                             index === currentSegmentIndex
                                               ? 'font-bold text-green-600 dark:text-green-400'
                                               : 'font-normal text-gray-700 dark:text-gray-300'
                                           }`}
                                         />
                                       </div>
-                                      <div className={`text-xs px-1 py-0.5 rounded bg-orange-50 dark:bg-orange-900/20 ${
-                                        index === currentSegmentIndex
-                                          ? 'text-orange-700 dark:text-orange-300'
-                                          : 'text-orange-600 dark:text-orange-400'
-                                      }`}>
-                                        {germanWord}
-                                      </div>
+                                      {translation && (
+                                        <div className={`text-xs px-2 py-1 rounded-md bg-orange-100 dark:bg-orange-900/30 min-w-[40px] ${
+                                          index === currentSegmentIndex
+                                            ? 'text-orange-800 dark:text-orange-200 font-medium'
+                                            : 'text-orange-700 dark:text-orange-300'
+                                        }`}>
+                                          {translation}
+                                        </div>
+                                      )}
                                     </div>
                                   );
                                 });
