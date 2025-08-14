@@ -2,6 +2,7 @@ import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTrial } from '@/contexts/TrialContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useFlashcards } from '@/contexts/FlashcardContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -16,13 +17,19 @@ import {
   Clock, 
   Crown,
   AlertTriangle,
-  ArrowRight
+  ArrowRight,
+  Target,
+  TrendingUp,
+  Book,
+  RotateCcw,
+  Home
 } from 'lucide-react';
 
 export default function Learn() {
   const { user, trialStatus } = useAuth();
   const { isTrialActive } = useTrial();
   const { strings } = useLanguage();
+  const { flashcards } = useFlashcards();
 
   console.log('Learn page - trialStatus:', trialStatus, 'isTrialActive:', isTrialActive, 'user:', user);
 
@@ -32,6 +39,13 @@ export default function Learn() {
   if (!hasActiveTrial && trialStatus === 'expired') {
     return <TrialExpiredBanner />;
   }
+
+  // Calculate statistics
+  const learnedWords = flashcards.length;
+  const collectedPhrases = 0; // Can be enhanced later
+  const weeklyProgress = 75; // Mock data - can be enhanced
+  const booksRead = 1; // Mock data
+  const flashcardRepeats = 0; // Mock data
 
   const learningModules = [
     {
@@ -67,82 +81,164 @@ export default function Learn() {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-6 relative">
+    <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-6xl mx-auto">
-        {/* Trial Status Banner */}
-        {hasActiveTrial && (
-          <Alert className="mb-8 border-green-200 bg-green-50">
-            <Clock className="h-4 w-4 text-green-600" />
-            <AlertDescription className="text-green-800">
-              <strong>{strings.trialActive}</strong> 
-              {user?.trialTimeRemaining && ` ${user.trialTimeRemaining} remaining.`} 
-              Enjoy full access to all features!
-            </AlertDescription>
-          </Alert>
-        )}
-
-        {/* Welcome Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">
-            {strings.welcomeBackUser}, {user?.name || 'Learner'}!
-          </h1>
-          <p className="text-xl text-gray-600">
-            {strings.continueJourney}
-          </p>
+        {/* Welcome Header with Arabic greeting */}
+        <div className="mb-8">
+          <div className="flex items-center gap-4 mb-2">
+            <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center">
+              <span className="text-white font-bold text-xl">ع</span>
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">ArabLearn</h1>
+              <p className="text-sm text-gray-600">Arabisch Lernen</p>
+            </div>
+          </div>
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">
+            !مَرْحَبًا Willkommen zurück
+          </h2>
+          <p className="text-gray-600">Setze deine Arabisch-Reise fort</p>
         </div>
 
-        {/* Learning Modules Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {learningModules.map((module, index) => (
-            <Link key={index} href={module.route}>
-              <Card className="group hover:shadow-2xl transition-all duration-300 cursor-pointer border-0 bg-white">
-                <CardContent className="p-6 text-center">
-                  <div className={`w-16 h-16 ${module.color} rounded-2xl flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform`}>
-                    <module.icon className="w-8 h-8 text-white" />
-                  </div>
-                  <h3 className="text-lg font-bold text-gray-800 mb-2">{module.title}</h3>
-                  <p className="text-gray-600 text-sm">{module.description}</p>
-                  <div className="mt-4">
-                    <Button className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl">
-                      {strings.startLearning}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+        {/* Weekly Goal Card */}
+        <Card className="mb-8 bg-gradient-to-r from-orange-400 to-orange-600 border-0 text-white">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <Target className="w-6 h-6" />
+              <h3 className="text-xl font-bold">Wöchentliches Ziel</h3>
+            </div>
+            <p className="text-lg mb-4">Fortschritt diese Woche</p>
+            <div className="flex items-center gap-4 mb-4">
+              <div className="flex-1">
+                <div className="bg-black/20 rounded-full h-3 overflow-hidden">
+                  <div className="bg-white h-full rounded-full" style={{width: `${weeklyProgress}%`}}></div>
+                </div>
+              </div>
+              <span className="text-xl font-bold">{weeklyProgress}%</span>
+            </div>
+            <p className="text-orange-100">Großartig! Du bist auf dem besten Weg dein Ziel zu erreichen.</p>
+          </CardContent>
+        </Card>
+
+        {/* Statistics Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          {/* Learned Words */}
+          <Card className="bg-white border-0 shadow-lg">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="text-gray-600 font-medium">Gelernte Wörter</h4>
+                <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center">
+                  <TrendingUp className="w-6 h-6 text-white" />
+                </div>
+              </div>
+              <p className="text-3xl font-bold text-gray-900">{learnedWords}</p>
+            </CardContent>
+          </Card>
+
+          {/* Collected Phrases */}
+          <Card className="bg-white border-0 shadow-lg">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="text-gray-600 font-medium">Gesammelte Phrasen</h4>
+                <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center">
+                  <Book className="w-6 h-6 text-white" />
+                </div>
+              </div>
+              <p className="text-3xl font-bold text-gray-900">{collectedPhrases}</p>
+            </CardContent>
+          </Card>
+
+          {/* Books Read */}
+          <Card className="bg-white border-0 shadow-lg">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="text-gray-600 font-medium">Gelesene Bücher</h4>
+                <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center">
+                  <BookOpen className="w-6 h-6 text-white" />
+                </div>
+              </div>
+              <p className="text-3xl font-bold text-gray-900">{booksRead}</p>
+            </CardContent>
+          </Card>
+
+          {/* Flashcards Wiederholung */}
+          <Card className="bg-white border-0 shadow-lg">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="text-gray-600 font-medium">Flashcards Wiederholung</h4>
+                <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center">
+                  <RotateCcw className="w-6 h-6 text-white" />
+                </div>
+              </div>
+              <p className="text-3xl font-bold text-gray-900">{flashcardRepeats}</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Learning Areas Section */}
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-6">
+            <Home className="w-5 h-5 text-gray-600" />
+            <h3 className="text-lg font-semibold text-gray-900">LERNBEREICHE</h3>
+          </div>
+
+          <div className="space-y-3">
+            {/* Dashboard */}
+            <Link href="/learn">
+              <div className="flex items-center gap-4 p-4 bg-orange-100 text-orange-700 rounded-xl cursor-pointer hover:bg-orange-200 transition-colors">
+                <Home className="w-5 h-5" />
+                <span className="font-medium">Dashboard</span>
+              </div>
             </Link>
-          ))}
+
+            {/* Bücher */}
+            <Link href="/book-reader">
+              <div className="flex items-center gap-4 p-4 bg-white rounded-xl cursor-pointer hover:bg-gray-50 transition-colors border">
+                <BookOpen className="w-5 h-5 text-gray-600" />
+                <span className="font-medium text-gray-700">Bücher</span>
+              </div>
+            </Link>
+
+            {/* Videos */}
+            <Link href="/video-trainer">
+              <div className="flex items-center gap-4 p-4 bg-white rounded-xl cursor-pointer hover:bg-gray-50 transition-colors border">
+                <Play className="w-5 h-5 text-gray-600" />
+                <span className="font-medium text-gray-700">Videos</span>
+              </div>
+            </Link>
+
+            {/* KI Chat */}
+            <Link href="/ai-chat">
+              <div className="flex items-center gap-4 p-4 bg-white rounded-xl cursor-pointer hover:bg-gray-50 transition-colors border">
+                <Brain className="w-5 h-5 text-gray-600" />
+                <span className="font-medium text-gray-700">KI Chat</span>
+              </div>
+            </Link>
+
+            {/* Flashcards */}
+            <Link href="/flashcards">
+              <div className="flex items-center gap-4 p-4 bg-white rounded-xl cursor-pointer hover:bg-gray-50 transition-colors border">
+                <GraduationCap className="w-5 h-5 text-gray-600" />
+                <span className="font-medium text-gray-700">Flashcards</span>
+              </div>
+            </Link>
+          </div>
         </div>
 
-        {/* Quick Access Tools */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="bg-gradient-to-r from-purple-500 to-blue-500 text-white border-0">
-            <CardContent className="p-6">
-              <h3 className="text-xl font-bold mb-2">{strings.weeklyPlan}</h3>
-              <p className="mb-4 text-purple-100">
-                Follow our structured program to master Arabic fundamentals
-              </p>
-              <Link href="/weekly-plan">
-                <Button className="bg-white text-purple-600 hover:bg-gray-100 rounded-xl">
-                  View Plan
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-r from-green-500 to-teal-500 text-white border-0">
-            <CardContent className="p-6">
-              <h3 className="text-xl font-bold mb-2">{strings.alphabetTrainer}</h3>
-              <p className="mb-4 text-green-100">
-                Master Arabic letters and pronunciation fundamentals
-              </p>
-              <Link href="/alphabet-trainer">
-                <Button className="bg-white text-green-600 hover:bg-gray-100 rounded-xl">
-                  Practice Now
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </div>
+        {/* User Status */}
+        <Card className="bg-white border-0 shadow-lg">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                <span className="text-white font-medium text-sm">L</span>
+              </div>
+              <div>
+                <p className="font-medium text-gray-900">Lernender</p>
+                <p className="text-sm text-gray-600">Auf dem Weg zur Meisterschaft</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
