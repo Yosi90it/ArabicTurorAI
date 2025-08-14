@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useState } from "react";
 import { useSimpleGamification } from "@/contexts/SimpleGamificationContext";
+import { isCommonVerb } from "@/data/commonArabicVerbs";
 import { useToast } from "@/hooks/use-toast";
 import { useFlashcards } from "@/contexts/FlashcardContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -40,12 +41,24 @@ export default function WordModal({
     setShowConjugationModal(true);
   };
 
-  // Check if word is likely a verb (simple heuristic)
+  // Enhanced verb detection using comprehensive patterns and common verb database
   const isLikelyVerb = grammar.includes('verb') || grammar.includes('فعل') || 
-    word.length >= 3 && (
+    isCommonVerb(word) || 
+    (word.length >= 3 && (
+      // Common prefixes for conjugated verbs
       word.startsWith('أ') || word.startsWith('ي') || word.startsWith('ت') || 
-      word.startsWith('ن') || word.includes('كتب') || word.includes('ذهب')
-    );
+      word.startsWith('ن') || word.startsWith('س') || word.startsWith('ل') ||
+      // Common verb patterns (3-letter roots)
+      /^[اأإيتنسل]?[بتثجحخدذرزسشصضطظعغفقكلمنهوي][ابتثجحخدذرزسشصضطظعغفقكلمنهوي][ابتثجحخدذرزسشصضطظعغفقكلمنهوي]/.test(word) ||
+      // Common 4-letter verb patterns
+      /^[اأإيتنسل]?[بتثجحخدذرزسشصضطظعغفقكلمنهوي][ابتثجحخدذرزسشصضطظعغفقكلمنهوي][ابتثجحخدذرزسشصضطظعغفقكلمنهوي][ابتثجحخدذرزسشصضطظعغفقكلمنهوي]/.test(word) ||
+      // Verb with و prefix (and)
+      (word.startsWith('و') && word.length > 3) ||
+      // Any word ending with verb suffixes
+      word.endsWith('وا') || word.endsWith('تم') || word.endsWith('تن') ||
+      word.endsWith('ني') || word.endsWith('ها') || word.endsWith('هم') ||
+      word.endsWith('هن') || word.endsWith('كم') || word.endsWith('كن')
+    ));
 
   return (
     <>
