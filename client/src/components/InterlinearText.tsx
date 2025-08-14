@@ -4,6 +4,7 @@ import WordModal from "./WordModal";
 import { useFlashcards } from "@/contexts/FlashcardContext";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTashkeel } from "@/contexts/TashkeelContext";
 
 interface InterlinearTextProps {
   text: string;
@@ -72,6 +73,12 @@ export default function InterlinearText({ text, className = "" }: InterlinearTex
   const { addFlashcard } = useFlashcards();
   const { toast } = useToast();
   const { strings } = useLanguage();
+  const { tashkeelEnabled } = useTashkeel();
+
+  // Function to remove tashkeel marks
+  const removeTashkeel = (text: string): string => {
+    return text.replace(/[\u064B-\u065F\u0670\u0640]/g, '');
+  };
 
   console.log("InterlinearText rendered with text:", text?.substring(0, 100));
 
@@ -196,7 +203,7 @@ export default function InterlinearText({ text, className = "" }: InterlinearTex
           >
             {/* Arabic word */}
             <div className="text-xl font-arabic text-gray-900 dark:text-white leading-tight mb-1 text-center">
-              {wordData.arabic}
+              {tashkeelEnabled ? wordData.arabic : removeTashkeel(wordData.arabic)}
             </div>
             
             {/* German translation */}
