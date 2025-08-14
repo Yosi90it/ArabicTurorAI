@@ -1,0 +1,377 @@
+// Video transcript data for Arabic listening comprehension
+export interface VideoSegment {
+  timestamp: string;
+  arabic: string;
+  german: string;
+}
+
+export const listeningVideoData = {
+  videoId: "BIjWf1anHIU",
+  title: "أهمية الاستماع في تعلم اللغة العربية",
+  description: "محاضرة حول أهمية مهارة الاستماع في تعلم اللغة العربية وكيفية تطويرها",
+  segments: [
+    {
+      timestamp: "0:01",
+      arabic: "بِسْمِ اللهِ وَالْحَمْدُ لِلَّهِ وَالصَّلَاةُ وَالسَّلَامُ عَلَى",
+      german: "Im Namen Allahs, und alles Lob gebührt Allah, und Segen und Frieden auf"
+    },
+    {
+      timestamp: "0:03",
+      arabic: "رَسُولِ اللَّهِ وَعَلَى آلِهِ وَأَصْحَابِهِ أَجْمَعِينَ أَمَّا",
+      german: "den Gesandten Allahs und auf seine Familie und alle seine Gefährten. Nun denn"
+    },
+    {
+      timestamp: "0:06",
+      arabic: "بَعْدُ السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ أَهْلًا",
+      german: "danach: Friede sei mit euch und Allahs Barmherzigkeit und Segen. Willkommen"
+    },
+    {
+      timestamp: "0:10",
+      arabic: "وَسَهْلًا وَمَرْحَبًا بِكُمْ إِخْوَانِي وَأَخَوَاتِي طُلَّابَ",
+      german: "und herzlich willkommen, meine Brüder und Schwestern, Studenten"
+    },
+    {
+      timestamp: "0:15",
+      arabic: "اللُّغَةِ الْعَرَبِيَّةِ وَالْيَوْمَ أُرِيدُ",
+      german: "der arabischen Sprache. Und heute möchte ich"
+    },
+    {
+      timestamp: "0:18",
+      arabic: "أَنْ أَتَكَلَّمَ مَعَكُمْ فِي مَوْضُوعٍ مُهِمٍّ",
+      german: "mit euch über ein sehr wichtiges Thema sprechen"
+    },
+    {
+      timestamp: "0:24",
+      arabic: "جِدًّا فِي تَعَلُّمِ اللُّغَةِ الْعَرَبِيَّةِ وَهُوَ الِاسْتِمَاعُ",
+      german: "beim Erlernen der arabischen Sprache, und das ist das Zuhören"
+    },
+    {
+      timestamp: "0:30",
+      arabic: "وَمَا أَدْرَاكَ مَا الِاسْتِمَاعُ",
+      german: "Und was lässt dich wissen, was das Zuhören ist?"
+    },
+    {
+      timestamp: "0:35",
+      arabic: "الِاسْتِمَاعُ كَمَا فَهِمْتُمْ مِنَ الْكَلِمَةِ",
+      german: "Das Zuhören, wie ihr es aus dem Wort verstanden habt"
+    },
+    {
+      timestamp: "0:41",
+      arabic: "نَفْسِهَا هُوَ أَنْ تَسْتَمِعَ إِلَى اللُّغَةِ",
+      german: "selbst, bedeutet, dass ihr der Sprache zuhört"
+    },
+    {
+      timestamp: "0:45",
+      arabic: "فَالِاسْتِمَاعُ مَصْدَرُ اسْتَمَعَ يَسْتَمِعُ اسْتِمَاعًا يَعْنِي أَنْ تَسْمَعَ",
+      german: "Das Zuhören ist das Verbalnomen von zuhören, er hört zu, Zuhören, das bedeutet, dass ihr hört"
+    },
+    {
+      timestamp: "0:50",
+      arabic: "اللُّغَةَ",
+      german: "die Sprache"
+    },
+    {
+      timestamp: "0:53",
+      arabic: "وَالِاسْتِمَاعُ إِحْدَى الْمَهَارَاتِ",
+      german: "Und das Zuhören ist eine der Fertigkeiten"
+    },
+    {
+      timestamp: "0:57",
+      arabic: "الْأَرْبَعِ لِلُّغَةِ",
+      german: "der vier Sprachfertigkeiten"
+    },
+    {
+      timestamp: "1:00",
+      arabic: "فَالْمَهَارَاتُ",
+      german: "Die Fertigkeiten"
+    },
+    {
+      timestamp: "1:01",
+      arabic: "اللُّغَوِيَّةُ هِيَ",
+      german: "der Sprache sind"
+    },
+    {
+      timestamp: "1:05",
+      arabic: "الِاسْتِمَاعُ",
+      german: "das Zuhören"
+    },
+    {
+      timestamp: "1:07",
+      arabic: "وَالْمُحَادَثَةُ وَالْقِرَاءَةُ",
+      german: "und das Sprechen und das Lesen"
+    },
+    {
+      timestamp: "1:10",
+      arabic: "وَالْكِتَابَةُ يَعْنِي الِاسْتِمَاعُ هِيَ قُدْرَتُكَ عَلَى فَهْمِ",
+      german: "und das Schreiben. Das Zuhören ist eure Fähigkeit zu verstehen"
+    },
+    {
+      timestamp: "1:16",
+      arabic: "كَلَامٍ",
+      german: "eine Rede"
+    },
+    {
+      timestamp: "1:18",
+      arabic: "تَسْمَعُهُ",
+      german: "die ihr hört"
+    },
+    {
+      timestamp: "1:20",
+      arabic: "وَالْكِتَابَةُ هِيَ قُدْرَتُكَ عَلَى التَّعْبِيرِ الْكِتَابِيِّ",
+      german: "Und das Schreiben ist eure Fähigkeit zum schriftlichen Ausdruck"
+    },
+    {
+      timestamp: "1:25",
+      arabic: "وَالْقِرَاءَةُ هِيَ قُدْرَتُكَ عَلَى فَهْمِ",
+      german: "Und das Lesen ist eure Fähigkeit zu verstehen"
+    },
+    {
+      timestamp: "1:28",
+      arabic: "كَلَامٍ مَقْرُوءٍ أَوْ كَلَامٍ"
+    },
+    {
+      timestamp: "1:31",
+      arabic: "تَقْرَؤُهُ وَالْمُحَادَثَةُ هِيَ قُدْرَتُكَ عَلَى التَّعْبِيرِ"
+    },
+    {
+      timestamp: "1:37",
+      arabic: "الشَّفَهِيِّ شَفَ"
+    },
+    {
+      timestamp: "1:41",
+      arabic: "الشَّفَهِيِّ شَفَوِيٌّ شَفَوِيٌّ"
+    },
+    {
+      timestamp: "1:45",
+      arabic: "شَفَةٌ شَفَوِيٌّ شَفَهِيٌّ صَرَاحَةً أَنَا الْآنَ"
+    },
+    {
+      timestamp: "1:53",
+      arabic: "إِيّ قَدْ أَشْكَلَتْ عَلَيَّ هَذِهِ الْكَلِمَةُ شَفَهِيٌّ"
+    },
+    {
+      timestamp: "1:59",
+      arabic: "شَفَوِيٌّ عَلَى كُلِّ حَالٍ الْآنَ السَّاعَةُ الرَّابِعَةُ"
+    },
+    {
+      timestamp: "2:05",
+      arabic: "لَيْلًا وَأَنَا أَجْلِسُ فِي هَذِهِ الْغُرْفَةِ وَالْجَمِيعُ"
+    },
+    {
+      timestamp: "2:09",
+      arabic: "نَائِمٌ وَأَنَا أَتَكَلَّمُ"
+    },
+    {
+      timestamp: "2:12",
+      arabic: "مَعَكُمْ نَعَمْ الِاسْتِمَاعُ كُنْتُ أُرِيدُ أَنْ أَتَكَلَّمَ مَعَكُمْ"
+    },
+    {
+      timestamp: "2:17",
+      arabic: "فِي هَذَا"
+    },
+    {
+      timestamp: "2:18",
+      arabic: "الْمَوْضُوعِ مَا أَهَمِّيَّةُ الِاسْتِمَاعِ فِي تَعَلُّمِ اللُّغَةِ"
+    },
+    {
+      timestamp: "2:23",
+      arabic: "الْعَرَبِيَّةِ أَسْتَطِيعُ أَنْ أَجْزِمَ أَنَّ الِاسْتِ"
+    },
+    {
+      timestamp: "2:29",
+      arabic: "اسْتِمَاعَةُ مِنْ"
+    },
+    {
+      timestamp: "2:31",
+      arabic: "أَهَمِّ"
+    },
+    {
+      timestamp: "2:34",
+      arabic: "الْمَهَارَاتِ لِمَاذَا؟ لِأَنَّهُ فِي هَذَا"
+    },
+    {
+      timestamp: "2:38",
+      arabic: "الزَّمَانِ أَغْلَبُ"
+    },
+    {
+      timestamp: "2:41",
+      arabic: "الطُّلَّابِ"
+    },
+    {
+      timestamp: "2:43",
+      arabic: "يُرِيدُونَ أَنْ يَفْهَمُوا اللُّغَةَ"
+    },
+    {
+      timestamp: "2:47",
+      arabic: "الْعَرَبِيَّةَ أَغْلَبُ"
+    },
+    {
+      timestamp: "2:49",
+      arabic: "الطُّلَّابِ لَا يُرِيدُونَ تَعَلُّمَ الْعَرَبِيَّةِ لِأَجْلِ"
+    },
+    {
+      timestamp: "2:53",
+      arabic: "الْحَدِيثِ لِأَجْلِ الْكَلَامِ مَعَ"
+    },
+    {
+      timestamp: "2:57",
+      arabic: "الْعَرَبِ لِأَنَّهُمْ أَصْلًا لَا يُقَابِلُونَ الْعَرَبَ إِلَّا"
+    },
+    {
+      timestamp: "3:03",
+      arabic: "قَلِيلًا فَهُنَاكَ طُلَّابٌ يَتَعَلَّمُونَ"
+    },
+    {
+      timestamp: "3:08",
+      arabic: "الْعَرَبِيَّةَ وَلَمْ يَرَوْا شَخْصًا عَرَبِيًّا فِي"
+    },
+    {
+      timestamp: "3:14",
+      arabic: "حَيَاتِهِمْ"
+    },
+    {
+      timestamp: "3:15",
+      arabic: "لِذَلِكَ لَا يَضُرُّهُمْ ضَعْفُهُمْ فِي"
+    },
+    {
+      timestamp: "3:20",
+      arabic: "الْمُحَادَثَةِ لَا"
+    },
+    {
+      timestamp: "3:23",
+      arabic: "يَضُرُّهُمْ وَثَانِيًا الْكِتَابَةُ"
+    },
+    {
+      timestamp: "3:26",
+      arabic: "أَيْضًا لَا يَحْتَاجُونَ إِلَيْهَا"
+    },
+    {
+      timestamp: "3:29",
+      arabic: "كَثِيرًا"
+    },
+    {
+      timestamp: "3:31",
+      arabic: "لِأَنَّهُمْ لَا يَكْتُبُونَ"
+    },
+    {
+      timestamp: "3:33",
+      arabic: "بِالْعَرَبِيَّةِ أَيْنَ سَيَكْتُبُونَ الطَّالِبُ الَّذِي يَسْكُنُ فِي"
+    },
+    {
+      timestamp: "3:38",
+      arabic: "كَازَاخِسْتَانَ فِي قَرْيَةٍ صَغِيرَةٍ عِنْدَ الْجِبَالِ لِمَاذَا"
+    },
+    {
+      timestamp: "3:42",
+      arabic: "يَحْتَاجُ إِلَى مَهَارَةِ الْكِتَابَةِ لَا"
+    },
+    {
+      timestamp: "3:48",
+      arabic: "يَحْتَاجُ"
+    },
+    {
+      timestamp: "3:50",
+      arabic: "وَالْقِرَاءَةُ نَعَمْ يَحْتَاجُ"
+    },
+    {
+      timestamp: "3:53",
+      arabic: "إِلَيْهَا يَحْتَاجُ إِلَيْهَا"
+    },
+    {
+      timestamp: "3:56",
+      arabic: "بِشِدَّةٍ يَحْتَاجُ"
+    },
+    {
+      timestamp: "3:58",
+      arabic: "إِلَيْهَا لَكِنَّ"
+    },
+    {
+      timestamp: "4:01",
+      arabic: "الِاسْتِمَاعُ أَهَمُّ إِلَى أَهَمُّ لَهُ لِمَاذَا؟ لِأَنَّهُ"
+    },
+    {
+      timestamp: "4:07",
+      arabic: "يَسْتَطِيعُ أَنْ يَسْتَمِعَ إِلَى آلَافِ الْمُحَاضَرَاتِ"
+    },
+    {
+      timestamp: "4:12",
+      arabic: "الْمَوْجُودَةِ عَلَى"
+    },
+    {
+      timestamp: "4:14",
+      arabic: "الْيُوتِيُوبِ وَالِاسْتِمَاعُ أَسْهَلُ مِنَ الْقِرَاءَةِ لِأَنَّ"
+    },
+    {
+      timestamp: "4:18",
+      arabic: "الْقِرَاءَةَ تَحْتَاجُ إِلَى كِتَابٍ لِأَنَّ الْقِرَاءَةَ تَحْتَاجُ"
+    },
+    {
+      timestamp: "4:23",
+      arabic: "إِلَى أَشْيَاءَ أَشْيَاءَ"
+    },
+    {
+      timestamp: "4:25",
+      arabic: "كَثِيرَةٍ وَالْكُتُبُ قَدْ تَكُونُ غَيْرَ مُتَوَفِّرَةٍ فِي"
+    },
+    {
+      timestamp: "4:31",
+      arabic: "بَلَدِهِ لَا يُوجَدُ عِنْدَهُ كِتَابٌ وَحَتَّى إِذَا وُجِدَ"
+    },
+    {
+      timestamp: "4:36",
+      arabic: "الطَّالِبُ الْمُعَاصِرُ لِلْأَسَفِ الشَّدِيدِ لَا"
+    },
+    {
+      timestamp: "4:41",
+      arabic: "يَقْرَأُ مَنْ مِنَّا يَقْرَأُ قَلِيلٌ جِدًّا يَعْنِي أَغْلَبُ"
+    },
+    {
+      timestamp: "4:47",
+      arabic: "النَّاسِ فِي هَذَا الزَّمَانِ إِذَا وَاجَهُوا مُشْكِلَةً لَا"
+    },
+    {
+      timestamp: "4:52",
+      arabic: "يَبْحَثُونَ فِي الْكُتُبِ يَدْخُلُ يَدْخُلُونَ فِي الْيُوتِيُوبِ"
+    },
+    {
+      timestamp: "4:55",
+      arabic: "وَيَكْتُبُونَ كَيْفَ أَفْعَلُ كَذَا وَكَذَا كَيْفَ أَيْنَ"
+    },
+    {
+      timestamp: "5:00",
+      arabic: "لِمَاذَا أَوْ يَسْأَلُونَ الذَّكَاءَ"
+    },
+    {
+      timestamp: "5:04",
+      arabic: "الِاصْطِنَاعِيَّةُ يَا تَشَاتْ جِي بِي تِي مَا مَعْنَى هَذَا"
+    },
+    {
+      timestamp: "5:09",
+      arabic: "كَيْفَ أَفْعَلُ هَذَا كَيْفَ أَذْهَبُ إِلَى مَكَانٍ مَا"
+    },
+    {
+      timestamp: "5:13",
+      arabic: "مَثَلًا لِذَلِكَ إِذَا تَمَكَّنْتَ أَوْ إِذَا طَوَّرْتَ مَهَارَةَ"
+    },
+    {
+      timestamp: "5:20",
+      arabic: "الِاسْتِمَاعِ فَهَذَا سَوْفَ يَفْتَحُ"
+    },
+    {
+      timestamp: "5:26",
+      arabic: "أَمَامَكَ"
+    },
+    {
+      timestamp: "5:28",
+      arabic: "مُحَاضَرَاتٍ وَحِوَارَاتٍ"
+    },
+    {
+      timestamp: "5:32",
+      arabic: "وَمُقَابَلَاتٍ وَأَشْيَاءَ كَثِيرَةً"
+    },
+    {
+      timestamp: "5:35",
+      arabic: "جِدًّا"
+    }
+  ]
+};
