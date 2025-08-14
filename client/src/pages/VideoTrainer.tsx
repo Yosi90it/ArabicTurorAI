@@ -272,7 +272,7 @@ export default function VideoTrainer() {
                   ref={transcriptRef}
                   className="h-[400px] overflow-y-auto pr-2"
                 >
-                  <div className="text-right space-y-2">
+                  <div className="text-right space-y-4">
                     {segments.map((segment, index) => (
                       <div
                         key={index}
@@ -282,9 +282,10 @@ export default function VideoTrainer() {
                             el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                           }
                         } : undefined}
-                        className={`p-2 rounded-lg transition-all duration-300 ease-in-out cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800`}
+                        className={`p-3 rounded-lg transition-all duration-300 ease-in-out cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 space-y-2`}
                         onClick={() => jumpToSegment(index)}
                       >
+                        {/* Arabic text */}
                         <ClickableText 
                           text={formatText(segment.arabic)}
                           className={`text-lg leading-relaxed font-arabic transition-all duration-300 ease-in-out ${
@@ -293,6 +294,15 @@ export default function VideoTrainer() {
                               : 'font-normal text-gray-700 dark:text-gray-300'
                           }`}
                         />
+                        
+                        {/* German translation directly below */}
+                        <div className={`text-sm leading-relaxed text-left transition-all duration-300 ease-in-out ${
+                          index === currentSegmentIndex
+                            ? 'font-medium text-blue-600 dark:text-blue-400'
+                            : 'font-normal text-gray-500 dark:text-gray-400'
+                        }`}>
+                          {segment.german}
+                        </div>
                       </div>
                     ))}
                   </div>
