@@ -260,9 +260,22 @@ export default function BookReader() {
   };
 
   return (
-    <div className="container mx-auto p-6 max-w-6xl">
+    <div className="min-h-screen bg-gray-50 py-6">
+      {/* Modern Header */}
+      <div className="mb-8">
+        <div className="flex items-center gap-4 mb-4">
+          <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center">
+            <BookOpen className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Bücher</h1>
+            <p className="text-gray-600">{strings.exploreBooks}</p>
+          </div>
+        </div>
+      </div>
+
       {/* Book Library - Above the content */}
-      <Card className="mb-6">
+      <Card className="mb-6 border-0 shadow-sm bg-white rounded-xl">
         <CardHeader>
           <CardTitle className="text-base">{strings.myLibrary}</CardTitle>
         </CardHeader>
@@ -280,7 +293,7 @@ export default function BookReader() {
 
       {/* Reading Area */}
       <div className="w-full">
-          <Card>
+          <Card className="border-0 shadow-sm bg-white rounded-xl">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2">

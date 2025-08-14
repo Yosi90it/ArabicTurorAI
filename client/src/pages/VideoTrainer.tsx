@@ -212,14 +212,27 @@ export default function VideoTrainer() {
   const progressPercentage = (completedSegments.size / segments.length) * 100;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gray-50 py-6">
+      {/* Modern Header */}
+      <div className="mb-8">
+        <div className="flex items-center gap-4 mb-4">
+          <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center">
+            <Monitor className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Videos</h1>
+            <p className="text-gray-600">Verstehen Sie Arabisch durch authentische Videoinhalte</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4">
         <div className="max-w-7xl mx-auto">
 
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Video Player */}
-            <Card className="overflow-hidden">
+            <Card className="overflow-hidden border-0 shadow-sm bg-white rounded-xl">
               <CardContent className="p-0">
                 <div className="relative aspect-video bg-black">
                   <div 
@@ -241,7 +254,7 @@ export default function VideoTrainer() {
             </Card>
 
             {/* Transcript */}
-            <Card>
+            <Card className="border-0 shadow-sm bg-white rounded-xl">
               <CardContent>
                 <div 
                   ref={transcriptRef}

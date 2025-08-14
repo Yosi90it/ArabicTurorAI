@@ -347,24 +347,32 @@ Antworte im JSON-Format:
   };
 
   return (
-    <div className="container mx-auto p-6 max-w-4xl">
+    <div className="min-h-screen bg-gray-50 py-6">
+      {/* Modern Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">{strings.flashcards}</h1>
-        <p className="text-gray-600">
-          {strings.language === 'de' 
-            ? "Üben Sie Ihre gesammelten arabischen Vokabeln und erstellen Sie personalisierte Geschichten"
-            : "Practice your collected Arabic vocabulary and create personalized stories"
-          }
-        </p>
+        <div className="flex items-center gap-4 mb-4">
+          <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center">
+            <BookOpen className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Flashcards</h1>
+            <p className="text-gray-600">
+              {strings.language === 'de' 
+                ? "Üben Sie Ihre gesammelten arabischen Vokabeln und erstellen Sie personalisierte Geschichten"
+                : "Practice your collected Arabic vocabulary and create personalized stories"
+              }
+            </p>
+          </div>
+        </div>
       </div>
 
       <Tabs defaultValue="flashcards" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="flashcards" className="flex items-center gap-2">
+        <TabsList className="grid w-full grid-cols-2 bg-white rounded-xl p-1 shadow-sm border">
+          <TabsTrigger value="flashcards" className="flex items-center gap-2 data-[state=active]:bg-orange-500 data-[state=active]:text-white rounded-lg">
             <BookOpen className="w-4 h-4" />
 {strings.flashcards} ({allFlashcards.length})
           </TabsTrigger>
-          <TabsTrigger value="stories" className="flex items-center gap-2">
+          <TabsTrigger value="stories" className="flex items-center gap-2 data-[state=active]:bg-orange-500 data-[state=active]:text-white rounded-lg">
             <Sparkles className="w-4 h-4" />
 {strings.storyGenerator}
           </TabsTrigger>
@@ -445,7 +453,7 @@ Antworte im JSON-Format:
           </div>
 
           {/* Flashcard */}
-          <Card className="mb-6 min-h-[300px] cursor-pointer" onClick={() => setShowAnswer(!showAnswer)}>
+          <Card className="mb-6 min-h-[300px] cursor-pointer border-0 shadow-sm bg-white rounded-xl" onClick={() => setShowAnswer(!showAnswer)}>
             <CardContent className="flex flex-col items-center justify-center h-full p-8">
               {filteredFlashcards.length > 0 ? (
                 !showAnswer ? (

@@ -453,29 +453,37 @@ export default function AiChat() {
   };
 
   return (
-    <div>
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">AI Chat Assistant</h2>
-        <p className="text-gray-600">Practice Arabic conversation with our intelligent AI tutor</p>
+    <div className="min-h-screen bg-gray-50 py-6">
+      {/* Modern Header */}
+      <div className="mb-8">
+        <div className="flex items-center gap-4 mb-4">
+          <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center">
+            <Bot className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">KI Chat Assistent</h1>
+            <p className="text-gray-600">Üben Sie Arabisch mit unserem intelligenten KI-Tutor</p>
+          </div>
+        </div>
       </div>
 
       <Tabs defaultValue="general" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="general" className="flex items-center gap-2">
+        <TabsList className="grid w-full grid-cols-2 bg-white rounded-xl p-1 shadow-sm border">
+          <TabsTrigger value="general" className="flex items-center gap-2 data-[state=active]:bg-orange-500 data-[state=active]:text-white rounded-lg">
             <Bot className="w-4 h-4" />
             Allgemeiner Chat
           </TabsTrigger>
-          <TabsTrigger value="practice" className="flex items-center gap-2">
+          <TabsTrigger value="practice" className="flex items-center gap-2 data-[state=active]:bg-orange-500 data-[state=active]:text-white rounded-lg">
             <Target className="w-4 h-4" />
             Wörter üben
           </TabsTrigger>
         </TabsList>
 
         {/* General Chat Tab */}
-        <TabsContent value="general">
-          <Card className="mb-6">
+        <TabsContent value="general" className="mt-6">
+          <Card className="mb-6 border-0 shadow-sm bg-white rounded-xl">
             <CardContent className="p-6">
-              <div className="h-96 bg-soft-gray rounded-2xl p-4 mb-4 overflow-y-auto scrollbar-hide">
+              <div className="h-96 bg-gray-50 rounded-2xl p-4 mb-4 overflow-y-auto scrollbar-hide">
                 <div className="space-y-4">
                   {messages.map((message) => (
                     <div
@@ -666,7 +674,7 @@ export default function AiChat() {
                     )}
 
                     {/* Chat area for practice */}
-                    <div className="h-96 bg-soft-gray rounded-2xl p-4 mb-4 overflow-y-auto scrollbar-hide">
+                    <div className="h-96 bg-gray-50 rounded-2xl p-4 mb-4 overflow-y-auto scrollbar-hide">
                       <div className="space-y-4">
                         {practiceMessages.map((message) => (
                           <div

@@ -168,20 +168,25 @@ export default function DailyChallenge() {
   const completionRate = totalChallenges > 0 ? (completedToday / totalChallenges) * 100 : 0;
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-6">
-      {/* Header */}
-      <div className="text-center space-y-4">
-        <h1 className="text-3xl font-bold text-gray-900">
-          Tägliche Sprachherausforderung
-        </h1>
-        <p className="text-gray-600">
-          Personalisierte Aufgaben basierend auf Ihrem Lernfortschritt
-        </p>
+    <div className="min-h-screen bg-gray-50 py-6">
+      {/* Modern Header */}
+      <div className="mb-8">
+        <div className="flex items-center gap-4 mb-4">
+          <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center">
+            <Target className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Tägliche Herausforderung</h1>
+            <p className="text-gray-600">Personalisierte Aufgaben basierend auf Ihrem Lernfortschritt</p>
+          </div>
+        </div>
       </div>
+
+      <div className="max-w-4xl mx-auto px-6 space-y-6">
 
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
+        <Card className="border-0 shadow-sm bg-white rounded-xl">
           <CardContent className="p-4 text-center">
             <Target className="w-8 h-8 mx-auto mb-2 text-blue-600" />
             <div className="text-2xl font-bold">{completedToday}</div>
@@ -189,7 +194,7 @@ export default function DailyChallenge() {
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="border-0 shadow-sm bg-white rounded-xl">
           <CardContent className="p-4 text-center">
             <Flame className="w-8 h-8 mx-auto mb-2 text-orange-600" />
             <div className="text-2xl font-bold">{streak}</div>
@@ -197,7 +202,7 @@ export default function DailyChallenge() {
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="border-0 shadow-sm bg-white rounded-xl">
           <CardContent className="p-4 text-center">
             <Trophy className="w-8 h-8 mx-auto mb-2 text-yellow-600" />
             <div className="text-2xl font-bold">{stats.totalPoints}</div>
@@ -205,7 +210,7 @@ export default function DailyChallenge() {
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="border-0 shadow-sm bg-white rounded-xl">
           <CardContent className="p-4 text-center">
             <TrendingUp className="w-8 h-8 mx-auto mb-2 text-green-600" />
             <div className="text-2xl font-bold">{Math.round(completionRate)}%</div>
@@ -215,7 +220,7 @@ export default function DailyChallenge() {
       </div>
 
       {/* Daily Progress */}
-      <Card>
+      <Card className="border-0 shadow-sm bg-white rounded-xl">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Calendar className="w-5 h-5" />
@@ -314,6 +319,7 @@ export default function DailyChallenge() {
           </div>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }

@@ -215,14 +215,24 @@ export default function AlphabetTrainer() {
   const content = getCurrentContent();
 
   return (
-    <div className="max-w-6xl mx-auto p-6 space-y-6">
-      <div className="text-center space-y-4">
-        <h1 className="text-3xl font-bold text-gray-900">Strukturierter Alphabet-Trainer</h1>
-        <p className="text-gray-600">Lernen Sie das arabische Alphabet systematisch in strukturierten Phasen</p>
+    <div className="min-h-screen bg-gray-50 py-6">
+      {/* Modern Header */}
+      <div className="mb-8">
+        <div className="flex items-center gap-4 mb-4">
+          <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center">
+            <BookOpen className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Alphabet</h1>
+            <p className="text-gray-600">Lernen Sie das arabische Alphabet systematisch in strukturierten Phasen</p>
+          </div>
+        </div>
       </div>
 
+      <div className="max-w-6xl mx-auto px-6 space-y-6">
+
       {/* Phase Selection */}
-      <Card>
+      <Card className="border-0 shadow-sm bg-white rounded-xl">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <BookOpen className="w-5 h-5" />
@@ -259,7 +269,7 @@ export default function AlphabetTrainer() {
       {!showQuiz ? (
         <>
           {/* Learning Mode */}
-          <Card className="mx-auto max-w-3xl">
+          <Card className="mx-auto max-w-3xl border-0 shadow-sm bg-white rounded-xl">
             <CardHeader className="text-center">
               <CardTitle className="flex items-center justify-center gap-2">
                 <span>{getPhaseTitle(currentPhase)}</span>
@@ -440,6 +450,7 @@ export default function AlphabetTrainer() {
           </Card>
         </>
       )}
+      </div>
     </div>
   );
 }
