@@ -76,7 +76,7 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
   };
 
   return (
-    <div className="h-full flex flex-col bg-white">
+    <div className="h-screen flex flex-col bg-white overflow-hidden">
       {/* Brand Header */}
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center gap-3 mb-2">
@@ -98,7 +98,7 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
       </div>
 
       {/* Navigation Links */}
-      <nav className="flex-1 px-3 space-y-2">
+      <nav className="flex-1 px-3 space-y-2 overflow-y-auto scrollbar-hide">
         {/* Dashboard Link */}
         <Link href="/learn">
           <div
@@ -183,7 +183,7 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
       </nav>
 
       {/* User Status */}
-      <div className="p-4 border-t border-gray-200">
+      <div className="p-4 border-t border-gray-200 flex-shrink-0">
         <div className="bg-white rounded-xl p-4 border">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
