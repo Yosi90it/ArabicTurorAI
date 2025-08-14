@@ -41,22 +41,8 @@ export default function WordModal({
     setShowConjugationModal(true);
   };
 
-  // Verb detection now relies primarily on OpenAI grammar analysis
-  // Fallback to pattern detection if grammar info is not available
-  const isLikelyVerb = grammar === 'verb' || grammar.includes('فعل') || 
-    (grammar === 'noun' ? false : // Trust OpenAI if it says noun
-     isCommonVerb(word) || 
-     (word.length >= 3 && (
-       // Common prefixes for conjugated verbs
-       word.startsWith('أ') || word.startsWith('ي') || word.startsWith('ت') || 
-       word.startsWith('ن') || word.startsWith('س') || word.startsWith('ل') ||
-       // Verb with و prefix (and)
-       (word.startsWith('و') && word.length > 3) ||
-       // Any word ending with verb suffixes
-       word.endsWith('وا') || word.endsWith('تم') || word.endsWith('تن') ||
-       word.endsWith('ني') || word.endsWith('ها') || word.endsWith('هم') ||
-       word.endsWith('هن') || word.endsWith('كم') || word.endsWith('كن')
-     )));
+  // Strict verb detection - only show button for confirmed verbs
+  const isLikelyVerb = grammar === 'verb' || grammar.includes('فعل');
 
   return (
     <>
