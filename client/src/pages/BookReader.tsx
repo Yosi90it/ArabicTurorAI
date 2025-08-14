@@ -318,8 +318,8 @@ export default function BookReader() {
                     </div>
                   )}
                   
-                  {/* Only show controls for interactive books, not image-based */}
-                  {!selectedBook?.title.includes("كامل مع الصور الأصلية") && (
+                  {/* Always show controls for all books */}
+                  {(
                     <>
                       <Button variant="outline" size="sm">
                         <Search className="w-4 h-4 mr-2" />
@@ -361,12 +361,26 @@ export default function BookReader() {
             <CardContent className="space-y-6">
               {selectedBook ? (
                 <>
-                  {/* Use new Qiraatu Rashida Pages based on HTML structure */}
-                  <div className="prose prose-lg max-w-none">
-                    <div className="bg-gradient-to-br from-amber-50 to-orange-50 p-6 rounded-2xl border border-amber-200 min-h-[500px]">
-                      <QiratuRashidaPages />
+                  {/* Show Qiraatu Rashida Pages for image-based books */}
+                  {selectedBook.title.includes("كامل مع الصور الأصلية") ? (
+                    <div className="prose prose-lg max-w-none">
+                      <div className="bg-gradient-to-br from-amber-50 to-orange-50 p-6 rounded-2xl border border-amber-200 min-h-[500px]">
+                        <QiratuRashidaPages />
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    /* Interactive book content with toggle support */
+                    <div className="prose prose-lg max-w-none">
+                      <div className="bg-gradient-to-br from-amber-50 to-orange-50 p-6 rounded-2xl border border-amber-200 min-h-[500px]">
+                        <BookContent 
+                          content={currentBookPages[currentPage] || ""} 
+                          tashkeelEnabled={tashkeelEnabled}
+                          interlinearEnabled={interlinearEnabled}
+                          onWordClick={handleContentClick}
+                        />
+                      </div>
+                    </div>
+                  )}
                 </>
               ) : (
                 <div className="text-center py-12">
