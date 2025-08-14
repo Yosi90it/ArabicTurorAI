@@ -44,7 +44,7 @@ export default function VideoTrainer() {
   const { toast } = useToast();
   const { updateProgress } = useSimpleGamification();
   const { strings, lang } = useLanguage();
-  const { tashkeelEnabled, toggleTashkeel } = useTashkeel();
+  const { tashkeelEnabled, toggleTashkeel, formatText } = useTashkeel();
 
   const segments = listeningVideoData.segments;
   const currentSegment = segments[currentSegmentIndex];
@@ -286,7 +286,7 @@ export default function VideoTrainer() {
                         onClick={() => jumpToSegment(index)}
                       >
                         <ClickableText 
-                          text={tashkeelEnabled ? segment.arabic : segment.arabic.replace(/[\u064B-\u065F\u0670\u0640]/g, '')}
+                          text={formatText(segment.arabic)}
                           className={`text-lg leading-relaxed font-arabic transition-all duration-300 ease-in-out ${
                             index === currentSegmentIndex
                               ? 'font-bold text-blue-600 dark:text-blue-400'

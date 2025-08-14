@@ -29,9 +29,7 @@ function BookContent({ content, tashkeelEnabled, interlinearEnabled, onWordClick
     // For interlinear mode, we need plain text
     if (interlinearEnabled) {
       let processedContent = content.replace(/<[^>]*>/g, ' ').trim();
-      if (!tashkeelEnabled) {
-        processedContent = processedContent.replace(/[\u064B-\u065F\u0670\u0640]/g, '');
-      }
+      processedContent = tashkeelEnabled ? processedContent : processedContent.replace(/[\u064B-\u065F\u0670\u0640]/g, '');
       console.log("Interlinear mode enabled, content:", processedContent?.substring(0, 100));
       return <InterlinearText text={processedContent} className="leading-relaxed" />;
     }
@@ -40,9 +38,7 @@ function BookContent({ content, tashkeelEnabled, interlinearEnabled, onWordClick
     let processedContent = content;
     
     // Remove tashkeel if disabled
-    if (!tashkeelEnabled) {
-      processedContent = processedContent.replace(/[\u064B-\u065F\u0670\u0640]/g, '');
-    }
+    processedContent = tashkeelEnabled ? processedContent : processedContent.replace(/[\u064B-\u065F\u0670\u0640]/g, '');
     
     // Parse HTML and make Arabic text clickable
     const parseHtmlToClickable = (htmlContent: string) => {
@@ -135,7 +131,7 @@ export default function BookReader() {
   }));
   const { addFlashcard } = useFlashcards();
   const { toast } = useToast();
-  const { tashkeelEnabled, toggleTashkeel } = useTashkeel();
+  const { tashkeelEnabled, toggleTashkeel, formatText } = useTashkeel();
   const { updateProgress } = useSimpleGamification();
   const { strings } = useLanguage();
   const [interlinearEnabled, setInterlinearEnabled] = useState(false);

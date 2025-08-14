@@ -42,7 +42,7 @@ interface Story {
 export default function Flashcards() {
   const { userFlashcards } = useFlashcards();
   const { strings } = useLanguage();
-  const { tashkeelEnabled, toggleTashkeel } = useTashkeel();
+  const { tashkeelEnabled, toggleTashkeel, formatText } = useTashkeel();
   const { wordByWordEnabled } = useWordByWord();
   const { toast } = useToast();
   const { updateProgress } = useSimpleGamification();
@@ -477,7 +477,7 @@ Antworte im JSON-Format:
                 !showAnswer ? (
                   <>
                     <div className="text-4xl font-bold mb-4 text-center" dir="rtl">
-                      {tashkeelEnabled ? currentCard.arabic : currentCard.arabic.replace(/[\u064B-\u065F\u0670\u0640]/g, '')}
+                      {formatText(currentCard.arabic)}
                     </div>
                     <Button 
                       variant="ghost" 
@@ -494,7 +494,7 @@ Antworte im JSON-Format:
                 ) : (
                   <>
                     <div className="text-4xl font-bold mb-4 text-center" dir="rtl">
-                      {tashkeelEnabled ? currentCard.arabic : currentCard.arabic.replace(/[\u064B-\u065F\u0670\u0640]/g, '')}
+                      {formatText(currentCard.arabic)}
                     </div>
                     <div className="text-2xl mb-4 text-center">
                       {currentCard.translation}
@@ -504,7 +504,7 @@ Antworte im JSON-Format:
                     </Badge>
                     {currentCard.sentence && (
                       <div className="text-sm text-gray-600 text-center mb-4" dir="rtl">
-                        {tashkeelEnabled ? currentCard.sentence : currentCard.sentence.replace(/[\u064B-\u065F\u0670\u0640]/g, '')}
+                        {formatText(currentCard.sentence)}
                       </div>
                     )}
                     {currentCard.conjugations && currentCard.conjugations.length > 0 && (
@@ -520,7 +520,7 @@ Antworte im JSON-Format:
                                 <div className="text-gray-500">{conj.tense}</div>
                               </div>
                               <div className="text-right">
-                                <div className="font-medium" dir="rtl">{tashkeelEnabled ? conj.arabic : conj.arabic.replace(/[\u064B-\u065F\u0670\u0640]/g, '')}</div>
+                                <div className="font-medium" dir="rtl">{formatText(conj.arabic)}</div>
                                 <div className="text-gray-600">{conj.german}</div>
                               </div>
                             </div>

@@ -30,7 +30,7 @@ const openai = new OpenAI({
 });
 
 export default function AiChat() {
-  const { tashkeelEnabled, toggleTashkeel } = useTashkeel();
+  const { tashkeelEnabled, toggleTashkeel, formatText } = useTashkeel();
   const { wordByWordEnabled } = useWordByWord();
   const { addFlashcard, userFlashcards, getWordsFromLastDays, getWordsByDateGroup } = useFlashcards();
   const { toast } = useToast();
