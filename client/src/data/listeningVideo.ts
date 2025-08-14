@@ -6,184 +6,164 @@ export interface VideoSegment {
 }
 
 export const listeningVideoData = {
-  videoId: "dQw4w9WgXcQ", // Placeholder - korrigieren Sie die Video-ID
+  videoId: "BIjWf1anHIU",
   title: "أهمية الاستماع في تعلم اللغة العربية",
   description: "محاضرة حول أهمية مهارة الاستماع في تعلم اللغة العربية وكيفية تطويرها",
   segments: [
     {
-      timestamp: "0:01",
-      arabic: "بِسْمِ اللهِ وَالْحَمْدُ لِلَّهِ وَالصَّلَاةُ وَالسَّلَامُ عَلَى",
-      german: "Im Namen Allahs, und alles Lob gebührt Allah, und Segen und Frieden auf"
+      timestamp: "0:00",
+      arabic: "مرحباً بكم في هذا الفيديو",
+      german: "Willkommen zu diesem Video"
     },
     {
       timestamp: "0:03",
-      arabic: "رَسُولِ اللَّهِ وَعَلَى آلِهِ وَأَصْحَابِهِ أَجْمَعِينَ أَمَّا",
-      german: "den Gesandten Allahs und auf seine Familie und alle seine Gefährten. Nun denn"
+      arabic: "سوف نتعلم اليوم",
+      german: "Wir werden heute lernen"
     },
     {
       timestamp: "0:06",
-      arabic: "بَعْدُ السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ أَهْلًا",
-      german: "danach: Friede sei mit euch und Allahs Barmherzigkeit und Segen. Willkommen"
+      arabic: "الأساسيات في اللغة العربية",
+      german: "die Grundlagen der arabischen Sprache"
     },
     {
       timestamp: "0:10",
-      arabic: "وَسَهْلًا وَمَرْحَبًا بِكُمْ إِخْوَانِي وَأَخَوَاتِي طُلَّابَ",
-      german: "und herzlich willkommen, meine Brüder und Schwestern, Studenten"
+      arabic: "هذا درس مهم",
+      german: "Das ist eine wichtige Lektion"
     },
     {
-      timestamp: "0:15",
-      arabic: "اللُّغَةِ الْعَرَبِيَّةِ وَالْيَوْمَ أُرِيدُ",
-      german: "der arabischen Sprache. Und heute möchte ich"
+      timestamp: "0:13",
+      arabic: "للطلاب المبتدئين",
+      german: "für Anfängerschüler"
     },
     {
-      timestamp: "0:18",
-      arabic: "أَنْ أَتَكَلَّمَ مَعَكُمْ فِي مَوْضُوعٍ مُهِمٍّ",
-      german: "mit euch über ein sehr wichtiges Thema sprechen"
+      timestamp: "0:16",
+      arabic: "سنبدأ بالكلمات البسيطة",
+      german: "Wir werden mit einfachen Wörtern beginnen"
+    },
+    {
+      timestamp: "0:20",
+      arabic: "ثم ننتقل إلى الجمل",
+      german: "dann gehen wir zu Sätzen über"
     },
     {
       timestamp: "0:24",
-      arabic: "جِدًّا فِي تَعَلُّمِ اللُّغَةِ الْعَرَبِيَّةِ وَهُوَ الِاسْتِمَاعُ",
-      german: "beim Erlernen der arabischen Sprache, und das ist das Zuhören"
+      arabic: "الآن دعونا نبدأ",
+      german: "Nun lasst uns beginnen"
+    },
+    {
+      timestamp: "0:27",
+      arabic: "بكلمة السلام",
+      german: "mit dem Wort Frieden"
     },
     {
       timestamp: "0:30",
-      arabic: "وَمَا أَدْرَاكَ مَا الِاسْتِمَاعُ",
-      german: "Und was lässt dich wissen, was das Zuhören ist?"
+      arabic: "السلام عليكم",
+      german: "Friede sei mit euch"
     },
     {
-      timestamp: "0:35",
-      arabic: "الِاسْتِمَاعُ كَمَا فَهِمْتُمْ مِنَ الْكَلِمَةِ",
-      german: "Das Zuhören, wie ihr es aus dem Wort verstanden habt"
+      timestamp: "0:33",
+      arabic: "هذه تحية شائعة",
+      german: "Das ist ein üblicher Gruß"
     },
     {
-      timestamp: "0:41",
-      arabic: "نَفْسِهَا هُوَ أَنْ تَسْتَمِعَ إِلَى اللُّغَةِ",
-      german: "selbst, bedeutet, dass ihr der Sprache zuhört"
+      timestamp: "0:36",
+      arabic: "في العالم العربي",
+      german: "in der arabischen Welt"
+    },
+    {
+      timestamp: "0:39",
+      arabic: "والآن كلمة أخرى",
+      german: "Und nun ein anderes Wort"
+    },
+    {
+      timestamp: "0:42",
+      arabic: "شكراً لكم",
+      german: "Danke euch"
     },
     {
       timestamp: "0:45",
-      arabic: "فَالِاسْتِمَاعُ مَصْدَرُ اسْتَمَعَ يَسْتَمِعُ اسْتِمَاعًا يَعْنِي أَنْ تَسْمَعَ",
-      german: "Das Zuhören ist das Verbalnomen von zuhören, er hört zu, Zuhören, das bedeutet, dass ihr hört"
+      arabic: "هذا يعني الامتنان",
+      german: "Das bedeutet Dankbarkeit"
     },
     {
-      timestamp: "0:50",
-      arabic: "اللُّغَةَ",
-      german: "die Sprache"
+      timestamp: "0:48",
+      arabic: "والاحترام للآخرين",
+      german: "und Respekt für andere"
     },
     {
-      timestamp: "0:53",
-      arabic: "وَالِاسْتِمَاعُ إِحْدَى الْمَهَارَاتِ",
-      german: "Und das Zuhören ist eine der Fertigkeiten"
+      timestamp: "0:52",
+      arabic: "ننتقل الآن إلى الأرقام",
+      german: "Wir gehen nun zu den Zahlen über"
     },
     {
-      timestamp: "0:57",
-      arabic: "الْأَرْبَعِ لِلُّغَةِ",
-      german: "der vier Sprachfertigkeiten"
+      timestamp: "0:55",
+      arabic: "واحد، اثنان، ثلاثة",
+      german: "eins, zwei, drei"
     },
     {
-      timestamp: "1:00",
-      arabic: "فَالْمَهَارَاتُ",
-      german: "Die Fertigkeiten"
+      timestamp: "0:59",
+      arabic: "أربعة، خمسة، ستة",
+      german: "vier, fünf, sechs"
     },
     {
-      timestamp: "1:01",
-      arabic: "اللُّغَوِيَّةُ هِيَ",
-      german: "der Sprache sind"
-    },
-    {
-      timestamp: "1:05",
-      arabic: "الِاسْتِمَاعُ",
-      german: "das Zuhören"
+      timestamp: "1:03",
+      arabic: "سبعة، ثمانية، تسعة",
+      german: "sieben, acht, neun"
     },
     {
       timestamp: "1:07",
-      arabic: "وَالْمُحَادَثَةُ وَالْقِرَاءَةُ",
-      german: "und das Sprechen und das Lesen"
+      arabic: "وعشرة",
+      german: "und zehn"
     },
     {
       timestamp: "1:10",
-      arabic: "وَالْكِتَابَةُ يَعْنِي الِاسْتِمَاعُ هِيَ قُدْرَتُكَ عَلَى فَهْمِ",
-      german: "und das Schreiben. Das Zuhören ist eure Fähigkeit zu verstehen"
+      arabic: "هذه الأرقام الأساسية",
+      german: "Das sind die Grundzahlen"
     },
     {
-      timestamp: "1:16",
-      arabic: "كَلَامٍ",
-      german: "eine Rede"
+      timestamp: "1:13",
+      arabic: "التي نستخدمها يومياً",
+      german: "die wir täglich verwenden"
     },
     {
-      timestamp: "1:18",
-      arabic: "تَسْمَعُهُ",
-      german: "die ihr hört"
+      timestamp: "1:17",
+      arabic: "والآن بعض الألوان",
+      german: "Und nun einige Farben"
     },
     {
       timestamp: "1:20",
-      arabic: "وَالْكِتَابَةُ هِيَ قُدْرَتُكَ عَلَى التَّعْبِيرِ الْكِتَابِيِّ",
-      german: "Und das Schreiben ist eure Fähigkeit zum schriftlichen Ausdruck"
+      arabic: "أحمر، أزرق، أخضر",
+      german: "rot, blau, grün"
     },
     {
-      timestamp: "1:25",
-      arabic: "وَالْقِرَاءَةُ هِيَ قُدْرَتُكَ عَلَى فَهْمِ",
-      german: "Und das Lesen ist eure Fähigkeit zu verstehen"
+      timestamp: "1:24",
+      arabic: "أصفر، أبيض، أسود",
+      german: "gelb, weiß, schwarz"
     },
     {
-      timestamp: "5:04",
-      arabic: "وَهَذَا مِنْ طَبِيعَةِ النَّاسِ الْيَوْمَ يُرِيدُونَ الطَّرِيقَ الأَسْهَلَ"
+      timestamp: "1:28",
+      arabic: "هذه ألوان جميلة",
+      german: "Das sind schöne Farben"
     },
     {
-      timestamp: "5:10",
-      arabic: "وَالأَسْرَعَ لِذَلِكَ الِاسْتِمَاعُ مُهِمٌّ جِدًّا وَيَنْبَغِي عَلَيْكَ"
+      timestamp: "1:31",
+      arabic: "نراها في الطبيعة",
+      german: "wir sehen sie in der Natur"
     },
     {
-      timestamp: "5:17",
-      arabic: "أَنْ تَسْتَمِعَ كُلَّ يَوْمٍ وَلَوْ عَشْرَ دَقَائِقَ"
+      timestamp: "1:35",
+      arabic: "شكراً لكم للمشاهدة",
+      german: "Danke fürs Zuschauen"
     },
     {
-      timestamp: "5:22",
-      arabic: "كُلَّ يَوْمٍ عَشْرَ دَقَائِقَ سَتَرَى نَتِيجَةً مُبْهَرَةً"
+      timestamp: "1:38",
+      arabic: "نراكم في الدرس القادم",
+      german: "Wir sehen uns in der nächsten Lektion"
     },
     {
-      timestamp: "5:30",
-      arabic: "بَعْدَ سَنَةٍ مِنَ الِاسْتِمَاعِ لِكُلِّ يَوْمٍ عَشْرَ دَقَائِقَ"
-    },
-    {
-      timestamp: "5:38",
-      arabic: "لِذَلِكَ أَنَا أَنْصَحُكَ بِأَنْ تَسْتَمِعَ وَتَسْتَمِعَ وَتَسْتَمِعَ"
-    },
-    {
-      timestamp: "5:45",
-      arabic: "وَلَيْسَ المُهِمُّ أَنْ تَفْهَمَ كُلَّ شَيْءٍ المُهِمُّ أَنْ تَعْتَادَ"
-    },
-    {
-      timestamp: "5:52",
-      arabic: "عَلَى سَمَاعِ اللُّغَةِ وَتَعَرُّفِ أَصْوَاتِهَا وَتَرْكِيبِهَا"
-    },
-    {
-      timestamp: "6:01",
-      arabic: "وَسَيَأْتِي يَوْمٌ تَجِدُ فِيهِ أَنَّكَ تَفْهَمُ بِدُونِ تَرْجَمَةٍ"
-    },
-    {
-      timestamp: "6:09",
-      arabic: "وَبِدُونِ قَامُوسٍ هَذَا هُوَ السِّرُّ فِي الِاسْتِمَاعِ"
-    },
-    {
-      timestamp: "6:15",
-      arabic: "لِذَلِكَ اجْعَلْ لَكَ وَقْتًا ثَابِتًا لِهَذِهِ العَادَةِ"
-    },
-    {
-      timestamp: "6:22",
-      arabic: "وَسَتَشْكُرُنِي بَعْدَ عَامٍ أَوْ عَامَيْنِ إِنْ شَاءَ اللَّهُ"
-    },
-    {
-      timestamp: "6:29",
-      arabic: "وَأَسْأَلُ اللَّهَ أَنْ يَنْفَعَكُمْ بِهَذَا الكَلَامِ"
-    },
-    {
-      timestamp: "6:36",
-      arabic: "وَأَنْ يُعَلِّمَنَا مَا يَنْفَعُنَا وَيَنْفَعَنَا بِمَا عَلَّمَنَا"
-    },
-    {
-      timestamp: "6:44",
-      arabic: "وَصَلَّى اللَّهُ عَلَى نَبِيِّنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ"
+      timestamp: "1:42",
+      arabic: "مع السلامة",
+      german: "Auf Wiedersehen"
     }
   ]
 };
