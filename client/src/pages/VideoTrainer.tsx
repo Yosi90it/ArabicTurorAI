@@ -36,6 +36,8 @@ export default function VideoTrainer() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [highlightedSegmentIndex, setHighlightedSegmentIndex] = useState(0);
   const [isVideoReady, setIsVideoReady] = useState(false);
+  const [wordByWordEnabled, setWordByWordEnabled] = useState(false);
+  const [sentenceTranslationEnabled, setSentenceTranslationEnabled] = useState(true);
   
   const videoRef = useRef<HTMLDivElement>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -250,20 +252,54 @@ export default function VideoTrainer() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg">Transcript</CardTitle>
-                  {/* Tashkeel Toggle */}
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-700">Tashkeel</span>
-                    <button
-                      onClick={toggleTashkeel}
-                      className="flex items-center"
-                      title="Tashkeel anzeigen/ausblenden"
-                    >
-                      {tashkeelEnabled ? (
-                        <ToggleRight className="w-5 h-5 text-purple-600" />
-                      ) : (
-                        <ToggleLeft className="w-5 h-5 text-gray-400" />
-                      )}
-                    </button>
+                  <div className="flex items-center gap-4">
+                    {/* Tashkeel Toggle */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-gray-700">Tashkeel</span>
+                      <button
+                        onClick={toggleTashkeel}
+                        className="flex items-center"
+                        title="Tashkeel anzeigen/ausblenden"
+                      >
+                        {tashkeelEnabled ? (
+                          <ToggleRight className="w-5 h-5 text-purple-600" />
+                        ) : (
+                          <ToggleLeft className="w-5 h-5 text-gray-400" />
+                        )}
+                      </button>
+                    </div>
+                    
+                    {/* Sentence Translation Toggle */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-gray-700">Satz-Übersetzung</span>
+                      <button
+                        onClick={() => setSentenceTranslationEnabled(!sentenceTranslationEnabled)}
+                        className="flex items-center"
+                        title="Satz-für-Satz Übersetzung anzeigen/ausblenden"
+                      >
+                        {sentenceTranslationEnabled ? (
+                          <ToggleRight className="w-5 h-5 text-blue-600" />
+                        ) : (
+                          <ToggleLeft className="w-5 h-5 text-gray-400" />
+                        )}
+                      </button>
+                    </div>
+                    
+                    {/* Word-by-Word Toggle */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-gray-700">Wort-für-Wort</span>
+                      <button
+                        onClick={() => setWordByWordEnabled(!wordByWordEnabled)}
+                        className="flex items-center"
+                        title="Wort-für-Wort Übersetzung anzeigen/ausblenden"
+                      >
+                        {wordByWordEnabled ? (
+                          <ToggleRight className="w-5 h-5 text-orange-600" />
+                        ) : (
+                          <ToggleLeft className="w-5 h-5 text-gray-400" />
+                        )}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </CardHeader>
@@ -286,23 +322,44 @@ export default function VideoTrainer() {
                         onClick={() => jumpToSegment(index)}
                       >
                         {/* Arabic text */}
-                        <ClickableText 
-                          text={formatText(segment.arabic)}
-                          className={`text-lg leading-relaxed font-arabic transition-all duration-300 ease-in-out ${
-                            index === currentSegmentIndex
-                              ? 'font-bold text-green-600 dark:text-green-400'
-                              : 'font-normal text-gray-700 dark:text-gray-300'
-                          }`}
-                        />
+                        {wordByWordEnabled ? (
+                          <div className="space-y-2">
+                            <div className="text-lg leading-relaxed font-arabic text-right">
+                              {formatText(segment.arabic).split(' ').map((word, wordIndex) => (
+                                <span key={wordIndex} className="inline-block mx-1">
+                                  <ClickableText 
+                                    text={word}
+                                    className={`transition-all duration-300 ease-in-out ${
+                                      index === currentSegmentIndex
+                                        ? 'font-bold text-green-600 dark:text-green-400'
+                                        : 'font-normal text-gray-700 dark:text-gray-300'
+                                    }`}
+                                  />
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        ) : (
+                          <ClickableText 
+                            text={formatText(segment.arabic)}
+                            className={`text-lg leading-relaxed font-arabic transition-all duration-300 ease-in-out ${
+                              index === currentSegmentIndex
+                                ? 'font-bold text-green-600 dark:text-green-400'
+                                : 'font-normal text-gray-700 dark:text-gray-300'
+                            }`}
+                          />
+                        )}
                         
-                        {/* German translation directly below */}
-                        <div className={`text-sm leading-relaxed text-left transition-all duration-300 ease-in-out ${
-                          index === currentSegmentIndex
-                            ? 'font-medium text-blue-600 dark:text-blue-400'
-                            : 'font-normal text-gray-500 dark:text-gray-400'
-                        }`}>
-                          {segment.german}
-                        </div>
+                        {/* German translation directly below - only show if sentence translation is enabled */}
+                        {sentenceTranslationEnabled && (
+                          <div className={`text-sm leading-relaxed text-left transition-all duration-300 ease-in-out ${
+                            index === currentSegmentIndex
+                              ? 'font-medium text-blue-600 dark:text-blue-400'
+                              : 'font-normal text-gray-500 dark:text-gray-400'
+                          }`}>
+                            {segment.german}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
