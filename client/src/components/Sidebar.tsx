@@ -78,14 +78,14 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
   return (
     <div className="h-screen flex flex-col bg-white overflow-hidden">
       {/* Brand Header */}
-      <div className="p-6 border-b border-gray-200">
+      <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-orange-50 to-amber-50">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center">
-            <span className="text-white font-bold text-lg">ع</span>
+          <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg">
+            <span className="text-white font-bold text-lg drop-shadow-sm">ع</span>
           </div>
           <div>
             <h1 className="text-xl font-bold text-gray-900">ArabLearn</h1>
-            <p className="text-gray-600 text-sm">Arabisch Lernen</p>
+            <p className="text-amber-700 text-sm font-medium">Arabisch Lernen</p>
           </div>
         </div>
       </div>
@@ -104,13 +104,13 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
         <Link href="/learn">
           <div
             onClick={onLinkClick}
-            className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer ${
+            className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 cursor-pointer transform hover:scale-105 ${
               isActive("/learn")
-                ? "bg-green-100 text-green-700"
-                : "text-gray-700 hover:bg-gray-100"
+                ? "bg-emerald-100 text-emerald-700"
+                : "text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700"
             }`}
           >
-            <Trophy size={18} />
+            <Trophy size={20} className="drop-shadow-sm" />
             <span className="font-medium">Dashboard</span>
           </div>
         </Link>
@@ -124,26 +124,57 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
                              item.label === "Daily Challenge" ? "Tägliche Herausforderung" :
                              item.label === "Flashcards" ? "Flashcards" :
                              item.label === "Erfolge" ? "Erfolge" : item.label;
+
+          // Definiere Farben für jedes Icon
+          const getIconColors = (route: string, isActive: boolean) => {
+            const colors: { [key: string]: { active: string; inactive: string } } = {
+              "/ai-chat": {
+                active: "bg-purple-100 text-purple-700",
+                inactive: "text-purple-600 hover:bg-purple-50 hover:text-purple-700"
+              },
+              "/book-reader": {
+                active: "bg-blue-100 text-blue-700", 
+                inactive: "text-blue-600 hover:bg-blue-50 hover:text-blue-700"
+              },
+              "/video-trainer": {
+                active: "bg-green-100 text-green-700",
+                inactive: "text-green-600 hover:bg-green-50 hover:text-green-700"
+              },
+              "/flashcards": {
+                active: "bg-indigo-100 text-indigo-700",
+                inactive: "text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700"
+              },
+              "/alphabet-trainer": {
+                active: "bg-orange-100 text-orange-700",
+                inactive: "text-orange-600 hover:bg-orange-50 hover:text-orange-700"
+              },
+              "/daily-challenge": {
+                active: "bg-teal-100 text-teal-700",
+                inactive: "text-teal-600 hover:bg-teal-50 hover:text-teal-700"
+              },
+              "/gamification": {
+                active: "bg-yellow-100 text-yellow-700",
+                inactive: "text-yellow-600 hover:bg-yellow-50 hover:text-yellow-700"
+              }
+            };
+            
+            return isActive 
+              ? colors[route]?.active || "bg-gray-100 text-gray-700"
+              : colors[route]?.inactive || "text-gray-600 hover:bg-gray-100";
+          };
           
           return (
             <Link key={item.route} href={item.route}>
               <div
                 onClick={onLinkClick}
-                className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer ${
-                  isActive(item.route)
-                    ? `${
-                        item.route === "/ai-chat" ? "bg-purple-100 text-purple-700" :
-                        item.route === "/book-reader" ? "bg-blue-100 text-blue-700" :
-                        item.route === "/video-trainer" ? "bg-green-100 text-green-700" :
-                        item.route === "/flashcards" ? "bg-purple-100 text-purple-700" :
-                        item.route === "/alphabet-trainer" ? "bg-orange-100 text-orange-700" :
-                        item.route === "/daily-challenge" ? "bg-blue-100 text-blue-700" :
-                        "bg-orange-100 text-orange-700"
-                      }`
-                    : "text-gray-700 hover:bg-gray-100"
+                className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 cursor-pointer transform hover:scale-105 ${
+                  getIconColors(item.route, isActive(item.route))
                 }`}
               >
-                <Icon size={18} />
+                <Icon 
+                  size={20} 
+                  className="drop-shadow-sm"
+                />
                 <span className="font-medium">{germanLabel}</span>
               </div>
             </Link>
@@ -155,13 +186,13 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
           <Link href="/admin-panel">
             <div
               onClick={onLinkClick}
-              className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer ${
+              className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 cursor-pointer transform hover:scale-105 ${
                 isActive("/admin-panel")
-                  ? "bg-gray-100 text-gray-700"
-                  : "text-gray-700 hover:bg-gray-100"
+                  ? "bg-red-100 text-red-700"
+                  : "text-red-600 hover:bg-red-50 hover:text-red-700"
               }`}
             >
-              <Settings size={18} />
+              <Settings size={20} className="drop-shadow-sm" />
               <span className="font-medium">Admin</span>
             </div>
           </Link>
@@ -171,13 +202,13 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
         <Link href="/weekly-plan">
           <div
             onClick={onLinkClick}
-            className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer ${
+            className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 cursor-pointer transform hover:scale-105 ${
               isActive("/weekly-plan")
-                ? "bg-gray-100 text-gray-700"
-                : "text-gray-700 hover:bg-gray-100"
+                ? "bg-pink-100 text-pink-700"
+                : "text-pink-600 hover:bg-pink-50 hover:text-pink-700"
             }`}
           >
-            <FileText size={18} />
+            <FileText size={20} className="drop-shadow-sm" />
             <span className="font-medium">{strings.weeklyPlan}</span>
           </div>
         </Link>
