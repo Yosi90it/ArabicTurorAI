@@ -63,6 +63,12 @@ function normalizeArabic(text: string): string {
 
 export async function searchWeaviateVocabulary(arabicWord: string): Promise<string> {
   try {
+    // Skip translation for non-Arabic words (English, numbers, etc.)
+    if (!/[\u0600-\u06FF]/.test(arabicWord)) {
+      console.log('Skipping non-Arabic word:', arabicWord);
+      return 'Translation not found';
+    }
+    
     const normalizedWord = normalizeArabic(arabicWord);
     console.log('Searching for:', arabicWord, '→ normalized:', normalizedWord);
     

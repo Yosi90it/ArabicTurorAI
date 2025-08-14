@@ -365,7 +365,7 @@ export default function BookReader() {
                   {selectedBook.title.includes("كامل مع الصور الأصلية") ? (
                     <div className="prose prose-lg max-w-none">
                       <div className="bg-gradient-to-br from-amber-50 to-orange-50 p-6 rounded-2xl border border-amber-200 min-h-[500px]">
-                        <QiratuRashidaPages />
+                        <QiratuRashidaPages interlinearEnabled={interlinearEnabled} />
                       </div>
                     </div>
                   ) : (

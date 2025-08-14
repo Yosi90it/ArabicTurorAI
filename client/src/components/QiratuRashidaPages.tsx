@@ -2,7 +2,9 @@ import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ClickableText from "./ClickableText";
+import InterlinearText from "./InterlinearText";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTashkeel } from "@/contexts/TashkeelContext";
 import { useQuery } from "@tanstack/react-query";
 
 interface PageData {
@@ -14,8 +16,13 @@ interface PageData {
   }>;
 }
 
-export default function QiratuRashidaPages() {
+interface QiratuRashidaPagesProps {
+  interlinearEnabled?: boolean;
+}
+
+export default function QiratuRashidaPages({ interlinearEnabled = false }: QiratuRashidaPagesProps) {
   const { strings } = useLanguage();
+  const { tashkeelEnabled } = useTashkeel();
   const [currentPage, setCurrentPage] = useState(0);
 
   // API-Aufruf für dynamische Seiten aus HTML-Datei
@@ -38,15 +45,27 @@ export default function QiratuRashidaPages() {
   // Render paragraph with clickable words - simplified approach
   const renderParagraph = (words: string[], maxWordsPerLine: number, pageNum: number, paragraphIndex: number) => {
     // Create full text string for this paragraph
-    const fullText = words.join(' ');
+    let fullText = words.join(' ');
+    
+    // Apply tashkeel toggle
+    if (!tashkeelEnabled) {
+      fullText = fullText.replace(/[\u064B-\u065F\u0670\u0640]/g, '');
+    }
     
     return (
       <div className="space-y-3 arabic-container">
         <div className="text-right arabic-text" style={{ direction: 'rtl', textAlign: 'right' }}>
-          <ClickableText
-            text={fullText}
-            className="text-lg leading-relaxed"
-          />
+          {interlinearEnabled ? (
+            <InterlinearText
+              text={fullText}
+              className="text-lg leading-relaxed"
+            />
+          ) : (
+            <ClickableText
+              text={fullText}
+              className="text-lg leading-relaxed"
+            />
+          )}
         </div>
       </div>
     );
