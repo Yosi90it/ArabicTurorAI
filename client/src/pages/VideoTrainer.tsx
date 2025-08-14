@@ -328,7 +328,7 @@ export default function VideoTrainer() {
                             <div className="text-right space-y-2">
                               {(() => {
                                 const arabicWords = formatText(segment.arabic).split(' ');
-                                const germanWords = segment.german.split(' ');
+                                const germanWords = (segment.german || '').split(' ');
                                 const maxWords = Math.max(arabicWords.length, germanWords.length);
                                 
                                 return Array.from({ length: maxWords }, (_, wordIndex) => {
@@ -372,7 +372,7 @@ export default function VideoTrainer() {
                         )}
                         
                         {/* German translation directly below - only show if sentence translation is enabled */}
-                        {sentenceTranslationEnabled && (
+                        {sentenceTranslationEnabled && segment.german && (
                           <div className={`text-sm leading-relaxed text-left transition-all duration-300 ease-in-out ${
                             index === currentSegmentIndex
                               ? 'font-medium text-blue-600 dark:text-blue-400'
