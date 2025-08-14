@@ -7,6 +7,7 @@ import { getWordInfo } from "@/data/arabicDictionary";
 import { useFlashcards } from "@/contexts/FlashcardContext";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTashkeel } from "@/contexts/TashkeelContext";
 
 // Fast Supabase-only translation function
 async function translateFast(word: string): Promise<{word: string, translation: string, grammar: string, examples: string[], pronunciation: string, context?: string, source?: string}> {
@@ -55,6 +56,12 @@ export default function ClickableText({ text, context, className = "" }: Clickab
   const { addFlashcard } = useFlashcards();
   const { toast } = useToast();
   const { strings } = useLanguage();
+  const { tashkeelEnabled } = useTashkeel();
+
+  // Function to remove tashkeel marks
+  const removeTashkeel = (text: string): string => {
+    return text.replace(/[\u064B-\u065F\u0670\u0640]/g, '');
+  };
 
   const handleWordClick = async (word: string, event: React.MouseEvent, context?: string) => {
     event.preventDefault();
@@ -75,8 +82,8 @@ export default function ClickableText({ text, context, className = "" }: Clickab
           x: rect.left + rect.width / 2,
           y: rect.top
         },
-        examples: localWord.examples || [],
-        pronunciation: localWord.pronunciation || ""
+        examples: [],
+        pronunciation: ""
       });
       console.log('Used local dictionary for:', word);
     } else {
@@ -163,7 +170,7 @@ export default function ClickableText({ text, context, className = "" }: Clickab
                     handleWordClick(cleanWord, e, context);
                   }}
                 >
-                  {part}
+                  {tashkeelEnabled ? part : removeTashkeel(part)}
                 </span>
                 <Button
                   variant="ghost"
