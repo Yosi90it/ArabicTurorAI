@@ -279,10 +279,7 @@ export default function BookReader() {
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  <BookOpen className="w-5 h-5" />
-                  {selectedBook?.title || "Select a Book"}
-                </CardTitle>
+                <div></div>
                 <div className="flex items-center gap-2">
                   {selectedBook && totalPages > 1 && (
                     <div className="flex items-center gap-1">
