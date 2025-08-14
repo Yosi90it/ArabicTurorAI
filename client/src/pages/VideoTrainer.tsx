@@ -216,7 +216,7 @@ export default function VideoTrainer() {
   const progressPercentage = (completedSegments.size / segments.length) * 100;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8">
+    <div className="min-h-screen bg-white py-8">
 
       <div className="container mx-auto px-4">
         <div className="max-w-7xl mx-auto">
