@@ -323,20 +323,41 @@ export default function VideoTrainer() {
                       >
                         {/* Arabic text */}
                         {wordByWordEnabled ? (
-                          <div className="space-y-2">
-                            <div className="text-lg leading-relaxed font-arabic text-right">
-                              {formatText(segment.arabic).split(' ').map((word, wordIndex) => (
-                                <span key={wordIndex} className="inline-block mx-1">
-                                  <ClickableText 
-                                    text={word}
-                                    className={`transition-all duration-300 ease-in-out ${
-                                      index === currentSegmentIndex
-                                        ? 'font-bold text-green-600 dark:text-green-400'
-                                        : 'font-normal text-gray-700 dark:text-gray-300'
-                                    }`}
-                                  />
-                                </span>
-                              ))}
+                          <div className="space-y-3">
+                            {/* Word-by-word display with translations */}
+                            <div className="text-right space-y-2">
+                              {(() => {
+                                const arabicWords = formatText(segment.arabic).split(' ');
+                                const germanWords = segment.german.split(' ');
+                                const maxWords = Math.max(arabicWords.length, germanWords.length);
+                                
+                                return Array.from({ length: maxWords }, (_, wordIndex) => {
+                                  const arabicWord = arabicWords[wordIndex] || '';
+                                  const germanWord = germanWords[wordIndex] || '';
+                                  
+                                  return (
+                                    <div key={wordIndex} className="inline-block mx-2 mb-2 text-center">
+                                      <div className="mb-1">
+                                        <ClickableText 
+                                          text={arabicWord}
+                                          className={`text-lg font-arabic transition-all duration-300 ease-in-out ${
+                                            index === currentSegmentIndex
+                                              ? 'font-bold text-green-600 dark:text-green-400'
+                                              : 'font-normal text-gray-700 dark:text-gray-300'
+                                          }`}
+                                        />
+                                      </div>
+                                      <div className={`text-xs px-1 py-0.5 rounded bg-orange-50 dark:bg-orange-900/20 ${
+                                        index === currentSegmentIndex
+                                          ? 'text-orange-700 dark:text-orange-300'
+                                          : 'text-orange-600 dark:text-orange-400'
+                                      }`}>
+                                        {germanWord}
+                                      </div>
+                                    </div>
+                                  );
+                                });
+                              })()}
                             </div>
                           </div>
                         ) : (
