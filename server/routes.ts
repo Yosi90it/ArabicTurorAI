@@ -189,7 +189,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // OpenAI Story Generation endpoint
+  // Enhanced word analysis with OpenAI grammar detection
   app.post("/api/weaviate/translate", async (req: Request, res: Response) => {
     try {
       const { word } = req.body;
@@ -201,10 +201,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { searchWeaviateVocabulary } = await import("./weaviate.js");
       const translation = await searchWeaviateVocabulary(word);
       
+      let grammar = "noun"; // Default
+      
+      // Use OpenAI to determine word type if available and word is Arabic
+      if (process.env.OPENAI_API_KEY && /[\u0600-\u06FF]/.test(word)) {
+        try {
+          const OpenAI = (await import("openai")).default;
+          const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+          
+          const completion = await openai.chat.completions.create({
+            model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+            messages: [
+              {
+                role: "system",
+                content: "Du bist ein arabischer Grammatikexperte. Analysiere das gegebene arabische Wort und bestimme seine Wortart. Antworte nur mit einem Wort: 'verb', 'noun', 'adjective', 'adverb', 'preposition', 'pronoun', oder 'particle'."
+              },
+              {
+                role: "user",
+                content: `Analysiere dieses arabische Wort: ${word}`
+              }
+            ],
+            temperature: 0.1,
+            max_tokens: 10
+          });
+
+          const grammarType = completion.choices[0].message.content?.trim().toLowerCase();
+          if (grammarType && ['verb', 'noun', 'adjective', 'adverb', 'preposition', 'pronoun', 'particle'].includes(grammarType)) {
+            grammar = grammarType;
+            console.log(`OpenAI grammar analysis: ${word} → ${grammar}`);
+          }
+        } catch (aiError) {
+          console.log('OpenAI grammar analysis failed, using default:', aiError);
+        }
+      }
+      
       res.json({ 
         word, 
         translation,
-        grammar: "noun", // Default since Weaviate only has translation
+        grammar,
         examples: [],
         pronunciation: ""
       });

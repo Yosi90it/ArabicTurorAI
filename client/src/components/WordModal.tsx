@@ -41,24 +41,22 @@ export default function WordModal({
     setShowConjugationModal(true);
   };
 
-  // Enhanced verb detection using comprehensive patterns and common verb database
-  const isLikelyVerb = grammar.includes('verb') || grammar.includes('فعل') || 
-    isCommonVerb(word) || 
-    (word.length >= 3 && (
-      // Common prefixes for conjugated verbs
-      word.startsWith('أ') || word.startsWith('ي') || word.startsWith('ت') || 
-      word.startsWith('ن') || word.startsWith('س') || word.startsWith('ل') ||
-      // Common verb patterns (3-letter roots)
-      /^[اأإيتنسل]?[بتثجحخدذرزسشصضطظعغفقكلمنهوي][ابتثجحخدذرزسشصضطظعغفقكلمنهوي][ابتثجحخدذرزسشصضطظعغفقكلمنهوي]/.test(word) ||
-      // Common 4-letter verb patterns
-      /^[اأإيتنسل]?[بتثجحخدذرزسشصضطظعغفقكلمنهوي][ابتثجحخدذرزسشصضطظعغفقكلمنهوي][ابتثجحخدذرزسشصضطظعغفقكلمنهوي][ابتثجحخدذرزسشصضطظعغفقكلمنهوي]/.test(word) ||
-      // Verb with و prefix (and)
-      (word.startsWith('و') && word.length > 3) ||
-      // Any word ending with verb suffixes
-      word.endsWith('وا') || word.endsWith('تم') || word.endsWith('تن') ||
-      word.endsWith('ني') || word.endsWith('ها') || word.endsWith('هم') ||
-      word.endsWith('هن') || word.endsWith('كم') || word.endsWith('كن')
-    ));
+  // Verb detection now relies primarily on OpenAI grammar analysis
+  // Fallback to pattern detection if grammar info is not available
+  const isLikelyVerb = grammar === 'verb' || grammar.includes('فعل') || 
+    (grammar === 'noun' ? false : // Trust OpenAI if it says noun
+     isCommonVerb(word) || 
+     (word.length >= 3 && (
+       // Common prefixes for conjugated verbs
+       word.startsWith('أ') || word.startsWith('ي') || word.startsWith('ت') || 
+       word.startsWith('ن') || word.startsWith('س') || word.startsWith('ل') ||
+       // Verb with و prefix (and)
+       (word.startsWith('و') && word.length > 3) ||
+       // Any word ending with verb suffixes
+       word.endsWith('وا') || word.endsWith('تم') || word.endsWith('تن') ||
+       word.endsWith('ني') || word.endsWith('ها') || word.endsWith('هم') ||
+       word.endsWith('هن') || word.endsWith('كم') || word.endsWith('كن')
+     )));
 
   return (
     <>
