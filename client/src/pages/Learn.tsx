@@ -125,7 +125,7 @@ export default function Learn() {
         {/* Statistics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           {/* Learned Words */}
-          <Card className="bg-white border border-gray-200 shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <Card className="bg-gradient-to-br from-green-50 to-green-100 border border-green-200 shadow-lg hover:shadow-xl transition-shadow duration-300">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <h4 className="text-gray-700 font-semibold">Gelernte Wörter</h4>
@@ -139,7 +139,7 @@ export default function Learn() {
           </Card>
 
           {/* Collected Phrases */}
-          <Card className="bg-white border border-gray-200 shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 shadow-lg hover:shadow-xl transition-shadow duration-300">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <h4 className="text-gray-700 font-semibold">Gesammelte Phrasen</h4>
@@ -153,7 +153,7 @@ export default function Learn() {
           </Card>
 
           {/* Books Read */}
-          <Card className="bg-white border border-gray-200 shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border border-orange-200 shadow-lg hover:shadow-xl transition-shadow duration-300">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <h4 className="text-gray-700 font-semibold">Gelesene Bücher</h4>
@@ -167,7 +167,7 @@ export default function Learn() {
           </Card>
 
           {/* Flashcards Wiederholung */}
-          <Card className="bg-white border border-gray-200 shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 shadow-lg hover:shadow-xl transition-shadow duration-300">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <h4 className="text-gray-700 font-semibold">Flashcards Wiederholung</h4>
