@@ -18,13 +18,16 @@ import {
   Target,
   Maximize,
   Minimize,
-  Monitor
+  Monitor,
+  ToggleLeft,
+  ToggleRight
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useSimpleGamification } from "@/contexts/SimpleGamificationContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { listeningVideoData, type VideoSegment } from "@/data/listeningVideo";
 import ClickableText from "@/components/ClickableText";
+import { useTashkeel } from "@/contexts/TashkeelContext";
 
 export default function VideoTrainer() {
   const [currentSegmentIndex, setCurrentSegmentIndex] = useState(0);
@@ -41,6 +44,7 @@ export default function VideoTrainer() {
   const { toast } = useToast();
   const { updateProgress } = useSimpleGamification();
   const { strings, lang } = useLanguage();
+  const { tashkeelEnabled, toggleTashkeel } = useTashkeel();
 
   const segments = listeningVideoData.segments;
   const currentSegment = segments[currentSegmentIndex];
@@ -212,19 +216,7 @@ export default function VideoTrainer() {
   const progressPercentage = (completedSegments.size / segments.length) * 100;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-6">
-      {/* Modern Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-4 mb-4">
-          <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center">
-            <Monitor className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Videos</h1>
-            <p className="text-gray-600">Verstehen Sie Arabisch durch authentische Videoinhalte</p>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8">
 
       <div className="container mx-auto px-4">
         <div className="max-w-7xl mx-auto">
@@ -232,7 +224,7 @@ export default function VideoTrainer() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Video Player */}
-            <Card className="overflow-hidden border-0 shadow-sm bg-white rounded-xl">
+            <Card className="overflow-hidden">
               <CardContent className="p-0">
                 <div className="relative aspect-video bg-black">
                   <div 
@@ -254,7 +246,27 @@ export default function VideoTrainer() {
             </Card>
 
             {/* Transcript */}
-            <Card className="border-0 shadow-sm bg-white rounded-xl">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg">Transcript</CardTitle>
+                  {/* Tashkeel Toggle */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-gray-700">Tashkeel</span>
+                    <button
+                      onClick={toggleTashkeel}
+                      className="flex items-center"
+                      title="Tashkeel anzeigen/ausblenden"
+                    >
+                      {tashkeelEnabled ? (
+                        <ToggleRight className="w-5 h-5 text-purple-600" />
+                      ) : (
+                        <ToggleLeft className="w-5 h-5 text-gray-400" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </CardHeader>
               <CardContent>
                 <div 
                   ref={transcriptRef}
@@ -274,7 +286,7 @@ export default function VideoTrainer() {
                         onClick={() => jumpToSegment(index)}
                       >
                         <ClickableText 
-                          text={segment.arabic}
+                          text={tashkeelEnabled ? segment.arabic : segment.arabic.replace(/[\u064B-\u065F\u0670\u0640]/g, '')}
                           className={`text-lg leading-relaxed font-arabic transition-all duration-300 ease-in-out ${
                             index === currentSegmentIndex
                               ? 'font-bold text-blue-600 dark:text-blue-400'

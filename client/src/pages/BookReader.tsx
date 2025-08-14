@@ -135,7 +135,7 @@ export default function BookReader() {
   }));
   const { addFlashcard } = useFlashcards();
   const { toast } = useToast();
-  const { tashkeelEnabled } = useTashkeel();
+  const { tashkeelEnabled, toggleTashkeel } = useTashkeel();
   const { updateProgress } = useSimpleGamification();
   const { strings } = useLanguage();
   const [interlinearEnabled, setInterlinearEnabled] = useState(false);
@@ -260,22 +260,9 @@ export default function BookReader() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-6">
-      {/* Modern Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-4 mb-4">
-          <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center">
-            <BookOpen className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Bücher</h1>
-            <p className="text-gray-600">{strings.exploreBooks}</p>
-          </div>
-        </div>
-      </div>
-
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8">
       {/* Book Library - Above the content */}
-      <Card className="mb-6 border-0 shadow-sm bg-white rounded-xl">
+      <Card className="mb-6">
         <CardHeader>
           <CardTitle className="text-base">{strings.myLibrary}</CardTitle>
         </CardHeader>
@@ -293,7 +280,7 @@ export default function BookReader() {
 
       {/* Reading Area */}
       <div className="w-full">
-          <Card className="border-0 shadow-sm bg-white rounded-xl">
+          <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
@@ -347,6 +334,22 @@ export default function BookReader() {
                         <Volume2 className="w-4 h-4 mr-2" />
                         Listen
                       </Button>
+                      
+                      {/* Tashkeel Toggle */}
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-gray-700">Tashkeel</span>
+                        <button
+                          onClick={toggleTashkeel}
+                          className="flex items-center"
+                          title="Tashkeel anzeigen/ausblenden"
+                        >
+                          {tashkeelEnabled ? (
+                            <ToggleRight className="w-5 h-5 text-purple-600" />
+                          ) : (
+                            <ToggleLeft className="w-5 h-5 text-gray-400" />
+                          )}
+                        </button>
+                      </div>
                       
                       {/* Interlinear Toggle */}
                       <div className="flex items-center gap-2">

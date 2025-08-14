@@ -14,11 +14,14 @@ import {
   RotateCcw,
   BookOpen,
   Zap,
-  Speaker
+  Speaker,
+  ToggleLeft,
+  ToggleRight
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useSimpleGamification } from "@/contexts/SimpleGamificationContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTashkeel } from "@/contexts/TashkeelContext";
 import { arabicAlphabet, vowelMarks, longVowels, practiceWords, type ArabicLetter, type VowelMark } from "@/data/arabicAlphabet";
 
 type LearningPhase = 'letters' | 'vowels' | 'extensions' | 'words3' | 'words4' | 'words5';
@@ -39,6 +42,7 @@ export default function AlphabetTrainer() {
   const { toast } = useToast();
   const { updateProgress } = useSimpleGamification();
   const { strings } = useLanguage();
+  const { tashkeelEnabled, toggleTashkeel } = useTashkeel();
 
   const currentLetter = arabicAlphabet[currentIndex];
   const currentVowelMark = vowelMarks[currentVowel];
@@ -215,29 +219,34 @@ export default function AlphabetTrainer() {
   const content = getCurrentContent();
 
   return (
-    <div className="min-h-screen bg-gray-50 py-6">
-      {/* Modern Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-4 mb-4">
-          <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center">
-            <BookOpen className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Alphabet</h1>
-            <p className="text-gray-600">Lernen Sie das arabische Alphabet systematisch in strukturierten Phasen</p>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 py-8">
 
       <div className="max-w-6xl mx-auto px-6 space-y-6">
 
       {/* Phase Selection */}
-      <Card className="border-0 shadow-sm bg-white rounded-xl">
+      <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BookOpen className="w-5 h-5" />
-            Lernphasen
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Lernphasen
+            </CardTitle>
+            {/* Tashkeel Toggle */}
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-gray-700">Tashkeel</span>
+              <button
+                onClick={toggleTashkeel}
+                className="flex items-center"
+                title="Tashkeel anzeigen/ausblenden"
+              >
+                {tashkeelEnabled ? (
+                  <ToggleRight className="w-5 h-5 text-purple-600" />
+                ) : (
+                  <ToggleLeft className="w-5 h-5 text-gray-400" />
+                )}
+              </button>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -269,7 +278,7 @@ export default function AlphabetTrainer() {
       {!showQuiz ? (
         <>
           {/* Learning Mode */}
-          <Card className="mx-auto max-w-3xl border-0 shadow-sm bg-white rounded-xl">
+          <Card className="mx-auto max-w-3xl">
             <CardHeader className="text-center">
               <CardTitle className="flex items-center justify-center gap-2">
                 <span>{getPhaseTitle(currentPhase)}</span>
@@ -285,7 +294,7 @@ export default function AlphabetTrainer() {
                   onClick={() => playAudio(content.arabic)}
                   dir="rtl"
                 >
-                  {content.arabic}
+                  {tashkeelEnabled ? content.arabic : content.arabic.replace(/[\u064B-\u065F\u0670\u0640]/g, '')}
                 </div>
                 <div className="space-y-2">
                   <h3 className="text-3xl font-semibold">{content.name}</h3>
@@ -311,7 +320,7 @@ export default function AlphabetTrainer() {
                         }}
                       >
                         <div className="text-4xl font-arabic mb-2" dir="rtl">
-                          {currentLetter[form]}
+                          {tashkeelEnabled ? currentLetter[form] : currentLetter[form].replace(/[\u064B-\u065F\u0670\u0640]/g, '')}
                         </div>
                         <div className="text-sm font-medium">{getFormName(form)}</div>
                       </div>
@@ -337,7 +346,7 @@ export default function AlphabetTrainer() {
                         }}
                       >
                         <div className="text-4xl font-arabic mb-2" dir="rtl">
-                          {currentLetter.isolated}{vowel.mark}
+                          {tashkeelEnabled ? `${currentLetter.isolated}${vowel.mark}` : currentLetter.isolated}
                         </div>
                         <div className="text-sm font-medium">{vowel.name}</div>
                         <div className="text-xs text-gray-600">/{vowel.pronunciation}/</div>
@@ -420,7 +429,7 @@ export default function AlphabetTrainer() {
                   onClick={() => playAudio(content.arabic)}
                   dir="rtl"
                 >
-                  {content.arabic}
+                  {tashkeelEnabled ? content.arabic : content.arabic.replace(/[\u064B-\u065F\u0670\u0640]/g, '')}
                 </div>
                 <p className="text-lg text-gray-600 mb-4">
                   Wie wird das ausgesprochen?

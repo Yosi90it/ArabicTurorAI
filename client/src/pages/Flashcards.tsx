@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RotateCcw, Volume2, Check, X, BookOpen, Trophy, Star, Target, Sparkles, RefreshCw, Loader2, Download, Play, Pause } from "lucide-react";
+import { RotateCcw, Volume2, Check, X, BookOpen, Trophy, Star, Target, Sparkles, RefreshCw, Loader2, Download, Play, Pause, ToggleLeft, ToggleRight } from "lucide-react";
 import { useFlashcards } from "@/contexts/FlashcardContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTashkeel } from "@/contexts/TashkeelContext";
@@ -42,7 +42,7 @@ interface Story {
 export default function Flashcards() {
   const { userFlashcards } = useFlashcards();
   const { strings } = useLanguage();
-  const { tashkeelEnabled } = useTashkeel();
+  const { tashkeelEnabled, toggleTashkeel } = useTashkeel();
   const { wordByWordEnabled } = useWordByWord();
   const { toast } = useToast();
   const { updateProgress } = useSimpleGamification();
@@ -417,23 +417,41 @@ Antworte im JSON-Format:
 
           {/* Study Mode Selector */}
           <div className="mb-6">
-            <div className="flex gap-2">
-              <Button 
-                variant={studyMode === 'review' ? 'default' : 'outline'}
-                onClick={() => setStudyMode('review')}
-              >
+            <div className="flex gap-2 justify-between items-center">
+              <div className="flex gap-2">
+                <Button 
+                  variant={studyMode === 'review' ? 'default' : 'outline'}
+                  onClick={() => setStudyMode('review')}
+                >
 {strings.reviewMode}
-              </Button>
-              <Button 
-                variant={studyMode === 'test' ? 'default' : 'outline'}
-                onClick={() => setStudyMode('test')}
-              >
+                </Button>
+                <Button 
+                  variant={studyMode === 'test' ? 'default' : 'outline'}
+                  onClick={() => setStudyMode('test')}
+                >
 {strings.testMode}
-              </Button>
-              <Button variant="outline" onClick={resetProgress}>
-                <RotateCcw className="w-4 h-4 mr-2" />
+                </Button>
+                <Button variant="outline" onClick={resetProgress}>
+                  <RotateCcw className="w-4 h-4 mr-2" />
 {strings.restart}
-              </Button>
+                </Button>
+              </div>
+              
+              {/* Tashkeel Toggle */}
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-gray-700">Tashkeel</span>
+                <button
+                  onClick={toggleTashkeel}
+                  className="flex items-center"
+                  title="Tashkeel anzeigen/ausblenden"
+                >
+                  {tashkeelEnabled ? (
+                    <ToggleRight className="w-5 h-5 text-purple-600" />
+                  ) : (
+                    <ToggleLeft className="w-5 h-5 text-gray-400" />
+                  )}
+                </button>
+              </div>
             </div>
           </div>
 
@@ -453,13 +471,13 @@ Antworte im JSON-Format:
           </div>
 
           {/* Flashcard */}
-          <Card className="mb-6 min-h-[300px] cursor-pointer border-0 shadow-sm bg-white rounded-xl" onClick={() => setShowAnswer(!showAnswer)}>
+          <Card className="mb-6 min-h-[300px] cursor-pointer" onClick={() => setShowAnswer(!showAnswer)}>
             <CardContent className="flex flex-col items-center justify-center h-full p-8">
               {filteredFlashcards.length > 0 ? (
                 !showAnswer ? (
                   <>
                     <div className="text-4xl font-bold mb-4 text-center" dir="rtl">
-                      {currentCard.arabic}
+                      {tashkeelEnabled ? currentCard.arabic : currentCard.arabic.replace(/[\u064B-\u065F\u0670\u0640]/g, '')}
                     </div>
                     <Button 
                       variant="ghost" 
@@ -476,7 +494,7 @@ Antworte im JSON-Format:
                 ) : (
                   <>
                     <div className="text-4xl font-bold mb-4 text-center" dir="rtl">
-                      {currentCard.arabic}
+                      {tashkeelEnabled ? currentCard.arabic : currentCard.arabic.replace(/[\u064B-\u065F\u0670\u0640]/g, '')}
                     </div>
                     <div className="text-2xl mb-4 text-center">
                       {currentCard.translation}
@@ -486,7 +504,7 @@ Antworte im JSON-Format:
                     </Badge>
                     {currentCard.sentence && (
                       <div className="text-sm text-gray-600 text-center mb-4" dir="rtl">
-                        {currentCard.sentence}
+                        {tashkeelEnabled ? currentCard.sentence : currentCard.sentence.replace(/[\u064B-\u065F\u0670\u0640]/g, '')}
                       </div>
                     )}
                     {currentCard.conjugations && currentCard.conjugations.length > 0 && (
@@ -502,7 +520,7 @@ Antworte im JSON-Format:
                                 <div className="text-gray-500">{conj.tense}</div>
                               </div>
                               <div className="text-right">
-                                <div className="font-medium" dir="rtl">{conj.arabic}</div>
+                                <div className="font-medium" dir="rtl">{tashkeelEnabled ? conj.arabic : conj.arabic.replace(/[\u064B-\u065F\u0670\u0640]/g, '')}</div>
                                 <div className="text-gray-600">{conj.german}</div>
                               </div>
                             </div>

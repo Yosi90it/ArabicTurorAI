@@ -4,7 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTashkeel } from "@/contexts/TashkeelContext";
 import { useWordByWord } from "@/contexts/WordByWordContext";
-import { Bot, User, Volume2, Loader2, Plus, BookOpen, Target, CheckCircle } from "lucide-react";
+import { Bot, User, Volume2, Loader2, Plus, BookOpen, Target, CheckCircle, ToggleLeft, ToggleRight, Send } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import VoiceChatComponent from "@/components/VoiceChatComponent";
 import { Badge } from "@/components/ui/badge";
 import { useFlashcards } from "@/contexts/FlashcardContext";
@@ -29,7 +30,7 @@ const openai = new OpenAI({
 });
 
 export default function AiChat() {
-  const { tashkeelEnabled } = useTashkeel();
+  const { tashkeelEnabled, toggleTashkeel } = useTashkeel();
   const { wordByWordEnabled } = useWordByWord();
   const { addFlashcard, userFlashcards, getWordsFromLastDays, getWordsByDateGroup } = useFlashcards();
   const { toast } = useToast();
@@ -467,17 +468,36 @@ export default function AiChat() {
         </div>
       </div>
 
-      <Tabs defaultValue="general" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 bg-white rounded-xl p-1 shadow-sm border">
-          <TabsTrigger value="general" className="flex items-center gap-2 data-[state=active]:bg-orange-500 data-[state=active]:text-white rounded-lg">
-            <Bot className="w-4 h-4" />
-            Allgemeiner Chat
-          </TabsTrigger>
-          <TabsTrigger value="practice" className="flex items-center gap-2 data-[state=active]:bg-orange-500 data-[state=active]:text-white rounded-lg">
-            <Target className="w-4 h-4" />
-            Wörter üben
-          </TabsTrigger>
-        </TabsList>
+      <div className="mb-4 flex justify-between items-center">
+        <Tabs defaultValue="general" className="w-full">
+          <div className="flex justify-between items-center">
+            <TabsList className="grid grid-cols-2 bg-white rounded-xl p-1 shadow-sm border">
+              <TabsTrigger value="general" className="flex items-center gap-2 data-[state=active]:bg-orange-500 data-[state=active]:text-white rounded-lg">
+                <Bot className="w-4 h-4" />
+                Allgemeiner Chat
+              </TabsTrigger>
+              <TabsTrigger value="practice" className="flex items-center gap-2 data-[state=active]:bg-orange-500 data-[state=active]:text-white rounded-lg">
+                <Target className="w-4 h-4" />
+                Wörter üben
+              </TabsTrigger>
+            </TabsList>
+            
+            {/* Tashkeel Toggle */}
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-gray-700">Tashkeel</span>
+              <button
+                onClick={toggleTashkeel}
+                className="flex items-center"
+                title="Tashkeel anzeigen/ausblenden"
+              >
+                {tashkeelEnabled ? (
+                  <ToggleRight className="w-5 h-5 text-purple-600" />
+                ) : (
+                  <ToggleLeft className="w-5 h-5 text-gray-400" />
+                )}
+              </button>
+            </div>
+          </div>
 
         {/* General Chat Tab */}
         <TabsContent value="general" className="mt-6">
@@ -751,7 +771,8 @@ export default function AiChat() {
             </CardContent>
           </Card>
         </TabsContent>
-      </Tabs>
+        </Tabs>
+      </div>
 
       {selectedWord && (
         <WordModal
