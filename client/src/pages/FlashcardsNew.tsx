@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { 
   ChevronLeft, 
   ChevronRight, 
@@ -10,7 +13,13 @@ import {
   Check, 
   Volume2,
   BookOpen,
-  Sparkles
+  Sparkles,
+  GitBranch,
+  Upload,
+  Camera,
+  Loader2,
+  X,
+  Plus
 } from "lucide-react";
 import { useFlashcards } from "@/contexts/FlashcardContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -36,7 +45,23 @@ export default function FlashcardsNew() {
   
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
-  const [activeTab, setActiveTab] = useState<'learn' | 'stories'>('learn');
+  const [activeTab, setActiveTab] = useState<'learn' | 'stories' | 'verbs' | 'handwriting'>('learn');
+  
+  // Story generator states
+  const [selectedWords, setSelectedWords] = useState<FlashcardData[]>([]);
+  const [storyDifficulty, setStoryDifficulty] = useState<'beginner' | 'intermediate' | 'advanced'>('beginner');
+  const [isGeneratingStory, setIsGeneratingStory] = useState(false);
+  const [generatedStory, setGeneratedStory] = useState<string>('');
+  
+  // Verb conjugation states
+  const [currentVerbIndex, setCurrentVerbIndex] = useState(0);
+  const [showConjugation, setShowConjugation] = useState(false);
+  
+  // Handwriting states  
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState<string>('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Static flashcard data for demo
   const staticFlashcards: FlashcardData[] = [
@@ -123,6 +148,87 @@ export default function FlashcardsNew() {
     }
   };
 
+  // Story generation handlers
+  const toggleWordSelection = (word: FlashcardData) => {
+    setSelectedWords(prev => 
+      prev.find(w => w.id === word.id)
+        ? prev.filter(w => w.id !== word.id)
+        : [...prev, word]
+    );
+  };
+
+  const generateStory = async () => {
+    if (selectedWords.length === 0) {
+      toast({
+        title: "Keine Wörter ausgewählt",
+        description: "Bitte wählen Sie mindestens ein Wort für die Geschichte aus.",
+      });
+      return;
+    }
+
+    setIsGeneratingStory(true);
+    try {
+      // Simuliere API-Aufruf für Geschichte
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      const words = selectedWords.map(w => w.arabic).join(', ');
+      setGeneratedStory(`هذه قصة جميلة تحتوي على الكلمات: ${words}. القصة تحكي عن مغامرة رائعة...`);
+    } catch (error) {
+      toast({
+        title: "Fehler",
+        description: "Geschichte konnte nicht generiert werden.",
+      });
+    } finally {
+      setIsGeneratingStory(false);
+    }
+  };
+
+  // Handwriting upload handlers
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setUploadedImage(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const analyzeHandwriting = async () => {
+    if (!uploadedImage) return;
+    
+    setIsAnalyzing(true);
+    try {
+      // Simuliere OCR/KI-Analyse
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      setAnalysisResult("Erkannter Text: 'أنا أحب اللغة العربية'\n\nKorrekturen:\n✓ Korrekte Schreibweise!\n✓ Gute Buchstabenverbindungen\n⚠ Achten Sie auf gleichmäßige Linienführung");
+    } catch (error) {
+      toast({
+        title: "Fehler", 
+        description: "Handschrift konnte nicht analysiert werden.",
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  // Verb conjugation data
+  const verbCards = allFlashcards.filter(card => card.grammar?.includes('Verb') || card.category.includes('Verb'));
+  const currentVerb = verbCards[currentVerbIndex];
+
+  const conjugationTable = {
+    'كتب': {
+      present: { 
+        'أنا': 'أكتب', 'أنت': 'تكتب', 'أنتِ': 'تكتبين',
+        'هو': 'يكتب', 'هي': 'تكتب', 'نحن': 'نكتب'
+      },
+      past: {
+        'أنا': 'كتبت', 'أنت': 'كتبت', 'أنتِ': 'كتبت', 
+        'هو': 'كتب', 'هي': 'كتبت', 'نحن': 'كتبنا'
+      }
+    }
+  };
+
   if (!currentCard) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -143,7 +249,7 @@ export default function FlashcardsNew() {
           <div className="flex bg-white rounded-xl p-1 shadow-sm border">
             <button
               onClick={() => setActiveTab('learn')}
-              className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all duration-200 ${
+              className={`flex items-center gap-2 px-4 py-3 rounded-lg transition-all duration-200 ${
                 activeTab === 'learn'
                   ? 'bg-black text-white shadow-sm'
                   : 'text-gray-600 hover:text-gray-900'
@@ -154,7 +260,7 @@ export default function FlashcardsNew() {
             </button>
             <button
               onClick={() => setActiveTab('stories')}
-              className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all duration-200 ${
+              className={`flex items-center gap-2 px-4 py-3 rounded-lg transition-all duration-200 ${
                 activeTab === 'stories'
                   ? 'bg-black text-white shadow-sm'
                   : 'text-gray-600 hover:text-gray-900'
@@ -162,6 +268,28 @@ export default function FlashcardsNew() {
             >
               <Sparkles size={18} />
               Geschichten
+            </button>
+            <button
+              onClick={() => setActiveTab('verbs')}
+              className={`flex items-center gap-2 px-4 py-3 rounded-lg transition-all duration-200 ${
+                activeTab === 'verbs'
+                  ? 'bg-black text-white shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <GitBranch size={18} />
+              Verben
+            </button>
+            <button
+              onClick={() => setActiveTab('handwriting')}
+              className={`flex items-center gap-2 px-4 py-3 rounded-lg transition-all duration-200 ${
+                activeTab === 'handwriting'
+                  ? 'bg-black text-white shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <Upload size={18} />
+              Handschrift
             </button>
           </div>
         </div>
@@ -183,8 +311,7 @@ export default function FlashcardsNew() {
                     {currentCard.category}
                   </Badge>
 
-                  {/* Bookmark Icon */}
-                  <div className="absolute top-4 right-16 w-8 h-8 bg-gray-200 rounded border-2 border-gray-300"></div>
+
 
                   {/* Main Content */}
                   <div className="text-center space-y-6">
@@ -297,10 +424,284 @@ export default function FlashcardsNew() {
         )}
 
         {activeTab === 'stories' && (
-          <div className="text-center py-16">
-            <Sparkles size={64} className="mx-auto text-gray-400 mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Geschichten</h2>
-            <p className="text-gray-600">Geschichten-Feature kommt bald!</p>
+          <div className="space-y-6">
+            {/* Word Selection */}
+            <Card>
+              <CardContent className="p-6">
+                <h3 className="text-xl font-bold mb-4">Wörter für die Geschichte auswählen</h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+                  {allFlashcards.map((word) => (
+                    <div
+                      key={word.id}
+                      className="flex items-center space-x-2 p-3 border rounded-lg hover:bg-gray-50"
+                    >
+                      <Checkbox
+                        checked={selectedWords.some(w => w.id === word.id)}
+                        onCheckedChange={() => toggleWordSelection(word)}
+                      />
+                      <div className="flex-1">
+                        <div className="font-arabic text-lg">{formatText(word.arabic)}</div>
+                        <div className="text-sm text-gray-600">{word.translation}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="flex gap-4 items-center">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Schwierigkeit</label>
+                    <select 
+                      value={storyDifficulty} 
+                      onChange={(e) => setStoryDifficulty(e.target.value as any)}
+                      className="border rounded-lg px-3 py-2"
+                    >
+                      <option value="beginner">Anfänger</option>
+                      <option value="intermediate">Fortgeschritten</option>
+                      <option value="advanced">Experte</option>
+                    </select>
+                  </div>
+                  
+                  <Button
+                    onClick={generateStory}
+                    disabled={isGeneratingStory || selectedWords.length === 0}
+                    className="bg-purple-600 hover:bg-purple-700"
+                  >
+                    {isGeneratingStory ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Generiere...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        Geschichte generieren
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Generated Story */}
+            {generatedStory && (
+              <Card>
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-bold mb-4">Generierte Geschichte</h3>
+                  <div className="bg-amber-50 p-6 rounded-lg border-l-4 border-amber-400">
+                    <p className="font-arabic text-lg text-right leading-relaxed mb-4">
+                      {formatText(generatedStory)}
+                    </p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => speakArabic(generatedStory)}
+                    >
+                      <Volume2 size={16} className="mr-2" />
+                      Vorlesen
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'verbs' && (
+          <div className="space-y-6">
+            {verbCards.length > 0 ? (
+              <>
+                {/* Verb Flashcard */}
+                <Card 
+                  className="w-full h-96 cursor-pointer transition-all duration-300 hover:shadow-lg border-2 border-blue-300 bg-gradient-to-br from-blue-50 to-indigo-50"
+                  onClick={() => setShowConjugation(!showConjugation)}
+                >
+                  <CardContent className="h-full flex flex-col items-center justify-center p-8">
+                    <Badge variant="secondary" className="absolute top-4 right-4 bg-white/80 text-gray-700">
+                      Verb
+                    </Badge>
+
+                    <div className="text-center space-y-6">
+                      {!showConjugation ? (
+                        <>
+                          <h2 className="text-6xl font-bold text-gray-900 font-arabic">
+                            {formatText(currentVerb?.arabic || 'كتب')}
+                          </h2>
+                          <p className="text-lg text-gray-500 font-medium">
+                            Klicke für Konjugationstabelle
+                          </p>
+                        </>
+                      ) : (
+                        <div className="w-full max-w-2xl">
+                          <h3 className="text-2xl font-bold mb-6">Konjugationstabelle</h3>
+                          <div className="grid grid-cols-2 gap-6">
+                            <div>
+                              <h4 className="font-bold text-lg mb-3">Präsens</h4>
+                              <div className="space-y-2">
+                                {Object.entries(conjugationTable['كتب']?.present || {}).map(([pronoun, form]) => (
+                                  <div key={pronoun} className="flex justify-between text-sm">
+                                    <span className="font-arabic">{pronoun}</span>
+                                    <span className="font-arabic">{form}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-lg mb-3">Präteritum</h4>
+                              <div className="space-y-2">
+                                {Object.entries(conjugationTable['كتب']?.past || {}).map(([pronoun, form]) => (
+                                  <div key={pronoun} className="flex justify-between text-sm">
+                                    <span className="font-arabic">{pronoun}</span>
+                                    <span className="font-arabic">{form}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Verb Navigation */}
+                <div className="flex items-center justify-between">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    onClick={() => setCurrentVerbIndex(Math.max(0, currentVerbIndex - 1))}
+                    disabled={currentVerbIndex === 0}
+                    className="w-16 h-16 rounded-lg"
+                  >
+                    <ChevronLeft size={24} />
+                  </Button>
+
+                  <div className="text-center">
+                    <span className="text-sm text-gray-600">
+                      Verb {currentVerbIndex + 1} von {verbCards.length}
+                    </span>
+                  </div>
+
+                  <Button
+                    variant="outline" 
+                    size="lg"
+                    onClick={() => setCurrentVerbIndex(Math.min(verbCards.length - 1, currentVerbIndex + 1))}
+                    disabled={currentVerbIndex === verbCards.length - 1}
+                    className="w-16 h-16 rounded-lg"
+                  >
+                    <ChevronRight size={24} />
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <div className="text-center py-16">
+                <GitBranch size={64} className="mx-auto text-gray-400 mb-4" />
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">Keine Verben verfügbar</h2>
+                <p className="text-gray-600">Fügen Sie Verben zu Ihren Flashcards hinzu.</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'handwriting' && (
+          <div className="space-y-6">
+            {/* Upload Section */}
+            <Card>
+              <CardContent className="p-6">
+                <h3 className="text-xl font-bold mb-4">Handschrift hochladen</h3>
+                <p className="text-gray-600 mb-6">
+                  Schreiben Sie arabischen Text auf Papier und laden Sie ein Foto hoch. Die KI wird Ihre Handschrift analysieren und Feedback geben.
+                </p>
+                
+                <div className="space-y-4">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                  />
+                  
+                  <div className="flex gap-4">
+                    <Button
+                      onClick={() => fileInputRef.current?.click()}
+                      variant="outline"
+                      className="flex-1"
+                    >
+                      <Upload size={20} className="mr-2" />
+                      Foto hochladen
+                    </Button>
+                    
+                    <Button
+                      onClick={() => {
+                        // Kamera-Funktionalität könnte hier implementiert werden
+                        toast({ 
+                          title: "Kamera", 
+                          description: "Kamera-Feature kommt bald!" 
+                        });
+                      }}
+                      variant="outline"
+                    >
+                      <Camera size={20} className="mr-2" />
+                      Foto aufnehmen
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Uploaded Image */}
+            {uploadedImage && (
+              <Card>
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-bold mb-4">Hochgeladenes Bild</h3>
+                  <div className="relative mb-4">
+                    <img
+                      src={uploadedImage}
+                      alt="Hochgeladene Handschrift"
+                      className="w-full max-h-96 object-contain border rounded-lg"
+                    />
+                    <Button
+                      onClick={() => {
+                        setUploadedImage(null);
+                        setAnalysisResult('');
+                      }}
+                      variant="outline"
+                      size="sm"
+                      className="absolute top-2 right-2"
+                    >
+                      <X size={16} />
+                    </Button>
+                  </div>
+                  
+                  <Button
+                    onClick={analyzeHandwriting}
+                    disabled={isAnalyzing}
+                    className="w-full"
+                  >
+                    {isAnalyzing ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Analysiere Handschrift...
+                      </>
+                    ) : (
+                      'Handschrift analysieren'
+                    )}
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Analysis Results */}
+            {analysisResult && (
+              <Card>
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-bold mb-4">Analyse-Ergebnis</h3>
+                  <div className="bg-green-50 p-6 rounded-lg border-l-4 border-green-400">
+                    <pre className="whitespace-pre-wrap text-sm">{analysisResult}</pre>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
         )}
       </div>
