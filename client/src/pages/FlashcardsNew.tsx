@@ -248,55 +248,105 @@ export default function FlashcardsNew() {
     URL.revokeObjectURL(url);
   };
 
-  // Download story as audio file (using Web Speech API)
+  // Download story as audio file (using Web Speech API with MediaRecorder)
   const downloadStoryAsAudio = async () => {
     if (!generatedStory) return;
 
     try {
-      // Create a more sophisticated audio recording
-      const utterance = new SpeechSynthesisUtterance(generatedStory);
-      utterance.lang = 'ar-SA';
-      utterance.rate = 0.7;
-      utterance.pitch = 1.0;
-
-      // For demo purposes, create a simple audio file
-      // In production, you would use a proper TTS service
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-      
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      
-      oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
-      gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-      
-      // Create a simple beep as placeholder
-      const duration = 3; // 3 seconds
-      const sampleRate = audioContext.sampleRate;
-      const buffer = audioContext.createBuffer(1, sampleRate * duration, sampleRate);
-      
-      // Create download link for the story text instead
-      const blob = new Blob([`Arabische Geschichte:\n\n${generatedStory}\n\nHinweis: Dies ist eine Textdatei. Für echte Audio-Dateien würde ein TTS-Service benötigt.`], 
-        { type: 'text/plain;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'arabische-geschichte-audio.txt';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-
       toast({
-        title: "Download gestartet",
-        description: "Die Geschichte wurde als Textdatei heruntergeladen.",
+        title: "Audio wird generiert...",
+        description: "Bitte warten Sie, während die Audiodatei erstellt wird.",
       });
+
+      // Create audio using Web Speech API and MediaRecorder
+      if ('speechSynthesis' in window && 'MediaRecorder' in window) {
+        // Create audio context for recording
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const destination = audioContext.createMediaStreamDestination();
+        
+        // Create speech synthesis
+        const utterance = new SpeechSynthesisUtterance(generatedStory);
+        utterance.lang = 'ar-SA';
+        utterance.rate = 0.7;
+        utterance.pitch = 1.0;
+        
+        // Record the speech
+        const mediaRecorder = new MediaRecorder(destination.stream);
+        const audioChunks: BlobPart[] = [];
+        
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            audioChunks.push(event.data);
+          }
+        };
+        
+        mediaRecorder.onstop = () => {
+          const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+          const url = URL.createObjectURL(audioBlob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `arabische-geschichte-${Date.now()}.wav`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+          
+          toast({
+            title: "Download erfolgreich",
+            description: "Die Audiodatei wurde heruntergeladen.",
+          });
+        };
+        
+        // Start recording and speaking
+        mediaRecorder.start();
+        
+        utterance.onend = () => {
+          setTimeout(() => {
+            mediaRecorder.stop();
+          }, 500); // Small delay to ensure audio is captured
+        };
+        
+        utterance.onerror = () => {
+          mediaRecorder.stop();
+          throw new Error('Speech synthesis failed');
+        };
+        
+        speechSynthesis.speak(utterance);
+        
+      } else {
+        // Fallback: Download as text with instructions
+        const content = `Arabische Geschichte (Audio-Version)
+        
+${generatedStory}
+
+Hinweise:
+- Diese Datei enthält den Text der Geschichte
+- Für echte Audiowiedergabe verwenden Sie den "Anhören" Button in der App
+- Browser-Kompatibilität: Speech Synthesis oder MediaRecorder nicht verfügbar
+
+Geschrieben am: ${new Date().toLocaleDateString('de-DE')}`;
+
+        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `arabische-geschichte-${Date.now()}.txt`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+
+        toast({
+          title: "Textdatei heruntergeladen",
+          description: "Audio-Aufnahme nicht unterstützt. Textversion wurde gespeichert.",
+        });
+      }
       
     } catch (error) {
+      console.error('Audio download failed:', error);
       toast({
         title: "Fehler",
-        description: "Audio-Download fehlgeschlagen.",
+        description: "Audio-Download fehlgeschlagen. Versuchen Sie es erneut.",
       });
     }
   };
@@ -605,19 +655,63 @@ export default function FlashcardsNew() {
             {generatedStory && (
               <Card>
                 <CardContent className="p-6">
-                  <h3 className="text-xl font-bold mb-4">Generierte Geschichte</h3>
-                  <div className="bg-amber-50 p-6 rounded-lg border-l-4 border-amber-400">
-                    <p className="font-arabic text-lg text-right leading-relaxed mb-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xl font-bold">Generierte Geschichte</h3>
+                    {isPlaying && (
+                      <div className="flex items-center text-blue-600">
+                        <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse mr-1"></div>
+                        <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse mr-1" style={{ animationDelay: '0.2s' }}></div>
+                        <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+                        <span className="ml-2 text-sm font-medium">Wiedergabe läuft...</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className={`p-6 rounded-lg border-l-4 ${isPlaying ? 'bg-blue-50 border-blue-400' : 'bg-amber-50 border-amber-400'} transition-colors duration-300`}>
+                    <p className="font-arabic text-lg text-right leading-relaxed mb-6">
                       {formatText(generatedStory)}
                     </p>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => speakArabic(generatedStory)}
-                    >
-                      <Volume2 size={16} className="mr-2" />
-                      Vorlesen
-                    </Button>
+                    
+                    {/* Audio Controls */}
+                    <div className="flex flex-wrap gap-3 justify-center">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={toggleAudioPlayback}
+                        className="bg-blue-50 hover:bg-blue-100 border-blue-200"
+                      >
+                        {isPlaying ? (
+                          <>
+                            <Pause size={16} className="mr-2" />
+                            Pause
+                          </>
+                        ) : (
+                          <>
+                            <Play size={16} className="mr-2" />
+                            Anhören
+                          </>
+                        )}
+                      </Button>
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={downloadStoryAsText}
+                        className="bg-green-50 hover:bg-green-100 border-green-200"
+                      >
+                        <Download size={16} className="mr-2" />
+                        Text herunterladen
+                      </Button>
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={downloadStoryAsAudio}
+                        className="bg-purple-50 hover:bg-purple-100 border-purple-200"
+                      >
+                        <Volume2 size={16} className="mr-2" />
+                        Audio herunterladen
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
