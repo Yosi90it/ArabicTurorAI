@@ -13,7 +13,7 @@ import { TrialProvider } from "@/contexts/TrialContext";
 import { SimpleGamificationProvider } from "@/contexts/SimpleGamificationContext";
 import Layout from "@/components/Layout";
 import AiChat from "@/pages/AiChat";
-import Flashcards from "@/pages/Flashcards";
+import FlashcardsNew from "@/pages/FlashcardsNew";
 import BookReader from "@/pages/BookReader";
 
 import VideoTrainer from "@/pages/VideoTrainer";
@@ -92,7 +92,7 @@ function Router() {
         <Layout>
           <Switch>
             <Route path="/ai-chat" component={AiChat} />
-            <Route path="/flashcards" component={Flashcards} />
+            <Route path="/flashcards" component={FlashcardsNew} />
             <Route path="/book-reader" component={BookReader} />
 
             <Route path="/video-trainer" component={VideoTrainer} />
