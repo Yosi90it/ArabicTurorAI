@@ -19,7 +19,10 @@ import {
   Camera,
   Loader2,
   X,
-  Plus
+  Plus,
+  Download,
+  Play,
+  Pause
 } from "lucide-react";
 import { useFlashcards } from "@/contexts/FlashcardContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -62,6 +65,10 @@ export default function FlashcardsNew() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Audio states
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
 
   // Static flashcard data for demo
   const staticFlashcards: FlashcardData[] = [
@@ -171,7 +178,11 @@ export default function FlashcardsNew() {
       // Simuliere API-Aufruf für Geschichte
       await new Promise(resolve => setTimeout(resolve, 2000));
       const words = selectedWords.map(w => w.arabic).join(', ');
-      setGeneratedStory(`هذه قصة جميلة تحتوي على الكلمات: ${words}. القصة تحكي عن مغامرة رائعة...`);
+      const story = `هذه قصة جميلة تحتوي على الكلمات: ${words}. القصة تحكي عن مغامرة رائعة في مدينة قديمة حيث التقى الأصدقاء وسافروا معًا عبر الصحراء. كان الطقس جميلًا والرحلة مليئة بالمفاجآت السعيدة.`;
+      setGeneratedStory(story);
+      
+      // Generate audio URL for the story
+      generateAudioForStory(story);
     } catch (error) {
       toast({
         title: "Fehler",
@@ -179,6 +190,114 @@ export default function FlashcardsNew() {
       });
     } finally {
       setIsGeneratingStory(false);
+    }
+  };
+
+  // Generate audio using Web Speech API
+  const generateAudioForStory = async (text: string) => {
+    try {
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'ar-SA';
+        utterance.rate = 0.7;
+        utterance.pitch = 1.0;
+        
+        // Create audio blob using MediaRecorder (simulated)
+        // In a real implementation, you would record the speech synthesis
+        // For now, we'll create a simple audio URL placeholder
+        setAudioUrl(`data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvWIcBDGH0fPTgjMGHm7A7+OZURE=`);
+      }
+    } catch (error) {
+      console.error('Audio generation failed:', error);
+    }
+  };
+
+  // Play/Pause audio
+  const toggleAudioPlayback = () => {
+    if (!generatedStory) return;
+    
+    if (isPlaying) {
+      speechSynthesis.cancel();
+      setIsPlaying(false);
+    } else {
+      const utterance = new SpeechSynthesisUtterance(generatedStory);
+      utterance.lang = 'ar-SA';
+      utterance.rate = 0.7;
+      utterance.pitch = 1.0;
+      
+      utterance.onstart = () => setIsPlaying(true);
+      utterance.onend = () => setIsPlaying(false);
+      utterance.onerror = () => setIsPlaying(false);
+      
+      speechSynthesis.speak(utterance);
+    }
+  };
+
+  // Download story as text file
+  const downloadStoryAsText = () => {
+    if (!generatedStory) return;
+    
+    const blob = new Blob([generatedStory], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'arabische-geschichte.txt';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  // Download story as audio file (using Web Speech API)
+  const downloadStoryAsAudio = async () => {
+    if (!generatedStory) return;
+
+    try {
+      // Create a more sophisticated audio recording
+      const utterance = new SpeechSynthesisUtterance(generatedStory);
+      utterance.lang = 'ar-SA';
+      utterance.rate = 0.7;
+      utterance.pitch = 1.0;
+
+      // For demo purposes, create a simple audio file
+      // In production, you would use a proper TTS service
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
+      gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+      
+      // Create a simple beep as placeholder
+      const duration = 3; // 3 seconds
+      const sampleRate = audioContext.sampleRate;
+      const buffer = audioContext.createBuffer(1, sampleRate * duration, sampleRate);
+      
+      // Create download link for the story text instead
+      const blob = new Blob([`Arabische Geschichte:\n\n${generatedStory}\n\nHinweis: Dies ist eine Textdatei. Für echte Audio-Dateien würde ein TTS-Service benötigt.`], 
+        { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'arabische-geschichte-audio.txt';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      toast({
+        title: "Download gestartet",
+        description: "Die Geschichte wurde als Textdatei heruntergeladen.",
+      });
+      
+    } catch (error) {
+      toast({
+        title: "Fehler",
+        description: "Audio-Download fehlgeschlagen.",
+      });
     }
   };
 
