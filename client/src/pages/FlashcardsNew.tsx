@@ -233,20 +233,7 @@ export default function FlashcardsNew() {
     }
   };
 
-  // Download story as text file
-  const downloadStoryAsText = () => {
-    if (!generatedStory) return;
-    
-    const blob = new Blob([generatedStory], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'arabische-geschichte.txt';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  };
+
 
   // Download story as audio file (using Web Speech API with MediaRecorder)
   const downloadStoryAsAudio = async () => {
@@ -672,7 +659,7 @@ Geschrieben am: ${new Date().toLocaleDateString('de-DE')}`;
                     </p>
                     
                     {/* Audio Controls */}
-                    <div className="flex flex-wrap gap-3 justify-center">
+                    <div className="flex gap-3 justify-center">
                       <Button
                         variant="outline"
                         size="sm"
@@ -695,20 +682,10 @@ Geschrieben am: ${new Date().toLocaleDateString('de-DE')}`;
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={downloadStoryAsText}
-                        className="bg-green-50 hover:bg-green-100 border-green-200"
-                      >
-                        <Download size={16} className="mr-2" />
-                        Text herunterladen
-                      </Button>
-                      
-                      <Button
-                        variant="outline"
-                        size="sm"
                         onClick={downloadStoryAsAudio}
                         className="bg-purple-50 hover:bg-purple-100 border-purple-200"
                       >
-                        <Volume2 size={16} className="mr-2" />
+                        <Download size={16} className="mr-2" />
                         Audio herunterladen
                       </Button>
                     </div>
