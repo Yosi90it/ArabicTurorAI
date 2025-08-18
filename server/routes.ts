@@ -7,12 +7,66 @@ import multer from 'multer';
 import OpenAI from 'openai';
 import { createClient } from '@supabase/supabase-js';
 
-// Dynamische HTML-Parser für Qiraatu al-Rashida
+// Dynamische HTML-Parser für beide Bücher
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const { parseQiratuRashidaHTML } = require('./htmlParser.js');
+const fs = require('fs');
+const path = require('path');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+
+// Parser function for Qasas al-Anbiya HTML
+function parseQasasAlAnbiyaHTML(htmlContent) {
+  const pages = [];
+  const { JSDOM } = require('jsdom');
+  const dom = new JSDOM(htmlContent);
+  const document = dom.window.document;
+  
+  const pageElements = document.querySelectorAll('.page[data-page]');
+  console.log(`Found ${pageElements.length} page markers`);
+  
+  pageElements.forEach((pageElement) => {
+    const pageNumber = parseInt(pageElement.getAttribute('data-page'));
+    const titleElement = pageElement.querySelector('.page-title, h1');
+    const title = titleElement ? titleElement.textContent.trim() : `الصفحة ${pageNumber}`;
+    
+    const paragraphElements = pageElement.querySelectorAll('.paragraph');
+    const paragraphs = [];
+    
+    paragraphElements.forEach((paragraphElement) => {
+      const wordElements = paragraphElement.querySelectorAll('.word');
+      const words = [];
+      
+      wordElements.forEach((wordElement) => {
+        words.push({
+          arabic: wordElement.getAttribute('data-arabic') || wordElement.textContent.trim(),
+          translation: wordElement.getAttribute('data-translation') || '',
+          root: wordElement.getAttribute('data-root') || '',
+          pos: wordElement.getAttribute('data-pos') || 'noun'
+        });
+      });
+      
+      // Also capture any text nodes that are not within .word spans
+      const allText = paragraphElement.textContent.trim();
+      
+      paragraphs.push({
+        words: words,
+        fullText: allText
+      });
+    });
+    
+    pages.push({
+      number: pageNumber,
+      title: title,
+      paragraphs: paragraphs
+    });
+    
+    console.log(`Processed page ${pageNumber}: ${title} with ${paragraphs.length} paragraphs`);
+  });
+  
+  return pages;
+}
 
 // Initialize OpenAI
 const openai = new OpenAI({
@@ -731,6 +785,34 @@ Gib nur den arabischen Fließtext zurück, ohne Übersetzung oder Kommentare.`;
       console.error('Error parsing HTML:', error);
       res.status(500).json({ 
         error: "Failed to parse HTML file",
+        message: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+  });
+
+  // API endpoint for Qasas al-Anbiya pages
+  app.get("/api/qasas-pages", async (req: Request, res: Response) => {
+    try {
+      console.log('Parsing Qasas al-Anbiya HTML file for pages...');
+      
+      // Parse the Qasas al-Anbiya HTML file
+      const htmlContent = fs.readFileSync(path.join(process.cwd(), 'qasas-al-anbiya-pages.html'), 'utf-8');
+      const pages = parseQasasAlAnbiyaHTML(htmlContent);
+      
+      console.log(`Found ${pages.length} pages in Qasas al-Anbiya`);
+      pages.forEach((page, index) => {
+        console.log(`Processed page ${page.number}: ${page.title} with ${page.paragraphs.length} paragraphs`);
+      });
+      
+      res.json({
+        pages: pages,
+        totalPages: pages.length,
+        lastUpdated: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Error parsing Qasas al-Anbiya HTML:', error);
+      res.status(500).json({ 
+        error: "Failed to parse Qasas al-Anbiya HTML file",
         message: error instanceof Error ? error.message : "Unknown error"
       });
     }

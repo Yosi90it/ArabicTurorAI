@@ -11,6 +11,7 @@ import InterlinearText from "@/components/InterlinearText";
 import WordModal from "@/components/WordModal";
 import BookSelector from "@/components/BookSelector";
 import QiratuRashidaPages from "@/components/QiratuRashidaPages";
+import QasasAlAnbiyaPages from "@/components/QasasAlAnbiyaPages";
 import { getWordInfo } from "@/data/arabicDictionary";
 import { useSimpleGamification } from "@/contexts/SimpleGamificationContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -375,6 +376,13 @@ export default function BookReader() {
                     <div className="prose prose-lg max-w-none">
                       <div className="bg-gradient-to-br from-amber-50 to-orange-50 p-6 rounded-2xl border border-amber-200 min-h-[500px]">
                         <QiratuRashidaPages interlinearEnabled={interlinearEnabled} />
+                      </div>
+                    </div>
+                  ) : selectedBook.title.includes("قصص الأنبياء") ? (
+                    /* Show Qasas al-Anbiya Pages */
+                    <div className="prose prose-lg max-w-none">
+                      <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-2xl border border-green-200 min-h-[500px]">
+                        <QasasAlAnbiyaPages onWordClick={handleContentClick} />
                       </div>
                     </div>
                   ) : (
