@@ -796,7 +796,7 @@ Gib nur den arabischen Fließtext zurück, ohne Übersetzung oder Kommentare.`;
       console.log('Parsing Qasas al-Anbiya HTML file for pages...');
       
       // Parse the Qasas al-Anbiya HTML file
-      const htmlContent = fs.readFileSync(path.join(process.cwd(), 'qasas-al-anbiya-pages.html'), 'utf-8');
+      const htmlContent = fs.readFileSync(path.join(process.cwd(), 'qasas-al-anbiya-extended.html'), 'utf-8');
       const pages = parseQasasAlAnbiyaHTML(htmlContent);
       
       console.log(`Found ${pages.length} pages in Qasas al-Anbiya`);
