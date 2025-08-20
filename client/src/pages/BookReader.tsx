@@ -1,203 +1,112 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Search, Volume2, ChevronLeft, ChevronRight, BookOpen, Loader2, Plus, ToggleLeft, ToggleRight } from "lucide-react";
+import { Search, Volume2, ChevronLeft, ChevronRight, BookOpen, ToggleLeft, ToggleRight } from "lucide-react";
 import { useTashkeel } from "@/contexts/TashkeelContext";
 import { useContent } from "@/contexts/ContentContext";
 import { useFlashcards } from "@/contexts/FlashcardContext";
 import { useToast } from "@/hooks/use-toast";
-import ClickableText from "@/components/ClickableText";
-import InterlinearText from "@/components/InterlinearText";
 import WordModal from "@/components/WordModal";
-import BookSelector from "@/components/BookSelector";
 import QiratuRashidaPages from "@/components/QiratuRashidaPages";
 import QasasAlAnbiyaPages from "@/components/QasasAlAnbiyaPages";
-import { getWordInfo } from "@/data/arabicDictionary";
-import { useSimpleGamification } from "@/contexts/SimpleGamificationContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 
-interface BookContentProps {
-  content: string;
-  tashkeelEnabled: boolean;
-  interlinearEnabled: boolean;
-  onWordClick: (event: React.MouseEvent) => Promise<void>;
-}
-
-function BookContent({ content, tashkeelEnabled, interlinearEnabled, onWordClick }: BookContentProps) {
-  const processContent = () => {
-    if (!content) return "";
-    
-    // For interlinear mode, we need plain text
-    if (interlinearEnabled) {
-      let processedContent = content.replace(/<[^>]*>/g, ' ').trim();
-      processedContent = tashkeelEnabled ? processedContent : processedContent.replace(/[\u064B-\u065F\u0670\u0640]/g, '');
-      console.log("Interlinear mode enabled, content:", processedContent?.substring(0, 100));
-      return <InterlinearText text={processedContent} className="leading-relaxed" />;
-    }
-    
-    // For normal mode, render HTML with structure
-    let processedContent = content;
-    
-    // Remove tashkeel if disabled
-    processedContent = tashkeelEnabled ? processedContent : processedContent.replace(/[\u064B-\u065F\u0670\u0640]/g, '');
-    
-    // Parse HTML and make Arabic text clickable
-    const parseHtmlToClickable = (htmlContent: string) => {
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(htmlContent, 'text/html');
-      
-      const processNode = (node: Node): React.ReactNode => {
-        if (node.nodeType === Node.TEXT_NODE) {
-          const text = node.textContent || '';
-          if (text.trim()) {
-            return <ClickableText key={Math.random()} text={text} className="leading-relaxed" />;
-          }
-          return null;
-        }
-        
-        if (node.nodeType === Node.ELEMENT_NODE) {
-          const element = node as Element;
-          const tagName = element.tagName.toLowerCase();
-          
-          const children = Array.from(element.childNodes).map(processNode).filter(Boolean);
-          
-          switch (tagName) {
-            case 'h1':
-              return <h1 key={Math.random()} className="text-3xl font-bold mb-6 text-blue-800">{children}</h1>;
-            case 'h2':
-              return <h2 key={Math.random()} className="text-2xl font-semibold mb-4 text-blue-700 mt-8">{children}</h2>;
-            case 'h3':
-              return <h3 key={Math.random()} className="text-xl font-medium mb-3 text-blue-600 mt-6">{children}</h3>;
-            case 'p':
-              return <p key={Math.random()} className="mb-4 text-lg">{children}</p>;
-            case 'div':
-              const style = element.getAttribute('style') || '';
-              const className = style.includes('text-align: center') ? 'text-center mb-6' : 'mb-4';
-              return <div key={Math.random()} className={className}>{children}</div>;
-            case 'strong':
-              return <strong key={Math.random()} className="font-bold text-blue-800">{children}</strong>;
-            default:
-              return <span key={Math.random()}>{children}</span>;
-          }
-        }
-        
-        return null;
-      };
-      
-      return Array.from(doc.body.childNodes).map(processNode).filter(Boolean);
-    };
-    
-    return parseHtmlToClickable(processedContent);
-  };
-
-  return (
-    <div 
-      className="text-xl leading-relaxed font-arabic" 
-      dir="rtl"
-      onClick={interlinearEnabled ? undefined : onWordClick}
-    >
-      {processContent()}
-    </div>
-  );
-}
-
-// Direct Weaviate translation function
-async function fetchTranslation(arabicWord: string): Promise<string> {
-  const res = await fetch('/api/weaviate/translate', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ word: arabicWord })
-  });
-  
-  if (!res.ok) {
-    throw new Error('Failed to fetch translation');
-  }
-  
-  const data = await res.json();
-  return data.translation || "–";
+interface SelectedWord {
+  word: string;
+  translation: string;
+  grammar: string;
+  position: { x: number; y: number };
 }
 
 export default function BookReader() {
-  const { books: contextBooks } = useContent();
-  
-  // Transform books to match BookSelector interface
-  const books = contextBooks.map(book => ({
-    id: book.id.toString(),
-    title: book.title,
-    level: book.level === 'beginner' ? 'anfänger' : book.level === 'intermediate' ? 'mittelstufe' : 'fortgeschritten',
-    icon: book.icon,
-    content: book.content
-  }));
+  const { tashkeelEnabled, toggleTashkeel } = useTashkeel();
+  const { books, fetchTranslation } = useContent();
   const { addFlashcard } = useFlashcards();
   const { toast } = useToast();
-  const { tashkeelEnabled, toggleTashkeel, formatText } = useTashkeel();
-  const { updateProgress } = useSimpleGamification();
   const { strings } = useLanguage();
-  const [interlinearEnabled, setInterlinearEnabled] = useState(false);
-  const [selectedBook, setSelectedBook] = useState(books.length > 0 ? books[0] : null);
+  
+  const [selectedBook, setSelectedBook] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
-  const wordsPerPage = 100; // Content is already split into ~100 word pages
-  const [selectedWord, setSelectedWord] = useState<{
-    word: string;
-    translation: string;
-    grammar: string;
-    position: { x: number; y: number };
-  } | null>(null);
+  const [selectedWord, setSelectedWord] = useState<SelectedWord | null>(null);
+  const [interlinearEnabled, setInterlinearEnabled] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState("alle");
+  const [searchQuery, setSearchQuery] = useState("");
 
-  // Get available page images for complete Qiraatu book
-  const qiraaturPages = [
-    30, 33, 35, 37, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 84, 85, 86, 87, 88, 89, 91, 94, 95, 96, 97, 116, 131, 226, 236, 238, 242, 245, 247
+  // Book library data with progress and difficulty levels
+  const bookLibrary = [
+    {
+      id: "qiraatu-rashida",
+      title: "قراءة الراشدة",
+      author: "من المنهج التقليدي", 
+      level: "anfänger",
+      progress: 100,
+      status: "abgeschlossen",
+      wordCount: 32,
+      description: "Klassisches arabisches Lesebuch für Anfänger"
+    },
+    {
+      id: "qasas-al-anbiya", 
+      title: "قصص الأنبياء",
+      author: "من التراث الإسلامي",
+      level: "mittelstufe", 
+      progress: 75,
+      status: "in-bearbeitung",
+      wordCount: 28,
+      description: "Geschichten der Propheten Ibrahim und Yusuf"
+    },
+    {
+      id: "madinat-al-muluk",
+      title: "مدن الملوك", 
+      author: "عبد الرحمن منيف",
+      level: "mittelstufe",
+      progress: 100,
+      status: "abgeschlossen", 
+      wordCount: 32,
+      description: "Moderne arabische Literatur"
+    },
+    {
+      id: "mawsim-al-hijra",
+      title: "موسم الهجرة إلى الشمال",
+      author: "الطيب صالح", 
+      level: "fortgeschritten",
+      progress: 50,
+      status: "in-bearbeitung",
+      wordCount: 28,
+      description: "Klassiker der arabischen Moderne"
+    }
   ];
 
-  // Split content into pages based on book type
-  const currentBookPages = selectedBook 
-    ? (() => {
-        // For complete Qiraatu book with images, use page numbers
-        if (selectedBook.title.includes("كامل مع الصور الأصلية")) {
-          return qiraaturPages.map(pageNum => `Page ${pageNum}`);
-        }
-        
-        // For other books, use existing pagebreak logic
-        const existingPages = selectedBook.content.split("<!-- pagebreak -->").map(p => p.trim()).filter(p => p.length > 0);
-        
-        if (existingPages.length > 1) {
-          return existingPages;
-        }
-        
-        // Otherwise, split by word count
-        const content = selectedBook.content.replace(/<[^>]*>/g, ' ').trim();
-        const words = content.split(/\s+/);
-        const pages = [];
-        
-        for (let i = 0; i < words.length; i += wordsPerPage) {
-          const pageWords = words.slice(i, i + wordsPerPage);
-          pages.push(pageWords.join(' '));
-        }
-        
-        return pages;
-      })()
-    : [];
-  
-  const totalPages = currentBookPages.length;
+  const filteredBooks = bookLibrary.filter(book => {
+    const matchesFilter = selectedFilter === "alle" || book.level === selectedFilter;
+    const matchesSearch = searchQuery === "" || 
+      book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      book.author.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesFilter && matchesSearch;
+  });
 
-  // Update selected book when books change
-  useEffect(() => {
-    if (books.length > 0 && !selectedBook) {
-      setSelectedBook(books[0]);
+  const getLevelColor = (level: string) => {
+    switch(level) {
+      case "anfänger": return "bg-green-100 text-green-800 border-green-200";
+      case "mittelstufe": return "bg-orange-100 text-orange-800 border-orange-200"; 
+      case "fortgeschritten": return "bg-red-100 text-red-800 border-red-200";
+      default: return "bg-gray-100 text-gray-800 border-gray-200";
     }
-  }, [books, selectedBook]);
+  };
+
+  const getProgressColor = (progress: number) => {
+    if (progress === 100) return "bg-green-600";
+    if (progress >= 50) return "bg-blue-600";
+    return "bg-gray-600";
+  };
 
   const handleContentClick = async (event: React.MouseEvent) => {
     const target = event.target as HTMLElement;
-    if (target.classList.contains('clickable-word')) {
-      const word = target.getAttribute('data-word');
+    if (target.classList.contains('clickable-word') || target.classList.contains('word')) {
+      const word = target.getAttribute('data-word') || target.textContent;
       if (word) {
-        const cleanedWord = word.replace(/[،؟!.:]/g, ''); // Remove punctuation
+        const cleanedWord = word.replace(/[،؟!.:]/g, '');
         const rect = target.getBoundingClientRect();
         
-        // Set initial loading state
         setSelectedWord({
           word: cleanedWord,
           translation: "Lädt…",
@@ -209,10 +118,7 @@ export default function BookReader() {
         });
         
         try {
-          // Fetch translation from Weaviate
           const translation = await fetchTranslation(cleanedWord);
-          
-          // Update with actual translation
           setSelectedWord({
             word: cleanedWord,
             translation: translation,
@@ -238,15 +144,6 @@ export default function BookReader() {
     }
   };
 
-  const playAudio = (text: string) => {
-    if ('speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'ar-SA';
-      utterance.rate = 0.8;
-      speechSynthesis.speak(utterance);
-    }
-  };
-
   const handleAddToFlashcards = (word: string, translation: string, grammar: string) => {
     addFlashcard(word, translation, grammar);
     toast({
@@ -256,169 +153,227 @@ export default function BookReader() {
     setSelectedWord(null);
   };
 
+  const playAudio = (text: string) => {
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'ar-SA';
+      utterance.rate = 0.8;
+      speechSynthesis.speak(utterance);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-white py-8">
-      {/* Book Library - Above the content */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle className="text-base">{strings.myLibrary}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <BookSelector 
-            books={books} 
-            selectedBook={selectedBook} 
-            onBookSelect={(book) => {
-              setSelectedBook(book);
-              setCurrentPage(0);
-            }}
-          />
-        </CardContent>
-      </Card>
+    <div className="min-h-screen bg-gray-50 py-8">
+      {/* Modern Book Library Interface */}
+      <div className="max-w-6xl mx-auto px-4">
+        
+        {/* Filter Section */}
+        {!selectedBook && (
+          <>
+            <Card className="mb-8 shadow-sm border-0">
+              <CardContent className="p-6">
+                <div className="flex flex-wrap items-center gap-4">
+                  {/* Search */}
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <input
+                      type="text"
+                      placeholder="Suchen..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl w-64 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
 
-      {/* Reading Area */}
-      <div className="w-full">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div></div>
-                <div className="flex items-center gap-2">
-                  {selectedBook && totalPages > 1 && (
-                    <div className="flex items-center gap-1">
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => {
-                          const newPage = Math.max(0, currentPage - 1);
-                          setCurrentPage(newPage);
-                        }}
-                        disabled={currentPage === 0}
+                  {/* Filter Buttons */}
+                  <div className="flex gap-2">
+                    {[
+                      { key: "alle", label: "Alle" },
+                      { key: "anfänger", label: "Anfänger" }, 
+                      { key: "mittelstufe", label: "Mittelstufe" },
+                      { key: "fortgeschritten", label: "Fortgeschritten" }
+                    ].map((filter) => (
+                      <button
+                        key={filter.key}
+                        onClick={() => setSelectedFilter(filter.key)}
+                        className={`px-6 py-3 rounded-xl font-medium transition-all ${
+                          selectedFilter === filter.key
+                            ? "bg-black text-white shadow-lg"
+                            : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
+                        }`}
                       >
-                        <ChevronLeft className="w-4 h-4" />
-                      </Button>
-                      <span className="text-sm text-gray-600 px-2">
-{strings.page} {currentPage + 1} {strings.of} {totalPages}
-                      </span>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => {
-                          const newPage = Math.min(totalPages - 1, currentPage + 1);
-                          setCurrentPage(newPage);
-                        }}
-                        disabled={currentPage === totalPages - 1}
-                      >
-                        <ChevronRight className="w-4 h-4" />
-                      </Button>
+                        {filter.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Books Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              {filteredBooks.map((book) => (
+                <Card 
+                  key={book.id} 
+                  className="shadow-sm border-0 hover:shadow-lg transition-all cursor-pointer bg-white"
+                  onClick={() => {
+                    const matchingBook = books.find(b => b.id === book.id);
+                    if (matchingBook) {
+                      setSelectedBook(matchingBook);
+                      setCurrentPage(0);
+                    }
+                  }}
+                >
+                  <CardContent className="p-6">
+                    <div className="flex items-start gap-4">
+                      {/* Book Icon */}
+                      <div className="w-16 h-16 bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <BookOpen className="w-8 h-8 text-white" />
+                      </div>
+
+                      {/* Book Info */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between mb-2">
+                          <div>
+                            <h3 className="text-xl font-semibold text-gray-900 mb-1 truncate">
+                              {book.title}
+                            </h3>
+                            <p className="text-gray-600 text-sm">
+                              von {book.author}
+                            </p>
+                          </div>
+                          
+                          {/* Level Badge */}
+                          <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getLevelColor(book.level)}`}>
+                            {book.level}
+                          </span>
+                        </div>
+
+                        {/* Progress Section */}
+                        <div className="space-y-3">
+                          <div>
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-sm font-medium text-gray-700">
+                                Fortschritt: {book.progress}%
+                              </span>
+                              <span className={`text-xs px-2 py-1 rounded-full ${
+                                book.status === "abgeschlossen" ? "bg-green-100 text-green-800" : "bg-blue-100 text-blue-800"
+                              }`}>
+                                {book.status === "abgeschlossen" ? "Abgeschlossen" : "In Bearbeitung"}
+                              </span>
+                            </div>
+                            
+                            {/* Progress Bar */}
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div 
+                                className={`h-2 rounded-full transition-all ${getProgressColor(book.progress)}`}
+                                style={{ width: `${book.progress}%` }}
+                              />
+                            </div>
+                          </div>
+
+                          {/* Stats */}
+                          <div className="flex items-center justify-between text-sm text-gray-600">
+                            <span>{book.wordCount} Wörter ca.</span>
+                            <span>{book.status}</span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  )}
-                  
-                  {/* Always show controls for all books */}
-                  {(
-                    <>
-                      <Button variant="outline" size="sm">
-                        <Search className="w-4 h-4 mr-2" />
-                        Search
-                      </Button>
-                      
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => selectedBook && playAudio(currentBookPages[currentPage])}
-                      >
-                        <Volume2 className="w-4 h-4 mr-2" />
-                        Listen
-                      </Button>
-                      
-                      {/* Tashkeel Toggle */}
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-gray-700">Tashkeel</span>
-                        <button
-                          onClick={toggleTashkeel}
-                          className="flex items-center"
-                          title="Tashkeel anzeigen/ausblenden"
-                        >
-                          {tashkeelEnabled ? (
-                            <ToggleRight className="w-5 h-5 text-purple-600" />
-                          ) : (
-                            <ToggleLeft className="w-5 h-5 text-gray-400" />
-                          )}
-                        </button>
-                      </div>
-                      
-                      {/* Interlinear Toggle */}
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-gray-700">{strings.wordByWordTranslation}</span>
-                        <button
-                          onClick={() => setInterlinearEnabled(!interlinearEnabled)}
-                          className="flex items-center"
-                          title={strings.wordByWordTranslation}
-                        >
-                          {interlinearEnabled ? (
-                            <ToggleRight className="w-5 h-5 text-purple-600" />
-                          ) : (
-                            <ToggleLeft className="w-5 h-5 text-gray-400" />
-                          )}
-                        </button>
-                      </div>
-                    </>
-                  )}
-                  
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </>
+        )}
 
+        {/* Reading Area - Only show when book is selected */}
+        {selectedBook && (
+          <Card className="shadow-sm border-0">
+            <CardHeader className="border-b border-gray-100">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setSelectedBook(null)}
+                    className="flex items-center gap-2"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    Zurück zur Bibliothek
+                  </Button>
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900">
+                      {selectedBook.title}
+                    </h2>
+                    <p className="text-sm text-gray-600">
+                      {bookLibrary.find(b => b.id === selectedBook.id)?.author}
+                    </p>
+                  </div>
+                </div>
 
+                <div className="flex items-center gap-2">
+                  {/* Tashkeel Toggle */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => toggleTashkeel()}
+                    className="flex items-center gap-2"
+                  >
+                    {tashkeelEnabled ? <ToggleRight className="w-4 h-4" /> : <ToggleLeft className="w-4 h-4" />}
+                    {tashkeelEnabled ? strings.tashkeelOn : strings.tashkeelOff}
+                  </Button>
+
+                  {/* Interlinear Toggle */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setInterlinearEnabled(!interlinearEnabled)}
+                    className="flex items-center gap-2"
+                  >
+                    {interlinearEnabled ? <ToggleRight className="w-4 h-4" /> : <ToggleLeft className="w-4 h-4" />}
+                    {interlinearEnabled ? strings.interlinearOn : strings.interlinearOff}
+                  </Button>
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="space-y-6">
-              {selectedBook ? (
-                <>
-                  {/* Show Qiraatu Rashida Pages for image-based books */}
-                  {selectedBook.title.includes("كامل مع الصور الأصلية") ? (
-                    <div className="prose prose-lg max-w-none">
-                      <div className="bg-gradient-to-br from-amber-50 to-orange-50 p-6 rounded-2xl border border-amber-200 min-h-[500px]">
-                        <QiratuRashidaPages interlinearEnabled={interlinearEnabled} />
-                      </div>
-                    </div>
-                  ) : selectedBook.title.includes("قصص الأنبياء") ? (
-                    /* Show Qasas al-Anbiya Pages */
-                    <div className="prose prose-lg max-w-none">
-                      <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-2xl border border-green-200 min-h-[500px]">
-                        <QasasAlAnbiyaPages onWordClick={handleContentClick} />
-                      </div>
-                    </div>
-                  ) : (
-                    /* Interactive book content with toggle support */
-                    <div className="prose prose-lg max-w-none">
-                      <div className="bg-gradient-to-br from-amber-50 to-orange-50 p-6 rounded-2xl border border-amber-200 min-h-[500px]">
-                        <BookContent 
-                          content={currentBookPages[currentPage] || ""} 
-                          tashkeelEnabled={tashkeelEnabled}
-                          interlinearEnabled={interlinearEnabled}
-                          onWordClick={handleContentClick}
-                        />
-                      </div>
-                    </div>
-                  )}
-                </>
-              ) : (
-                <div className="text-center py-12">
-                  <p className="text-gray-500">{strings.selectBook}</p>
-                </div>
-              )}
+            
+            <CardContent className="p-8">
+              <div className="max-w-4xl mx-auto">
+                {selectedBook.id === 'qiraatu-rashida' && (
+                  <QiratuRashidaPages 
+                    currentPage={currentPage} 
+                    onWordClick={handleContentClick} 
+                  />
+                )}
+                {selectedBook.id === 'qasas-al-anbiya' && (
+                  <QasasAlAnbiyaPages 
+                    currentPage={currentPage} 
+                    onWordClick={handleContentClick} 
+                  />
+                )}
+                {!['qiraatu-rashida', 'qasas-al-anbiya'].includes(selectedBook.id) && (
+                  <div className="min-h-[600px] p-8 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl leading-relaxed text-lg text-right">
+                    <p className="text-gray-600 text-center">Dieser Buchinhalt wird bald verfügbar sein.</p>
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
-        </div>
-
-        {/* Word Modal */}
-        {selectedWord && (
-          <WordModal
-            word={selectedWord.word}
-            translation={selectedWord.translation}
-            grammar={selectedWord.grammar}
-            position={selectedWord.position}
-            onClose={() => setSelectedWord(null)}
-            onAddToFlashcards={handleAddToFlashcards}
-          />
         )}
       </div>
-    );
+      
+      {/* Word Modal */}
+      {selectedWord && (
+        <WordModal
+          word={selectedWord.word}
+          translation={selectedWord.translation}
+          grammar={selectedWord.grammar}
+          position={selectedWord.position}
+          onClose={() => setSelectedWord(null)}
+          onAddToFlashcards={handleAddToFlashcards}
+        />
+      )}
+    </div>
+  );
 }

@@ -1,0 +1,65 @@
+<div class="page" dir="rtl">
+  <h1 style="text-align:center;">٢٣- يُوسُفُ يُرْسِلُ إِلَى يَعْقُوبَ</h1>
+
+  <p>
+    <span class="word">وَاشْتَاقَ</span> <span class="word">يُوسُفُ</span> <span class="word">إِلَى</span> <span class="word">لِقَاءِ</span> <span class="word">يَعْقُوبَ،</span> <span class="word">وَقَدْ</span> <span class="word">طَالَ</span> <span class="word">الْفِرَاقُ،</span> <span class="word">فَكَيْفَ</span> <span class="word">يَصْبِرُ</span> <span class="word">الْآنَ</span> <span class="word">وَقَدْ</span> <span class="word">ظَهَرَ</span> <span class="word">السِّرُّ؟</span> <span class="word">وَكَيْفَ</span> <span class="word">يَطِيبُ</span> <span class="word">لَهُ</span> <span class="word">الشَّرَابُ</span> <span class="word">وَالطَّعَامُ</span> <span class="word">وَأَبُوهُ</span> <span class="word">لَا</span> <span class="word">يَطِيبُ</span> <span class="word">لَهُ</span> <span class="word">شَرَابٌ</span> <span class="word">وَلَا</span> <span class="word">طَعَامٌ</span> <span class="word">وَلَا</span> <span class="word">مَنَامٌ؟</span>
+  </p>
+
+  <p>
+    <span class="word">فَقَالَ:</span> <span class="word">(اذْهَبُوا</span> <span class="word">بِقَمِيصِي</span> <span class="word">هَذَا</span> <span class="word">فَأَلْقُوهُ</span> <span class="word">عَلَى</span> <span class="word">وَجْهِ</span> <span class="word">أَبِي</span> <span class="word">يَأْتِ</span> <span class="word">بَصِيرًا،</span> <span class="word">وَأْتُونِي</span> <span class="word">بِأَهْلِكُمْ</span> <span class="word">أَجْمَعِينَ).</span>
+  </p>
+
+  <h1 style="text-align:center;">٢٤- يَعْقُوبُ عِنْدَ يُوسُفَ</h1>
+
+  <p>
+    <span class="word">فَلَمَّا</span> <span class="word">سَارَ</span> <span class="word">الرِّجَالُ</span> <span class="word">بِقَمِيصِ</span> <span class="word">يُوسُفَ</span> <span class="word">إِلَى</span> <span class="word">كَنْعَانَ</span> <span class="word">أَحَسَّ</span> <span class="word">يَعْقُوبُ</span> <span class="word">رَائِحَةَ</span> <span class="word">يُوسُفَ،</span> <span class="word">فَقَالَ:</span> <span class="word">(إِنِّي</span> <span class="word">لَأَجِدُ</span> <span class="word">رِيحَ</span> <span class="word">يُوسُفَ</span> <span class="word">لَوْلَا</span> <span class="word">أَنْ</span> <span class="word">تُفَنِّدُونِ).</span>
+  </p>
+
+  <p>
+    <span class="word">فَلَمَّا</span> <span class="word">جَاءَ</span> <span class="word">الْبَشِيرُ</span> <span class="word">أَلْقَاهُ</span> <span class="word">عَلَى</span> <span class="word">وَجْهِهِ</span> <span class="word">فَارْتَدَّ</span> <span class="word">بَصِيرًا،</span> <span class="word">وَقَالَ:</span> <span class="word">(أَلَمْ</span> <span class="word">أَقُلْ</span> <span class="word">لَكُمْ</span> <span class="word">إِنِّي</span> <span class="word">أَعْلَمُ</span> <span class="word">مِنَ</span> <span class="word">اللَّهِ</span> <span class="word">مَا</span> <span class="word">لَا</span> <span class="word">تَعْلَمُونَ)?</span>
+  </p>
+
+  <p>
+    <span class="word">قَالُوا:</span> <span class="word">(يَا</span> <span class="word">أَبَانَا</span> <span class="word">اسْتَغْفِرْ</span> <span class="word">لَنَا</span> <span class="word">ذُنُوبَنَا</span> <span class="word">إِنَّا</span> <span class="word">كُنَّا</span> <span class="word">خَاطِئِينَ).</span>
+  </p>
+
+  <p>
+    <span class="word">قَالَ:</span> <span class="word">(سَوْفَ</span> <span class="word">أَسْتَغْفِرُ</span> <span class="word">لَكُمْ</span> <span class="word">رَبِّي</span> <span class="word">إِنَّهُ</span> <span class="word">هُوَ</span> <span class="word">الْغَفُورُ</span> <span class="word">الرَّحِيمُ).</span>
+  </p>
+
+  <p>
+    <span class="word">ثُمَّ</span> <span class="word">قَدِمُوا</span> <span class="word">مِصْرَ،</span> <span class="word">فَاسْتَقْبَلَهُم</span> <span class="word">يُوسُفُ،</span> <span class="word">وَرَفَعَ</span> <span class="word">أَبَوَيْهِ</span> <span class="word">عَلَى</span> <span class="word">الْعَرْشِ</span> <span class="word">وَخَرُّوا</span> <span class="word">لَهُ</span> <span class="word">سُجَّدًا.</span>
+  </p>
+
+  <p>
+    <span class="word">وَقَالَ</span> <span class="word">يُوسُفُ:</span> <span class="word">(هَذَا</span> <span class="word">تَأْوِيلُ</span> <span class="word">رُؤْيَايَ</span> <span class="word">مِنْ</span> <span class="word">قَبْلُ</span> <span class="word">قَدْ</span> <span class="word">جَعَلَهَا</span> <span class="word">رَبِّي</span> <span class="word">حَقًّا).</span>
+  </p>
+
+  <p>
+    <span class="word">(إِنِّي</span> <span class="word">رَأَيْتُ</span> <span class="word">أَحَدَ</span> <span class="word">عَشَرَ</span> <span class="word">كَوْكَبًا</span> <span class="word">وَالشَّمْسَ</span> <span class="word">وَالْقَمَرَ</span> <span class="word">رَأَيْتُهُمْ</span> <span class="word">لِي</span> <span class="word">سَاجِدِينَ).</span>
+  </p>
+
+  <p>
+    <span class="word">وَحَمِدَ</span> <span class="word">يُوسُفُ</span> <span class="word">اللَّهَ</span> <span class="word">وَشَكَرَهُ</span> <span class="word">شُكْرًا</span> <span class="word">عَظِيمًا،</span> <span class="word">وَأَقَامَ</span> <span class="word">يَعْقُوبُ</span> <span class="word">وَآلُهُ</span> <span class="word">فِي</span> <span class="word">مِصْرَ</span> <span class="word">زَمَنًا</span> <span class="word">طَوِيلًا.</span>
+  </p>
+
+  <h1 style="text-align:center;">٢٥- حُسْنُ الْعَاقِبَةِ</h1>
+
+  <p>
+    <span class="word">وَلَمْ</span> <span class="word">يَشْغَلْ</span> <span class="word">هَذَا</span> <span class="word">الْمُلْكُ</span> <span class="word">الْعَظِيمُ</span> <span class="word">يُوسُفَ</span> <span class="word">عَنِ</span> <span class="word">اللَّهِ</span> <span class="word">وَلَمْ</span> <span class="word">يُغَيِّرْهُ؛</span> <span class="word">بَلْ</span> <span class="word">كَانَ</span> <span class="word">يَذْكُرُ</span> <span class="word">اللَّهَ</span> <span class="word">وَيَعْبُدُهُ</span> <span class="word">وَيَخَافُهُ،</span> <span class="word">وَيَحْكُمُ</span> <span class="word">بِحُكْمِهِ</span> <span class="word">وَيُنَفِّذُ</span> <span class="word">أَوَامِرَهُ.</span>
+  </p>
+
+  <p>
+    <span class="word">وَلَمْ</span> <span class="word">يَرَ</span> <span class="word">الْمُلْكَ</span> <span class="word">شَيْئًا</span> <span class="word">عَظِيمًا،</span> <span class="word">وَلَمْ</span> <span class="word">يُحِبَّ</span> <span class="word">أَنْ</span> <span class="word">يَمُوتَ</span> <span class="word">مَوْتَ</span> <span class="word">مَلِكٍ</span> <span class="word">وَيُحْشَرَ</span> <span class="word">مَعَ</span> <span class="word">الْمُلُوكِ؛</span> <span class="word">بَلْ</span> <span class="word">كَانَ</span> <span class="word">يُحِبُّ</span> <span class="word">أَنْ</span> <span class="word">يَمُوتَ</span> <span class="word">مَوْتَ</span> <span class="word">عَبْدٍ</span> <span class="word">وَيُحْشَرَ</span> <span class="word">مَعَ</span> <span class="word">الصَّالِحِينَ.</span>
+  </p>
+
+  <p>
+    <span class="word">وَكَانَ</span> <span class="word">دُعَاؤُهُ:</span> <span class="word">(رَبِّ</span> <span class="word">قَدْ</span> <span class="word">آتَيْتَنِي</span> <span class="word">مِنَ</span> <span class="word">الْمُلْكِ</span> <span class="word">وَعَلَّمْتَنِي</span> <span class="word">مِنْ</span> <span class="word">تَأْوِيلِ</span> <span class="word">الْأَحَادِيثِ،</span> <span class="word">فَاطِرَ</span> <span class="word">السَّمَاوَاتِ</span> <span class="word">وَالْأَرْضِ،</span> <span class="word">أَنْتَ</span> <span class="word">وَلِيِّي</span> <span class="word">فِي</span> <span class="word">الدُّنْيَا</span> <span class="word">وَالْآخِرَةِ،</span> <span class="word">تَوَفَّنِي</span> <span class="word">مُسْلِمًا</span> <span class="word">وَأَلْحِقْنِي</span> <span class="word">بِالصَّالِحِينَ).</span>
+  </p>
+
+  <p>
+    <span class="word">فَتَوَفَّاهُ</span> <span class="word">اللَّهُ</span> <span class="word">مُسْلِمًا،</span> <span class="word">وَأَلْحَقَهُ</span> <span class="word">بِآبَائِهِ:</span> <span class="word">إِبْرَاهِيمَ</span> <span class="word">وَإِسْحَاقَ</span> <span class="word">وَيَعْقُوبَ،</span> <span class="word">صَلَّى</span> <span class="word">اللَّهُ</span> <span class="word">عَلَيْهِمْ</span> <span class="word">وَعَلَى</span> <span class="word">نَبِيِّنَا</span> <span class="word">وَسَلَّمَ.</span>
+  </p>
+
+  <div class="page-number">٢٣–٢٥</div>
+</div>
