@@ -36,23 +36,23 @@ export default function BookReader() {
   const bookLibrary = [
     {
       id: 1,
-      title: "قراءة الراشدة",
-      author: "من المنهج التقليدي", 
-      level: "anfänger",
-      progress: 100,
-      status: "abgeschlossen",
-      wordCount: 32,
-      description: "Klassisches arabisches Lesebuch für Anfänger"
-    },
-    {
-      id: 2, 
       title: "قصص الأنبياء",
-      author: "من التراث الإسلامي",
-      level: "mittelstufe", 
+      author: "من التراث الإسلامي", 
+      level: "mittelstufe",
       progress: 75,
       status: "in-bearbeitung",
       wordCount: 28,
       description: "Geschichten der Propheten Ibrahim und Yusuf"
+    },
+    {
+      id: 2, 
+      title: "قراءة الراشدة",
+      author: "من المنهج التقليدي",
+      level: "anfänger", 
+      progress: 100,
+      status: "abgeschlossen",
+      wordCount: 32,
+      description: "Klassisches arabisches Lesebuch für Anfänger"
     },
     {
       id: 3,
