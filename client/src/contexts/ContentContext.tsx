@@ -32,6 +32,7 @@ interface ContentContextType {
   updateVideo: (video: Video) => void;
   deleteBook: (id: number) => void;
   deleteVideo: (id: number) => void;
+  fetchTranslation: (word: string) => Promise<string>;
 }
 
 const ContentContext = createContext<ContentContextType | undefined>(undefined);
@@ -189,6 +190,27 @@ export function ContentProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const fetchTranslation = async (word: string): Promise<string> => {
+    try {
+      const response = await fetch('/api/translate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ word }),
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        return data.translation || 'Übersetzung nicht verfügbar';
+      }
+      return 'Übersetzung nicht verfügbar';
+    } catch (error) {
+      console.error('Translation error:', error);
+      return 'Übersetzung nicht verfügbar';
+    }
+  };
+
   return (
     <ContentContext.Provider 
       value={{
@@ -203,7 +225,8 @@ export function ContentProvider({ children }: { children: ReactNode }) {
         updateBook,
         updateVideo,
         deleteBook,
-        deleteVideo
+        deleteVideo,
+        fetchTranslation
       }}
     >
       {children}

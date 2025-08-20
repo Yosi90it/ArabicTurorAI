@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Search, Volume2, ChevronLeft, ChevronRight, BookOpen, ToggleLeft, ToggleRight } from "lucide-react";
 import { useTashkeel } from "@/contexts/TashkeelContext";
-import { useContent } from "@/contexts/ContentContext";
+import { useContent, type Book } from "@/contexts/ContentContext";
 import { useFlashcards } from "@/contexts/FlashcardContext";
 import { useToast } from "@/hooks/use-toast";
 import WordModal from "@/components/WordModal";
@@ -25,7 +25,7 @@ export default function BookReader() {
   const { toast } = useToast();
   const { strings } = useLanguage();
   
-  const [selectedBook, setSelectedBook] = useState(null);
+  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [selectedWord, setSelectedWord] = useState<SelectedWord | null>(null);
   const [interlinearEnabled, setInterlinearEnabled] = useState(false);
@@ -35,7 +35,7 @@ export default function BookReader() {
   // Book library data with progress and difficulty levels
   const bookLibrary = [
     {
-      id: "qiraatu-rashida",
+      id: 1,
       title: "قراءة الراشدة",
       author: "من المنهج التقليدي", 
       level: "anfänger",
@@ -45,7 +45,7 @@ export default function BookReader() {
       description: "Klassisches arabisches Lesebuch für Anfänger"
     },
     {
-      id: "qasas-al-anbiya", 
+      id: 2, 
       title: "قصص الأنبياء",
       author: "من التراث الإسلامي",
       level: "mittelstufe", 
@@ -55,7 +55,7 @@ export default function BookReader() {
       description: "Geschichten der Propheten Ibrahim und Yusuf"
     },
     {
-      id: "madinat-al-muluk",
+      id: 3,
       title: "مدن الملوك", 
       author: "عبد الرحمن منيف",
       level: "mittelstufe",
@@ -65,7 +65,7 @@ export default function BookReader() {
       description: "Moderne arabische Literatur"
     },
     {
-      id: "mawsim-al-hijra",
+      id: 4,
       title: "موسم الهجرة إلى الشمال",
       author: "الطيب صالح", 
       level: "fortgeschritten",
@@ -340,19 +340,13 @@ export default function BookReader() {
             
             <CardContent className="p-8">
               <div className="max-w-4xl mx-auto">
-                {selectedBook.id === 'qiraatu-rashida' && (
-                  <QiratuRashidaPages 
-                    currentPage={currentPage} 
-                    onWordClick={handleContentClick} 
-                  />
+                {selectedBook.id === 1 && (
+                  <QiratuRashidaPages />
                 )}
-                {selectedBook.id === 'qasas-al-anbiya' && (
-                  <QasasAlAnbiyaPages 
-                    currentPage={currentPage} 
-                    onWordClick={handleContentClick} 
-                  />
+                {selectedBook.id === 2 && (
+                  <QasasAlAnbiyaPages onWordClick={handleContentClick} />
                 )}
-                {!['qiraatu-rashida', 'qasas-al-anbiya'].includes(selectedBook.id) && (
+                {![1, 2].includes(selectedBook.id) && (
                   <div className="min-h-[600px] p-8 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl leading-relaxed text-lg text-right">
                     <p className="text-gray-600 text-center">Dieser Buchinhalt wird bald verfügbar sein.</p>
                   </div>
