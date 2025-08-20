@@ -4,7 +4,7 @@ const path = require('path');
 // Parst die HTML-Datei und extrahiert alle Seiten mit Titeln und Wörtern
 function parseQiratuRashidaHTML() {
   try {
-    const htmlPath = path.join(__dirname, '..', 'qiraatu-rashida-original.html');
+    const htmlPath = path.join(__dirname, '..', 'books', 'qiraatu al rashida.html');
     const htmlContent = fs.readFileSync(htmlPath, 'utf8');
     
     const pages = [];
