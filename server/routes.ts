@@ -10,7 +10,7 @@ import { createClient } from '@supabase/supabase-js';
 // Dynamische HTML-Parser für beide Bücher
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
-const { parseQiratuRashidaHTML } = require('./htmlParser.js');
+const { parseQiratuRashidaHTML, parseQasasAlAnbiyaPart2HTML } = require('./htmlParser.js');
 const fs = require('fs');
 const path = require('path');
 
@@ -821,45 +821,15 @@ Gib nur den arabischen Fließtext zurück, ohne Übersetzung oder Kommentare.`;
   // API endpoint für Qasas al-Anbiya Teil 2 
   app.get("/api/qasas-pages-2", async (req: Request, res: Response) => {
     try {
-      console.log('Creating Qasas al-Anbiya Teil 2 pages...');
+      console.log('Parsing Qasas al-Anbiya Teil 2 HTML file for pages...');
       
-      // Placeholder structure - User will add content
-      const pages = [
-        {
-          number: 1,
-          title: "قصة موسى عليه السلام - الجزء الأول",
-          paragraphs: [
-            {
-              words: ["هنا", "سيتم", "إضافة", "المحتوى", "من", "قبل", "المستخدم"],
-              fullText: "هنا سيتم إضافة المحتوى من قبل المستخدم"
-            }
-          ]
-        },
-        {
-          number: 2,
-          title: "قصة موسى عليه السلام - الجزء الثاني", 
-          paragraphs: [
-            {
-              words: ["المحتوى", "سيتم", "إضافته", "لاحقاً"],
-              fullText: "المحتوى سيتم إضافته لاحقاً"
-            }
-          ]
-        },
-        {
-          number: 3,
-          title: "قصة عيسى عليه السلام",
-          paragraphs: [
-            {
-              words: ["نص", "مؤقت", "للاختبار"],
-              fullText: "نص مؤقت للاختبار"
-            }
-          ]
-        }
-      ];
+      // Parse die Qasas al-Anbiya Teil 2 HTML-Datei
+      const htmlContent = fs.readFileSync(path.join(process.cwd(), 'qasas-al-anbiya-teil-2.html'), 'utf-8');
+      const pages = parseQasasAlAnbiyaPart2HTML(htmlContent);
       
-      console.log(`Created ${pages.length} placeholder pages for Qasas al-Anbiya Teil 2`);
+      console.log(`Found ${pages.length} pages in Qasas al-Anbiya Teil 2`);
       pages.forEach((page) => {
-        console.log(`Page ${page.number}: ${page.title} with ${page.paragraphs.length} paragraphs`);
+        console.log(`Processed page ${page.number}: ${page.title} with ${page.paragraphs.length} paragraphs`);
       });
       
       res.json({
@@ -868,9 +838,9 @@ Gib nur den arabischen Fließtext zurück, ohne Übersetzung oder Kommentare.`;
         lastUpdated: new Date().toISOString()
       });
     } catch (error) {
-      console.error('Error creating Qasas al-Anbiya Teil 2 pages:', error);
+      console.error('Error parsing Qasas al-Anbiya Teil 2 HTML:', error);
       res.status(500).json({ 
-        error: "Failed to create Qasas al-Anbiya Teil 2 pages",
+        error: "Failed to parse Qasas al-Anbiya Teil 2 HTML file",
         message: error instanceof Error ? error.message : "Unknown error"
       });
     }

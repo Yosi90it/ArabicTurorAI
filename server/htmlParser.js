@@ -108,6 +108,82 @@ function getOptimalWordsPerLine(totalWords) {
   return 20; // Längere Texte
 }
 
+// Parst die HTML-Datei für Qasas al-Anbiya Teil 2
+function parseQasasAlAnbiyaPart2HTML(htmlContent) {
+  try {
+    const pages = [];
+    const pageMarkers = [];
+    let index = 0;
+    
+    // Finde alle <div class="page"> Positionen
+    while ((index = htmlContent.indexOf('<div class="page"', index)) !== -1) {
+      pageMarkers.push(index);
+      index += 17;
+    }
+    
+    console.log(`Found ${pageMarkers.length} page markers in Qasas al-Anbiya Teil 2`);
+    
+    for (let i = 0; i < pageMarkers.length; i++) {
+      const startPos = pageMarkers[i];
+      const endPos = i < pageMarkers.length - 1 ? pageMarkers[i + 1] : htmlContent.length;
+      
+      if (endPos <= startPos) continue;
+      
+      let pageSection = htmlContent.substring(startPos, endPos);
+      
+      // Entferne den <div class="page"> Tag am Anfang
+      pageSection = pageSection.replace(/^<div class="page"[^>]*>/, '');
+      
+      // Entferne schließende </div> Tags am Ende
+      pageSection = pageSection.replace(/<\/div>\s*$/, '').trim();
+      
+      // Titel extrahieren (h2 Element mit class page-title)
+      const titleRegex = /<h2 class="page-title"[^>]*>(.*?)<\/h2>/s;
+      const titleMatch = pageSection.match(titleRegex);
+      
+      let title = `الصفحة ${i + 1}`;
+      if (titleMatch) {
+        title = titleMatch[1].trim();
+      }
+      
+      // Alle Paragraphen extrahieren
+      const paragraphs = [];
+      const paragraphRegex = /<div class="paragraph"[^>]*>(.*?)<\/div>/gs;
+      let paragraphMatch;
+      
+      while ((paragraphMatch = paragraphRegex.exec(pageSection)) !== null) {
+        const paragraphHTML = paragraphMatch[1].trim();
+        if (paragraphHTML) {
+          const words = extractWordsFromHTML(paragraphHTML);
+          if (words.length > 0) {
+            paragraphs.push({
+              words: words,
+              fullText: words.join(' ')
+            });
+          }
+        }
+      }
+      
+      // Seite nur hinzufügen, wenn sie Inhalt hat
+      if (paragraphs.length > 0) {
+        pages.push({
+          number: i + 1,
+          title: title,
+          paragraphs: paragraphs
+        });
+        
+        console.log(`Processed page ${i + 1}: ${title} with ${paragraphs.length} paragraphs`);
+      }
+    }
+    
+    return pages;
+  } catch (error) {
+    console.error('Fehler beim Parsen der Qasas al-Anbiya Teil 2 HTML-Datei:', error);
+    return [];
+  }
+}
+
 module.exports = {
-  parseQiratuRashidaHTML
+  parseQiratuRashidaHTML,
+  parseQasasAlAnbiyaPart2HTML
 };
