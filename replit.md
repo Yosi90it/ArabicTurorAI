@@ -31,6 +31,7 @@ The application follows a monorepo structure, separating client, server, and sha
 - **HTML Parser Enhancement**: Updated `parseQasasAlAnbiyaPart2HTML` function to correctly parse user-provided Arabic content with proper section extraction
 - **Content Format Standardization**: Established consistent HTML structure using `<span class="word">text</span>` format for all interactive Arabic content
 - **Cache Management**: Resolved React Query caching issues by implementing proper cache invalidation for real-time content updates
+- **Multi-digit Arabic Numbers Support**: Fixed regex pattern to recognize multi-digit Arabic numerals (١٠، ١١، ١٢, etc.) in H2 headers, resolving issue where pages 4 and 5 weren't detecting headers with two-digit numbers
 
 ## External Dependencies
 - **UI and Styling**: Radix UI, Tailwind CSS, Lucide React, Class Variance Authority.

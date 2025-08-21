@@ -148,7 +148,7 @@ function parseQasasAlAnbiyaPart2HTML(htmlContent) {
       const elements = [];
       
       // Alle H2 und P Elemente mit ihren Positionen sammeln
-      const h2Regex = /<h2[^>]*>\s*\(([١٢٣٤٥٦٧٨٩])\)\s*([^<]+?)<\/h2>/g;
+      const h2Regex = /<h2[^>]*>\s*\(([١٢٣٤٥٦٧٨٩٠]+)\)\s*([^<]+?)<\/h2>/g;
       let h2Match;
       while ((h2Match = h2Regex.exec(htmlContent)) !== null) {
         elements.push({
@@ -232,7 +232,7 @@ function parseQasasAlAnbiyaPart2HTML(htmlContent) {
         const elements = [];
         
         // Alle H2 und P Elemente mit ihren Positionen sammeln
-        const h2Regex = /<h2[^>]*>\s*\(([١٢٣٤٥٦٧٨٩])\)\s*([^<]+?)<\/h2>/g;
+        const h2Regex = /<h2[^>]*>\s*\(([١٢٣٤٥٦٧٨٩٠]+)\)\s*([^<]+?)<\/h2>/g;
         let h2Match;
         while ((h2Match = h2Regex.exec(page1Content)) !== null) {
           elements.push({
@@ -309,7 +309,7 @@ function parseQasasAlAnbiyaPart2HTML(htmlContent) {
         console.log(`Processing data-page="${pageNumber}"`);
         
         // Titel aus der ersten H2-Überschrift extrahieren oder Standard verwenden
-        const h2Match = pageContent.match(/<h2[^>]*>\s*\(([١٢٣٤٥٦٧٨٩])\)\s*([^<]+?)<\/h2>/);
+        const h2Match = pageContent.match(/<h2[^>]*>\s*\(([١٢٣٤٥٦٧٨٩٠]+)\)\s*([^<]+?)<\/h2>/);
         const pageTitle = h2Match ? h2Match[2].trim() : `الصفحة ${pageNumber}`;
         
         // Alle Wörter in diesem Seitenbereich sammeln - sequenziell durch den Content gehen
@@ -319,7 +319,7 @@ function parseQasasAlAnbiyaPart2HTML(htmlContent) {
         const elements = [];
         
         // Alle H2 und P Elemente mit ihren Positionen sammeln
-        const h2Regex = /<h2[^>]*>\s*\(([١٢٣٤٥٦٧٨٩])\)\s*([^<]+?)<\/h2>/g;
+        const h2Regex = /<h2[^>]*>\s*\(([١٢٣٤٥٦٧٨٩٠]+)\)\s*([^<]+?)<\/h2>/g;
         let h2PageMatch;
         while ((h2PageMatch = h2Regex.exec(pageContent)) !== null) {
           elements.push({
