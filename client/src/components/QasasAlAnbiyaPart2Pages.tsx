@@ -179,27 +179,31 @@ function QasasAlAnbiyaPart2Pages({ onWordClick }: QasasAlAnbiyaPart2PagesProps) 
                   <p className="text-lg text-gray-700 leading-relaxed">
                     {paragraph.words && paragraph.words.length > 0 ? (
                       paragraph.words.map((word, wordIndex) => (
-                        <span
-                          key={wordIndex}
-                          className={`word cursor-pointer hover:bg-purple-100 transition-colors duration-200 px-1 py-0.5 rounded ${
-                            selectedWord === word ? 'bg-purple-200' : ''
-                          }`}
-                          onClick={() => handleWordClick(word, "", "", "")}
-                        >
-                          {tashkeelEnabled ? word : word.replace(/[\u064B-\u065F\u0670\u0640]/g, '')}
+                        <span key={wordIndex}>
+                          <span
+                            className={`word cursor-pointer hover:bg-purple-100 transition-colors duration-200 px-1 py-0.5 rounded ${
+                              selectedWord === word ? 'bg-purple-200' : ''
+                            }`}
+                            onClick={() => handleWordClick(word, "", "", "")}
+                          >
+                            {tashkeelEnabled ? word : word.replace(/[\u064B-\u065F\u0670\u0640]/g, '')}
+                          </span>
+                          {wordIndex < paragraph.words.length - 1 && ' '}
                         </span>
                       ))
                     ) : (
                       // Fallback for simple text
-                      paragraph.fullText?.split(' ').map((word, wordIndex) => (
-                        <span
-                          key={wordIndex}
-                          className={`word cursor-pointer hover:bg-purple-100 transition-colors duration-200 px-1 py-0.5 rounded ${
-                            selectedWord === word ? 'bg-purple-200' : ''
-                          }`}
-                          onClick={() => handleWordClick(word, "", "", "")}
-                        >
-                          {tashkeelEnabled ? word : word.replace(/[\u064B-\u065F\u0670\u0640]/g, '')}
+                      paragraph.fullText?.split(' ').map((word, wordIndex, array) => (
+                        <span key={wordIndex}>
+                          <span
+                            className={`word cursor-pointer hover:bg-purple-100 transition-colors duration-200 px-1 py-0.5 rounded ${
+                              selectedWord === word ? 'bg-purple-200' : ''
+                            }`}
+                            onClick={() => handleWordClick(word, "", "", "")}
+                          >
+                            {tashkeelEnabled ? word : word.replace(/[\u064B-\u065F\u0670\u0640]/g, '')}
+                          </span>
+                          {wordIndex < array.length - 1 && ' '}
                         </span>
                       ))
                     )}
