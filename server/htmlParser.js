@@ -175,23 +175,42 @@ function parseQasasAlAnbiyaPart2HTML(htmlContent) {
       // Nach Index sortieren für korrekte Reihenfolge
       elements.sort((a, b) => a.index - b.index);
       
-      // Elemente in korrekter Reihenfolge zu allWords hinzufügen
+      // Elemente zu separaten Paragraphen gruppieren  
+      const paragraphs = [];
+      let currentParagraph = { words: [], fullText: '' };
+      
       for (const element of elements) {
         if (element.type === 'h2') {
-          allWords.push(`##(${element.arabicNumber}) ${element.title}##`);
+          // H2 startet neuen Paragraphen
+          if (currentParagraph.words.length > 0) {
+            paragraphs.push({
+              words: currentParagraph.words,
+              fullText: currentParagraph.words.join(' ').replace(/##([^#]+)##/g, '\n\n$1\n\n')
+            });
+          }
+          currentParagraph = {
+            words: [`##(${element.arabicNumber}) ${element.title}##`],
+            fullText: ''
+          };
         } else if (element.type === 'p') {
-          allWords.push(...element.words);
+          // P-Elemente zum aktuellen Paragraphen hinzufügen
+          currentParagraph.words.push(...element.words);
         }
       }
       
-      if (allWords.length > 0) {
+      // Letzten Paragraphen hinzufügen
+      if (currentParagraph.words.length > 0) {
+        paragraphs.push({
+          words: currentParagraph.words,
+          fullText: currentParagraph.words.join(' ').replace(/##([^#]+)##/g, '\n\n$1\n\n')
+        });
+      }
+      
+      if (paragraphs.length > 0) {
         pages.push({
           number: 1,
           title: mainTitle,
-          paragraphs: [{
-            words: allWords,
-            fullText: allWords.join(' ').replace(/##([^#]+)##/g, '\n\n$1\n\n')
-          }]
+          paragraphs: paragraphs
         });
       }
     } else {
@@ -226,11 +245,8 @@ function parseQasasAlAnbiyaPart2HTML(htmlContent) {
         
         const pRegex = /<p[^>]*>(.*?)<\/p>/gs; // Global und dotAll flags hinzufügen
         let pMatch;
-        console.log('Searching for <p> elements in page1Content, length:', page1Content.length);
         while ((pMatch = pRegex.exec(page1Content)) !== null) {
-          console.log('Found <p> element at index:', pMatch.index);
           const words = extractWordsFromHTML(pMatch[1].trim());
-          console.log('Extracted words count:', words.length);
           if (words.length > 0) {
             elements.push({
               type: 'p',
@@ -239,31 +255,49 @@ function parseQasasAlAnbiyaPart2HTML(htmlContent) {
             });
           }
         }
-        console.log('Total elements found for page 1:', elements.length);
         
         // Nach Index sortieren für korrekte Reihenfolge
         elements.sort((a, b) => a.index - b.index);
         
-        // Elemente in korrekter Reihenfolge zu page1Words hinzufügen
+        // Elemente zu separaten Paragraphen gruppieren
+        const paragraphs = [];
+        let currentParagraph = { words: [], fullText: '' };
+        
         for (const element of elements) {
           if (element.type === 'h2') {
-            page1Words.push(`##(${element.arabicNumber}) ${element.title}##`);
+            // H2 startet neuen Paragraphen
+            if (currentParagraph.words.length > 0) {
+              paragraphs.push({
+                words: currentParagraph.words,
+                fullText: currentParagraph.words.join(' ').replace(/##([^#]+)##/g, '\n\n$1\n\n')
+              });
+            }
+            currentParagraph = {
+              words: [`##(${element.arabicNumber}) ${element.title}##`],
+              fullText: ''
+            };
           } else if (element.type === 'p') {
-            page1Words.push(...element.words);
+            // P-Elemente zum aktuellen Paragraphen hinzufügen
+            currentParagraph.words.push(...element.words);
           }
         }
         
-        if (page1Words.length > 0) {
+        // Letzten Paragraphen hinzufügen
+        if (currentParagraph.words.length > 0) {
+          paragraphs.push({
+            words: currentParagraph.words,
+            fullText: currentParagraph.words.join(' ').replace(/##([^#]+)##/g, '\n\n$1\n\n')
+          });
+        }
+        
+        if (paragraphs.length > 0) {
           pages.push({
             number: 1,
             title: page1Title,
-            paragraphs: [{
-              words: page1Words,
-              fullText: page1Words.join(' ').replace(/##([^#]+)##/g, '\n\n$1\n\n')
-            }]
+            paragraphs: paragraphs
           });
           
-          console.log(`Created implicit page 1: "${page1Title}" with ${page1Words.length} elements`);
+          console.log(`Created implicit page 1: "${page1Title}" with ${paragraphs.length} paragraphs`);
         }
       }
       
@@ -312,26 +346,45 @@ function parseQasasAlAnbiyaPart2HTML(htmlContent) {
         // Nach Index sortieren für korrekte Reihenfolge
         elements.sort((a, b) => a.index - b.index);
         
-        // Elemente in korrekter Reihenfolge zu pageWords hinzufügen
+        // Elemente zu separaten Paragraphen gruppieren
+        const paragraphs = [];
+        let currentParagraph = { words: [], fullText: '' };
+        
         for (const element of elements) {
           if (element.type === 'h2') {
-            pageWords.push(`##(${element.arabicNumber}) ${element.title}##`);
+            // H2 startet neuen Paragraphen
+            if (currentParagraph.words.length > 0) {
+              paragraphs.push({
+                words: currentParagraph.words,
+                fullText: currentParagraph.words.join(' ').replace(/##([^#]+)##/g, '\n\n$1\n\n')
+              });
+            }
+            currentParagraph = {
+              words: [`##(${element.arabicNumber}) ${element.title}##`],
+              fullText: ''
+            };
           } else if (element.type === 'p') {
-            pageWords.push(...element.words);
+            // P-Elemente zum aktuellen Paragraphen hinzufügen
+            currentParagraph.words.push(...element.words);
           }
         }
         
-        if (pageWords.length > 0) {
+        // Letzten Paragraphen hinzufügen
+        if (currentParagraph.words.length > 0) {
+          paragraphs.push({
+            words: currentParagraph.words,
+            fullText: currentParagraph.words.join(' ').replace(/##([^#]+)##/g, '\n\n$1\n\n')
+          });
+        }
+        
+        if (paragraphs.length > 0) {
           pages.push({
             number: pageNumber,
             title: pageTitle,
-            paragraphs: [{
-              words: pageWords,
-              fullText: pageWords.join(' ').replace(/##([^#]+)##/g, '\n\n$1\n\n')
-            }]
+            paragraphs: paragraphs
           });
           
-          console.log(`Created page ${pageNumber}: "${pageTitle}" with ${pageWords.length} elements`);
+          console.log(`Created page ${pageNumber}: "${pageTitle}" with ${paragraphs.length} paragraphs`);
         }
       }
     }
