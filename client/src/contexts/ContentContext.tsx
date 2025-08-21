@@ -104,6 +104,13 @@ export function ContentProvider({ children }: { children: ReactNode }) {
       <p>هٰذَا أَبِي - هٰذِهِ أُمِّي - هٰذَا أَخِي - هٰذِهِ أُخْتِي</p>
       <p>أَبِي طَبِيبٌ - أُمِّي مُدَرِّسَةٌ - أَخِي طَالِبٌ - أُخْتِي صَغِيرَةٌ</p>`,
       level: "beginner",
+      icon: "📚"
+    },
+    {
+      id: 3,
+      title: "قصص الأنبياء - الجزء الثاني",
+      content: `قصص الأنبياء - الجزء الثاني - Interactive stories from Qasas Al-Anbiya Part 2`,
+      level: "beginner",
       icon: "📖"
     },
     {
