@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import WordModal from "@/components/WordModal";
 import QiratuRashidaPages from "@/components/QiratuRashidaPages";
 import QasasAlAnbiyaPages from "@/components/QasasAlAnbiyaPages";
+import QasasAlAnbiyaPart2Pages from "@/components/QasasAlAnbiyaPart2Pages";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface SelectedWord {
@@ -56,6 +57,16 @@ export default function BookReader() {
     },
     {
       id: 3,
+      title: "قصص الأنبياء - الجزء الثاني",
+      author: "من التراث الإسلامي",
+      level: "mittelstufe",
+      progress: 0,
+      status: "bereit", 
+      wordCount: 0,
+      description: "Weitere Prophetengeschichten - Musa, Isa und andere Propheten"
+    },
+    {
+      id: 4,
       title: "مدن الملوك", 
       author: "عبد الرحمن منيف",
       level: "mittelstufe",
@@ -346,7 +357,10 @@ export default function BookReader() {
                 {selectedBook.id === 2 && (
                   <QasasAlAnbiyaPages onWordClick={handleContentClick} />
                 )}
-                {![1, 2].includes(selectedBook.id) && (
+                {selectedBook.id === 3 && (
+                  <QasasAlAnbiyaPart2Pages onWordClick={handleContentClick} />
+                )}
+                {![1, 2, 3].includes(selectedBook.id) && (
                   <div className="min-h-[600px] p-8 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl leading-relaxed text-lg text-right">
                     <p className="text-gray-600 text-center">Dieser Buchinhalt wird bald verfügbar sein.</p>
                   </div>

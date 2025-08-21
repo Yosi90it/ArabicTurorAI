@@ -818,6 +818,64 @@ Gib nur den arabischen Fließtext zurück, ohne Übersetzung oder Kommentare.`;
     }
   });
 
+  // API endpoint für Qasas al-Anbiya Teil 2 
+  app.get("/api/qasas-pages-2", async (req: Request, res: Response) => {
+    try {
+      console.log('Creating Qasas al-Anbiya Teil 2 pages...');
+      
+      // Placeholder structure - User will add content
+      const pages = [
+        {
+          number: 1,
+          title: "قصة موسى عليه السلام - الجزء الأول",
+          paragraphs: [
+            {
+              words: ["هنا", "سيتم", "إضافة", "المحتوى", "من", "قبل", "المستخدم"],
+              fullText: "هنا سيتم إضافة المحتوى من قبل المستخدم"
+            }
+          ]
+        },
+        {
+          number: 2,
+          title: "قصة موسى عليه السلام - الجزء الثاني", 
+          paragraphs: [
+            {
+              words: ["المحتوى", "سيتم", "إضافته", "لاحقاً"],
+              fullText: "المحتوى سيتم إضافته لاحقاً"
+            }
+          ]
+        },
+        {
+          number: 3,
+          title: "قصة عيسى عليه السلام",
+          paragraphs: [
+            {
+              words: ["نص", "مؤقت", "للاختبار"],
+              fullText: "نص مؤقت للاختبار"
+            }
+          ]
+        }
+      ];
+      
+      console.log(`Created ${pages.length} placeholder pages for Qasas al-Anbiya Teil 2`);
+      pages.forEach((page) => {
+        console.log(`Page ${page.number}: ${page.title} with ${page.paragraphs.length} paragraphs`);
+      });
+      
+      res.json({
+        pages: pages,
+        totalPages: pages.length,
+        lastUpdated: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Error creating Qasas al-Anbiya Teil 2 pages:', error);
+      res.status(500).json({ 
+        error: "Failed to create Qasas al-Anbiya Teil 2 pages",
+        message: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
