@@ -137,37 +137,50 @@ function parseQasasAlAnbiyaPart2HTML(htmlContent) {
     if (pageMatches.length === 0) {
       console.log('No data-page attributes found, treating all content as one page');
       
-      // Alle Wörter sammeln, inklusive H2-Überschriften als Strukturelemente
+      // Alle Wörter sammeln - sequenziell durch den Content gehen
       const allWords = [];
       
       // H1 Titel extrahieren
       const h1Match = htmlContent.match(/<h1[^>]*>([^<]+)<\/h1>/);
       const mainTitle = h1Match ? h1Match[1].trim() : 'الْجُزْءُ الثَّانِي';
       
-      // H2-Überschriften und deren Inhalte sammeln
-      const sectionRegex = /<h2[^>]*>\s*\(([١٢٣٤٥٦٧٨٩])\)\s*([^<]+?)<\/h2>/g;
-      const sectionMatches = Array.from(htmlContent.matchAll(sectionRegex));
+      // Sequenziell durch den HTML-Content parsen
+      const elements = [];
       
-      for (let i = 0; i < sectionMatches.length; i++) {
-        const arabicNumber = sectionMatches[i][1];
-        const title = sectionMatches[i][2].trim();
-        allWords.push(`##(${arabicNumber}) ${title}##`);
-        
-        // Den Text zwischen aktueller und nächster Überschrift extrahieren
-        const currentIndex = sectionMatches[i].index;
-        const nextIndex = i + 1 < sectionMatches.length ? sectionMatches[i + 1].index : htmlContent.length;
-        const sectionContent = htmlContent.substring(currentIndex, nextIndex);
-        
-        const paragraphRegex = /<p[^>]*>(.*?)<\/p>/gs;
-        let paragraphMatch;
-        while ((paragraphMatch = paragraphRegex.exec(sectionContent)) !== null) {
-          const paragraphHTML = paragraphMatch[1].trim();
-          if (paragraphHTML) {
-            const words = extractWordsFromHTML(paragraphHTML);
-            if (words.length > 0) {
-              allWords.push(...words);
-            }
-          }
+      // Alle H2 und P Elemente mit ihren Positionen sammeln
+      const h2Regex = /<h2[^>]*>\s*\(([١٢٣٤٥٦٧٨٩])\)\s*([^<]+?)<\/h2>/g;
+      let h2Match;
+      while ((h2Match = h2Regex.exec(htmlContent)) !== null) {
+        elements.push({
+          type: 'h2',
+          index: h2Match.index,
+          arabicNumber: h2Match[1],
+          title: h2Match[2].trim()
+        });
+      }
+      
+      const pRegex = /<p[^>]*>(.*?)<\/p>/gs; // Global und dotAll flags hinzufügen
+      let pMatch;
+      while ((pMatch = pRegex.exec(htmlContent)) !== null) {
+        const words = extractWordsFromHTML(pMatch[1].trim());
+        if (words.length > 0) {
+          elements.push({
+            type: 'p',
+            index: pMatch.index,
+            words: words
+          });
+        }
+      }
+      
+      // Nach Index sortieren für korrekte Reihenfolge
+      elements.sort((a, b) => a.index - b.index);
+      
+      // Elemente in korrekter Reihenfolge zu allWords hinzufügen
+      for (const element of elements) {
+        if (element.type === 'h2') {
+          allWords.push(`##(${element.arabicNumber}) ${element.title}##`);
+        } else if (element.type === 'p') {
+          allWords.push(...element.words);
         }
       }
       
@@ -193,28 +206,50 @@ function parseQasasAlAnbiyaPart2HTML(htmlContent) {
         const h1Match = page1Content.match(/<h1[^>]*>([^<]+)<\/h1>/);
         const page1Title = h1Match ? h1Match[1].trim() : 'الْجُزْءُ الثَّانِي';
         
-        // Alle Wörter für Seite 1 sammeln
+        // Alle Wörter für Seite 1 sammeln - sequenziell durch den Content gehen
         const page1Words = [];
         
-        // H2-Überschriften als Strukturelemente hinzufügen
-        const sectionRegex = /<h2[^>]*>\s*\(([١٢٣٤٥٦٧٨٩])\)\s*([^<]+?)<\/h2>/g;
-        let sectionMatch;
-        while ((sectionMatch = sectionRegex.exec(page1Content)) !== null) {
-          const arabicNumber = sectionMatch[1];
-          const title = sectionMatch[2].trim();
-          page1Words.push(`##(${arabicNumber}) ${title}##`);
+        // Sequenziell durch den HTML-Content parsen
+        const elements = [];
+        
+        // Alle H2 und P Elemente mit ihren Positionen sammeln
+        const h2Regex = /<h2[^>]*>\s*\(([١٢٣٤٥٦٧٨٩])\)\s*([^<]+?)<\/h2>/g;
+        let h2Match;
+        while ((h2Match = h2Regex.exec(page1Content)) !== null) {
+          elements.push({
+            type: 'h2',
+            index: h2Match.index,
+            arabicNumber: h2Match[1],
+            title: h2Match[2].trim()
+          });
         }
         
-        // Alle <p> Elemente sammeln
-        const paragraphRegex = /<p[^>]*>(.*?)<\/p>/gs;
-        let paragraphMatch;
-        while ((paragraphMatch = paragraphRegex.exec(page1Content)) !== null) {
-          const paragraphHTML = paragraphMatch[1].trim();
-          if (paragraphHTML) {
-            const words = extractWordsFromHTML(paragraphHTML);
-            if (words.length > 0) {
-              page1Words.push(...words);
-            }
+        const pRegex = /<p[^>]*>(.*?)<\/p>/gs; // Global und dotAll flags hinzufügen
+        let pMatch;
+        console.log('Searching for <p> elements in page1Content, length:', page1Content.length);
+        while ((pMatch = pRegex.exec(page1Content)) !== null) {
+          console.log('Found <p> element at index:', pMatch.index);
+          const words = extractWordsFromHTML(pMatch[1].trim());
+          console.log('Extracted words count:', words.length);
+          if (words.length > 0) {
+            elements.push({
+              type: 'p',
+              index: pMatch.index,
+              words: words
+            });
+          }
+        }
+        console.log('Total elements found for page 1:', elements.length);
+        
+        // Nach Index sortieren für korrekte Reihenfolge
+        elements.sort((a, b) => a.index - b.index);
+        
+        // Elemente in korrekter Reihenfolge zu page1Words hinzufügen
+        for (const element of elements) {
+          if (element.type === 'h2') {
+            page1Words.push(`##(${element.arabicNumber}) ${element.title}##`);
+          } else if (element.type === 'p') {
+            page1Words.push(...element.words);
           }
         }
         
@@ -243,28 +278,46 @@ function parseQasasAlAnbiyaPart2HTML(htmlContent) {
         const h2Match = pageContent.match(/<h2[^>]*>\s*\(([١٢٣٤٥٦٧٨٩])\)\s*([^<]+?)<\/h2>/);
         const pageTitle = h2Match ? h2Match[2].trim() : `الصفحة ${pageNumber}`;
         
-        // Alle Wörter in diesem Seitenbereich sammeln, inklusive H2-Überschriften
+        // Alle Wörter in diesem Seitenbereich sammeln - sequenziell durch den Content gehen
         const pageWords = [];
         
-        // H2-Überschriften als Strukturelemente hinzufügen
-        const sectionRegex = /<h2[^>]*>\s*\(([١٢٣٤٥٦٧٨٩])\)\s*([^<]+?)<\/h2>/g;
-        let sectionMatch;
-        while ((sectionMatch = sectionRegex.exec(pageContent)) !== null) {
-          const arabicNumber = sectionMatch[1];
-          const title = sectionMatch[2].trim();
-          pageWords.push(`##(${arabicNumber}) ${title}##`);
+        // Sequenziell durch den HTML-Content parsen
+        const elements = [];
+        
+        // Alle H2 und P Elemente mit ihren Positionen sammeln
+        const h2Regex = /<h2[^>]*>\s*\(([١٢٣٤٥٦٧٨٩])\)\s*([^<]+?)<\/h2>/g;
+        let h2PageMatch;
+        while ((h2PageMatch = h2Regex.exec(pageContent)) !== null) {
+          elements.push({
+            type: 'h2',
+            index: h2PageMatch.index,
+            arabicNumber: h2PageMatch[1],
+            title: h2PageMatch[2].trim()
+          });
         }
         
-        // Alle <p> Elemente sammeln
-        const paragraphRegex = /<p[^>]*>(.*?)<\/p>/gs;
-        let paragraphMatch;
-        while ((paragraphMatch = paragraphRegex.exec(pageContent)) !== null) {
-          const paragraphHTML = paragraphMatch[1].trim();
-          if (paragraphHTML) {
-            const words = extractWordsFromHTML(paragraphHTML);
-            if (words.length > 0) {
-              pageWords.push(...words);
-            }
+        const pRegex = /<p[^>]*>(.*?)<\/p>/gs; // Global und dotAll flags hinzufügen
+        let pMatch;
+        while ((pMatch = pRegex.exec(pageContent)) !== null) {
+          const words = extractWordsFromHTML(pMatch[1].trim());
+          if (words.length > 0) {
+            elements.push({
+              type: 'p',
+              index: pMatch.index,
+              words: words
+            });
+          }
+        }
+        
+        // Nach Index sortieren für korrekte Reihenfolge
+        elements.sort((a, b) => a.index - b.index);
+        
+        // Elemente in korrekter Reihenfolge zu pageWords hinzufügen
+        for (const element of elements) {
+          if (element.type === 'h2') {
+            pageWords.push(`##(${element.arabicNumber}) ${element.title}##`);
+          } else if (element.type === 'p') {
+            pageWords.push(...element.words);
           }
         }
         
