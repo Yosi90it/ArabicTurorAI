@@ -16,8 +16,8 @@ interface Word {
 }
 
 interface Paragraph {
-  words: Word[];
-  fullText: string;
+  words: string[];
+  fullText?: string;
 }
 
 interface Page {
@@ -178,20 +178,20 @@ function QasasAlAnbiyaPart2Pages({ onWordClick }: QasasAlAnbiyaPart2PagesProps) 
                 <div key={paragraphIndex} className="text-right leading-loose">
                   <p className="text-lg text-gray-700 leading-relaxed">
                     {paragraph.words && paragraph.words.length > 0 ? (
-                      paragraph.words.map((wordObj, wordIndex) => (
+                      paragraph.words.map((word, wordIndex) => (
                         <span
                           key={wordIndex}
                           className={`word cursor-pointer hover:bg-purple-100 transition-colors duration-200 px-1 py-0.5 rounded ${
-                            selectedWord === wordObj.arabic ? 'bg-purple-200' : ''
+                            selectedWord === word ? 'bg-purple-200' : ''
                           }`}
-                          onClick={() => handleWordClick(wordObj.arabic, wordObj.translation, wordObj.root, wordObj.pos)}
+                          onClick={() => handleWordClick(word, "", "", "")}
                         >
-                          {tashkeelEnabled ? wordObj.arabic : wordObj.arabic.replace(/[\u064B-\u065F\u0670\u0640]/g, '')}
+                          {tashkeelEnabled ? word : word.replace(/[\u064B-\u065F\u0670\u0640]/g, '')}
                         </span>
                       ))
                     ) : (
                       // Fallback for simple text
-                      paragraph.fullText.split(' ').map((word, wordIndex) => (
+                      paragraph.fullText?.split(' ').map((word, wordIndex) => (
                         <span
                           key={wordIndex}
                           className={`word cursor-pointer hover:bg-purple-100 transition-colors duration-200 px-1 py-0.5 rounded ${
