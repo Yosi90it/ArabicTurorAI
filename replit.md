@@ -15,12 +15,22 @@ The application follows a monorepo structure, separating client, server, and sha
 - **Core Features**:
     - **Interactive Learning**: Clickable words for instant translation, grammar info, and "Add to Flashcards" functionality.
     - **AI-Powered Tools**: AI chat assistance with follow-up suggestions, AI story generation based on learned vocabulary, and an AI-powered daily language challenge generator (Vocabulary, Translation, Grammar, Listening, Conversation).
-    - **Content Integration**: Direct PDF processing for interactive book content (e.g., "Al-Qir'atur.Rashida"), with interlinear reading mode.
+    - **Multi-Book Integration**: Complete book reader system supporting three interactive Arabic books:
+      * **Qiraatu al-Rashida** - Traditional structured pages with clear paragraph divisions
+      * **Qasas al-Anbiya Part 1** - Prophet stories with narrative format
+      * **Qasas al-Anbiya Part 2** - Extended prophet narratives with custom HTML content parsing
+    - **Content Management**: HTML-based content system with automatic word extraction, supporting Arabic text with full tashkeel preservation and interactive span-based word clicking.
     - **Authentication**: Complete signup, login, and logout with JWT tokens, including a 72-hour trial system and protected routes.
     - **Multilingual Interface**: Comprehensive translation system supporting German and English across all UI elements.
     - **Verb Recognition**: Enhanced system for identifying verbs and providing conjugation options.
     - **Gamification**: Points, streaks, achievements, and progress tracking for daily challenges.
 - **Deployment**: Configured for Replit with autoscale deployment, utilizing `nodejs-20`, `web`, and `postgresql-16` modules.
+
+## Recent Updates (August 2025)
+- **Third Book Integration Completed**: Successfully implemented Qasas al-Anbiya Part 2 with custom HTML parser supporting Arabic sectional headers (١), (٢), (٣) format
+- **HTML Parser Enhancement**: Updated `parseQasasAlAnbiyaPart2HTML` function to correctly parse user-provided Arabic content with proper section extraction
+- **Content Format Standardization**: Established consistent HTML structure using `<span class="word">text</span>` format for all interactive Arabic content
+- **Cache Management**: Resolved React Query caching issues by implementing proper cache invalidation for real-time content updates
 
 ## External Dependencies
 - **UI and Styling**: Radix UI, Tailwind CSS, Lucide React, Class Variance Authority.

@@ -111,51 +111,36 @@ function getOptimalWordsPerLine(totalWords) {
 // Parst die HTML-Datei für Qasas al-Anbiya Teil 2
 function parseQasasAlAnbiyaPart2HTML(htmlContent) {
   try {
+    console.log('Parsing Qasas al-Anbiya Teil 2 HTML file for pages...');
+    
     const pages = [];
-    const pageMarkers = [];
-    let index = 0;
     
-    // Finde alle <div class="page"> Positionen
-    while ((index = htmlContent.indexOf('<div class="page"', index)) !== -1) {
-      pageMarkers.push(index);
-      index += 17;
-    }
+    // Nach h2 Überschriften mit arabischen Nummern suchen (١), (٢), (٣)
+    const sectionRegex = /<h2[^>]*>\s*\(([١٢٣٤٥٦٧٨٩])\)\s*([^<]+?)<\/h2>/g;
+    const sectionMatches = Array.from(htmlContent.matchAll(sectionRegex));
     
-    console.log(`Found ${pageMarkers.length} page markers in Qasas al-Anbiya Teil 2`);
+    console.log(`Found ${sectionMatches.length} page markers in Qasas al-Anbiya Teil 2`);
     
-    for (let i = 0; i < pageMarkers.length; i++) {
-      const startPos = pageMarkers[i];
-      const endPos = i < pageMarkers.length - 1 ? pageMarkers[i + 1] : htmlContent.length;
+    for (let i = 0; i < sectionMatches.length; i++) {
+      const arabicNumber = sectionMatches[i][1];
+      const title = sectionMatches[i][2].trim();
       
-      if (endPos <= startPos) continue;
+      // Den Text zwischen aktueller und nächster Überschrift extrahieren
+      const currentIndex = sectionMatches[i].index;
+      const nextIndex = i + 1 < sectionMatches.length ? sectionMatches[i + 1].index : htmlContent.length;
+      const sectionContent = htmlContent.substring(currentIndex, nextIndex);
       
-      let pageSection = htmlContent.substring(startPos, endPos);
-      
-      // Entferne den <div class="page"> Tag am Anfang
-      pageSection = pageSection.replace(/^<div class="page"[^>]*>/, '');
-      
-      // Entferne schließende </div> Tags am Ende
-      pageSection = pageSection.replace(/<\/div>\s*$/, '').trim();
-      
-      // Titel extrahieren (h2 Element mit class page-title)
-      const titleRegex = /<h2 class="page-title"[^>]*>(.*?)<\/h2>/s;
-      const titleMatch = pageSection.match(titleRegex);
-      
-      let title = `الصفحة ${i + 1}`;
-      if (titleMatch) {
-        title = titleMatch[1].trim();
-      }
-      
-      // Alle Paragraphen extrahieren
+      // Alle <p> Elemente in diesem Abschnitt finden
       const paragraphs = [];
-      const paragraphRegex = /<div class="paragraph"[^>]*>(.*?)<\/div>/gs;
+      const paragraphRegex = /<p[^>]*>(.*?)<\/p>/gs;
       let paragraphMatch;
       
-      while ((paragraphMatch = paragraphRegex.exec(pageSection)) !== null) {
+      while ((paragraphMatch = paragraphRegex.exec(sectionContent)) !== null) {
         const paragraphHTML = paragraphMatch[1].trim();
         if (paragraphHTML) {
           const words = extractWordsFromHTML(paragraphHTML);
           if (words.length > 0) {
+            // Ein großer <p> Block wird als ein Paragraphen behandelt
             paragraphs.push({
               words: words,
               fullText: words.join(' ')
@@ -175,6 +160,14 @@ function parseQasasAlAnbiyaPart2HTML(htmlContent) {
         console.log(`Processed page ${i + 1}: ${title} with ${paragraphs.length} paragraphs`);
       }
     }
+    
+    console.log(`Found ${pages.length} pages in Qasas al-Anbiya Teil 2`);
+    
+    // Debug: Zeige erste paar Wörter jeder Seite
+    pages.forEach((page, index) => {
+      const firstWords = page.paragraphs[0]?.words.slice(0, 3).join(' ') || 'No words';
+      console.log(`Page ${index + 1}: ${page.title} starts with: ${firstWords}`);
+    });
     
     return pages;
   } catch (error) {
