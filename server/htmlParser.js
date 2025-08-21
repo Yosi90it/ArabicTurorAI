@@ -113,25 +113,35 @@ function parseQasasAlAnbiyaPart2HTML(htmlContent) {
   try {
     console.log('Parsing Qasas al-Anbiya Teil 2 HTML file for pages...');
     
-    const pages = [];
+    // Alle Wörter sammeln, inklusive H2-Überschriften als Strukturelemente
+    const allWords = [];
+    const allParagraphs = [];
     
-    // Nach h2 Überschriften mit arabischen Nummern suchen (mit möglichen style-Attributen)
+    // H1 Titel extrahieren für den Seitentitel
+    const h1Match = htmlContent.match(/<h1[^>]*>([^<]+)<\/h1>/);
+    const mainTitle = h1Match ? h1Match[1].trim() : 'الْجُزْءُ الثَّانِي';
+    
+    // Nach h2 Überschriften mit arabischen Nummern suchen
     const sectionRegex = /<h2[^>]*>\s*\(([١٢٣٤٥٦٧٨٩])\)\s*([^<]+?)<\/h2>/g;
     const sectionMatches = Array.from(htmlContent.matchAll(sectionRegex));
     
     console.log(`Found ${sectionMatches.length} H2 sections in Qasas al-Anbiya Teil 2`);
     
+    // Jeden Abschnitt durchgehen und alle Inhalte sammeln
     for (let i = 0; i < sectionMatches.length; i++) {
       const arabicNumber = sectionMatches[i][1];
       const title = sectionMatches[i][2].trim();
+      const fullHeader = `(${arabicNumber}) ${title}`;
+      
+      // H2-Überschrift als spezielles Strukturelement hinzufügen
+      allWords.push(`##${fullHeader}##`);
       
       // Den Text zwischen aktueller und nächster Überschrift extrahieren
       const currentIndex = sectionMatches[i].index;
       const nextIndex = i + 1 < sectionMatches.length ? sectionMatches[i + 1].index : htmlContent.length;
       const sectionContent = htmlContent.substring(currentIndex, nextIndex);
       
-      // Alle <p> Elemente in diesem Abschnitt finden
-      const paragraphs = [];
+      // Alle <p> Elemente in diesem Abschnitt sammeln
       const paragraphRegex = /<p[^>]*>(.*?)<\/p>/gs;
       let paragraphMatch;
       
@@ -140,35 +150,32 @@ function parseQasasAlAnbiyaPart2HTML(htmlContent) {
         if (paragraphHTML) {
           const words = extractWordsFromHTML(paragraphHTML);
           if (words.length > 0) {
-            paragraphs.push({
-              words: words,
-              fullText: words.join(' ')
-            });
+            allWords.push(...words);
           }
         }
       }
-      
-      // Seite nur hinzufügen, wenn sie Inhalt hat
-      if (paragraphs.length > 0) {
-        pages.push({
-          number: i + 1,
-          title: title,
-          paragraphs: paragraphs
-        });
-        
-        console.log(`Created page ${i + 1}: "${title}" with ${paragraphs.length} paragraphs`);
-      }
     }
     
-    console.log(`Total pages created: ${pages.length}`);
+    // Alles als eine große Seite mit eingebetteten Überschriften
+    if (allWords.length > 0) {
+      allParagraphs.push({
+        words: allWords,
+        fullText: allWords.join(' ').replace(/##([^#]+)##/g, '\n\n$1\n\n') // Formatierung für Überschriften
+      });
+      
+      const pages = [{
+        number: 1,
+        title: mainTitle,
+        paragraphs: allParagraphs
+      }];
+      
+      console.log(`Combined content into 1 page with ${allWords.length} elements (including headers)`);
+      console.log(`Content includes ${sectionMatches.length} section headers`);
+      
+      return pages;
+    }
     
-    // Debug: Zeige erste paar Wörter jeder Seite
-    pages.forEach((page, index) => {
-      const firstWords = page.paragraphs[0]?.words.slice(0, 3).join(' ') || 'No words';
-      console.log(`Page ${index + 1}: ${page.title} starts with: ${firstWords}`);
-    });
-    
-    return pages;
+    return [];
   } catch (error) {
     console.error('Fehler beim Parsen der Qasas al-Anbiya Teil 2 HTML-Datei:', error);
     return [];

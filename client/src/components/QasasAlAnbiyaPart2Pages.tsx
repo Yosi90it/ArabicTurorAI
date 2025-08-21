@@ -176,21 +176,36 @@ function QasasAlAnbiyaPart2Pages({ onWordClick }: QasasAlAnbiyaPart2PagesProps) 
             <div className="space-y-6" dir="rtl">
               {currentPage.paragraphs.map((paragraph, paragraphIndex) => (
                 <div key={paragraphIndex} className="text-right leading-loose">
-                  <p className="text-lg text-gray-700 leading-relaxed">
+                  <div className="text-lg text-gray-700 leading-relaxed">
                     {paragraph.words && paragraph.words.length > 0 ? (
-                      paragraph.words.map((word, wordIndex) => (
-                        <span key={wordIndex}>
-                          <span
-                            className={`word cursor-pointer hover:bg-purple-100 transition-colors duration-200 px-1 py-0.5 rounded ${
-                              selectedWord === word ? 'bg-purple-200' : ''
-                            }`}
-                            onClick={() => handleWordClick(word, "", "", "")}
-                          >
-                            {tashkeelEnabled ? word : word.replace(/[\u064B-\u065F\u0670\u0640]/g, '')}
+                      paragraph.words.map((word, wordIndex) => {
+                        // Check if this word is a section header (##header##)
+                        if (word.startsWith('##') && word.endsWith('##')) {
+                          const headerText = word.slice(2, -2); // Remove ## markers
+                          return (
+                            <div key={wordIndex} className="my-8 text-center">
+                              <h2 className="text-2xl font-bold text-purple-800 border-b-2 border-purple-200 pb-2 inline-block">
+                                {headerText}
+                              </h2>
+                            </div>
+                          );
+                        }
+                        
+                        // Regular clickable word
+                        return (
+                          <span key={wordIndex}>
+                            <span
+                              className={`word cursor-pointer hover:bg-purple-100 transition-colors duration-200 px-1 py-0.5 rounded ${
+                                selectedWord === word ? 'bg-purple-200' : ''
+                              }`}
+                              onClick={() => handleWordClick(word, "", "", "")}
+                            >
+                              {tashkeelEnabled ? word : word.replace(/[\u064B-\u065F\u0670\u0640]/g, '')}
+                            </span>
+                            {wordIndex < paragraph.words.length - 1 && ' '}
                           </span>
-                          {wordIndex < paragraph.words.length - 1 && ' '}
-                        </span>
-                      ))
+                        );
+                      })
                     ) : (
                       // Fallback for simple text
                       paragraph.fullText?.split(' ').map((word, wordIndex, array) => (
@@ -207,7 +222,7 @@ function QasasAlAnbiyaPart2Pages({ onWordClick }: QasasAlAnbiyaPart2PagesProps) 
                         </span>
                       ))
                     )}
-                  </p>
+                  </div>
                 </div>
               ))}
             </div>
