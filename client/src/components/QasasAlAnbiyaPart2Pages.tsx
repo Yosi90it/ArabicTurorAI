@@ -40,7 +40,8 @@ function QasasAlAnbiyaPart2Pages({ onWordClick }: QasasAlAnbiyaPart2PagesProps) 
 
   const { data: pagesData, isLoading, error } = useQuery({
     queryKey: ['/api/qasas-pages-2'],
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 0, // Always fresh data
+    gcTime: 0, // No caching (TanStack Query v5)
   });
 
   const pages: Page[] = pagesData?.pages || [];
