@@ -112,10 +112,12 @@ export default function QiratuRashidaPages({ interlinearEnabled = false }: Qirat
 
       {/* Arabischer Text-Container mit Rahmen wie im Bild */}
       <div className="border-2 border-gray-300 rounded-lg p-8 min-h-96 arabic-container bg-white">
-        <div className="space-y-6">
+        <div className="space-y-6" dir="rtl">
           {currentPageData.paragraphs.map((paragraph, paragraphIndex) => (
-            <div key={paragraphIndex} className="text-lg leading-relaxed arabic-container">
-              {renderParagraph(paragraph.words, paragraph.maxWordsPerLine, currentPage, paragraphIndex)}
+            <div key={paragraphIndex} className="text-right leading-loose">
+              <div className="text-lg text-gray-700 leading-relaxed">
+                {renderParagraph(paragraph.words, paragraph.maxWordsPerLine, currentPage, paragraphIndex)}
+              </div>
             </div>
           ))}
         </div>

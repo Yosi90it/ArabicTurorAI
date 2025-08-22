@@ -148,10 +148,10 @@ function QasasAlAnbiyaPages({ onWordClick }: QasasAlAnbiyaPagesProps) {
         </div>
 
         {/* Page Content */}
-        <div className="font-arabic text-lg leading-relaxed text-right space-y-4">
+        <div className="font-arabic text-lg leading-relaxed text-right">
           {currentPage.paragraphs.map((paragraph: Paragraph, pIndex: number) => (
-            <div key={pIndex} className="mb-6">
-              <p className="text-lg leading-loose">
+            <div key={pIndex} className="text-right leading-loose">
+              <div className="text-lg text-gray-700 leading-relaxed">
                 {paragraph.words.map((word: Word, wIndex: number) => {
                   const displayText = formatArabicText(word.arabic);
                   return (
@@ -168,7 +168,7 @@ function QasasAlAnbiyaPages({ onWordClick }: QasasAlAnbiyaPagesProps) {
                     </span>
                   );
                 })}
-              </p>
+              </div>
             </div>
           ))}
         </div>
