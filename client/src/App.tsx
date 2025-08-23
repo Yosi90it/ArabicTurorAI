@@ -11,6 +11,7 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { TrialProvider } from "@/contexts/TrialContext";
 import { SimpleGamificationProvider } from "@/contexts/SimpleGamificationContext";
+import { ReminderProvider } from "@/contexts/ReminderContext";
 import Layout from "@/components/Layout";
 import AiChat from "@/pages/AiChat";
 import FlashcardsNew from "@/pages/FlashcardsNew";
@@ -29,6 +30,7 @@ import Signup from "@/pages/Signup";
 import Login from "@/pages/Login";
 import Learn from "@/pages/Learn";
 import SelectLanguage from "@/pages/SelectLanguage";
+import Settings from "@/pages/Settings";
 import TrialExpiredBanner from "@/components/TrialExpiredBanner";
 import GlobalHeader from "@/components/GlobalHeader";
 import NotFound from "@/pages/not-found";
@@ -100,6 +102,7 @@ function Router() {
             <Route path="/daily-challenge" component={DailyChallenge} />
             <Route path="/weekly-plan" component={WeeklyPlan} />
             <Route path="/gamification" component={SimpleGoalTracker} />
+            <Route path="/settings" component={Settings} />
             <Route path="/admin-panel" component={ProtectedAdminRoute} />
             <Route component={NotFound} />
           </Switch>
@@ -116,19 +119,21 @@ function App() {
         <TrialProvider>
           <AuthProvider>
             <SimpleGamificationProvider>
-              <ContentProvider>
-                <FlashcardProvider>
-                  <TashkeelProvider>
-                    <WordByWordProvider>
-                      <TooltipProvider>
-                      <GlobalHeader />
-                      <Toaster />
-                      <Router />
-                      </TooltipProvider>
-                    </WordByWordProvider>
-                  </TashkeelProvider>
-                </FlashcardProvider>
-              </ContentProvider>
+              <ReminderProvider>
+                <ContentProvider>
+                  <FlashcardProvider>
+                    <TashkeelProvider>
+                      <WordByWordProvider>
+                        <TooltipProvider>
+                          <GlobalHeader />
+                          <Toaster />
+                          <Router />
+                        </TooltipProvider>
+                      </WordByWordProvider>
+                    </TashkeelProvider>
+                  </FlashcardProvider>
+                </ContentProvider>
+              </ReminderProvider>
             </SimpleGamificationProvider>
           </AuthProvider>
         </TrialProvider>

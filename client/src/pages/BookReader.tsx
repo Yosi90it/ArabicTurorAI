@@ -11,6 +11,7 @@ import QiratuRashidaPages from "@/components/QiratuRashidaPages";
 import QasasAlAnbiyaPages from "@/components/QasasAlAnbiyaPages";
 import QasasAlAnbiyaPart2Pages from "@/components/QasasAlAnbiyaPart2Pages";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useReminder } from "@/contexts/ReminderContext";
 
 interface SelectedWord {
   word: string;
@@ -25,6 +26,7 @@ export default function BookReader() {
   const { addFlashcard } = useFlashcards();
   const { toast } = useToast();
   const { strings } = useLanguage();
+  const { studySessionStarted, studySessionEnded } = useReminder();
   
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -32,6 +34,15 @@ export default function BookReader() {
   const [interlinearEnabled, setInterlinearEnabled] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("alle");
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Track when user leaves the book reader
+  useEffect(() => {
+    return () => {
+      if (selectedBook) {
+        studySessionEnded();
+      }
+    };
+  }, [selectedBook, studySessionEnded]);
 
   // Book library data with progress and difficulty levels
   const bookLibrary = [
@@ -232,6 +243,7 @@ export default function BookReader() {
                     if (matchingBook) {
                       setSelectedBook(matchingBook);
                       setCurrentPage(0);
+                      studySessionStarted(); // Track study session
                     }
                   }}
                 >

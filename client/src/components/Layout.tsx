@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Sidebar from './Sidebar';
+import ReminderPopup from './ReminderPopup';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -47,6 +48,9 @@ export default function Layout({ children }: LayoutProps) {
           {children}
         </div>
       </main>
+      
+      {/* Reminder Popup - Global */}
+      <ReminderPopup />
     </div>
   );
 }

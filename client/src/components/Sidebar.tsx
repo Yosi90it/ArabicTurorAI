@@ -54,6 +54,11 @@ const navigationItems = [
     icon: Trophy,
     label: "Erfolge",
     route: "/gamification"
+  },
+  {
+    icon: Settings,
+    label: "Einstellungen",
+    route: "/settings"
   }
 ];
 
