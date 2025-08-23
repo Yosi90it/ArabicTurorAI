@@ -5,14 +5,21 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
-import { Clock, Target, Bell, Settings, Save } from 'lucide-react';
+import { Clock, Target, Bell, Settings, Save, Smartphone, TestTube } from 'lucide-react';
 import { useReminder } from '@/contexts/ReminderContext';
 import { useToast } from '@/hooks/use-toast';
 
 export default function ReminderSettings() {
-  const { settings, updateSettings } = useReminder();
+  const { 
+    settings, 
+    updateSettings, 
+    setupPushNotifications, 
+    disablePushNotifications, 
+    testPushNotification 
+  } = useReminder();
   const { toast } = useToast();
   const [localSettings, setLocalSettings] = useState(settings);
+  const [pushLoading, setPushLoading] = useState(false);
 
   const handleSave = () => {
     updateSettings(localSettings);
@@ -20,6 +27,29 @@ export default function ReminderSettings() {
       title: "Einstellungen gespeichert",
       description: "Deine Erinnerungseinstellungen wurden aktualisiert.",
     });
+  };
+
+  const handlePushToggle = async (enabled: boolean) => {
+    setPushLoading(true);
+    try {
+      if (enabled) {
+        const success = await setupPushNotifications();
+        if (success) {
+          setLocalSettings(prev => ({ ...prev, pushNotificationsEnabled: true }));
+        }
+      } else {
+        const success = await disablePushNotifications();
+        if (success) {
+          setLocalSettings(prev => ({ ...prev, pushNotificationsEnabled: false }));
+        }
+      }
+    } finally {
+      setPushLoading(false);
+    }
+  };
+
+  const handleTestNotification = async () => {
+    await testPushNotification();
   };
 
   const intervalOptions = [
@@ -68,6 +98,64 @@ export default function ReminderSettings() {
                 setLocalSettings(prev => ({ ...prev, enabled: checked }))
               }
             />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Push Notifications */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Smartphone className="h-5 w-5" />
+            Mobile Push-Benachrichtigungen
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <Label htmlFor="push-notifications" className="text-base font-medium">
+                Push-Benachrichtigungen aktivieren
+              </Label>
+              <p className="text-sm text-gray-600 mt-1">
+                Erhalte Erinnerungen auch wenn die App geschlossen ist (funktioniert auf dem Handy)
+              </p>
+            </div>
+            <Switch
+              id="push-notifications"
+              checked={localSettings.pushNotificationsEnabled}
+              onCheckedChange={handlePushToggle}
+              disabled={pushLoading}
+            />
+          </div>
+
+          {localSettings.pushNotificationsEnabled && (
+            <div className="bg-green-50 p-3 rounded-lg">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-green-800">
+                    Push-Benachrichtigungen sind aktiv
+                  </p>
+                  <p className="text-xs text-green-600">
+                    Du erhältst Erinnerungen auch wenn die App geschlossen ist
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleTestNotification}
+                  className="text-green-700 border-green-300 hover:bg-green-100"
+                >
+                  <TestTube className="h-4 w-4 mr-1" />
+                  Test
+                </Button>
+              </div>
+            </div>
+          )}
+
+          <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded-lg">
+            <strong>Hinweis:</strong> Push-Benachrichtigungen funktionieren am besten wenn du die 
+            Webapp zu deinem Homescreen hinzufügst. Tippe in deinem Browser auf "Teilen" → 
+            "Zum Homescreen hinzufügen".
           </div>
         </CardContent>
       </Card>
@@ -250,6 +338,7 @@ export default function ReminderSettings() {
                 'Erinnerungen sind deaktiviert'
               }
             </p>
+            <p>• Push-Benachrichtigungen: {localSettings.pushNotificationsEnabled ? 'Aktiviert' : 'Deaktiviert'}</p>
             <p>• Tagesziel: {localSettings.dailyGoal} Minuten</p>
             <p>• Lernserie-Ziel: {localSettings.streakTarget} Tage</p>
           </div>

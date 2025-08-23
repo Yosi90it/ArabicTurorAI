@@ -1,6 +1,7 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { PushNotificationService } from "./pushNotifications";
 import { insertUserSchema, loginUserSchema } from "@shared/schema";
 import jwt from 'jsonwebtoken';
 import multer from 'multer';
@@ -845,6 +846,159 @@ Gib nur den arabischen Fließtext zurück, ohne Übersetzung oder Kommentare.`;
       });
     }
   });
+
+  // Push Notification API Endpoints
+  
+  // Gibt den öffentlichen VAPID-Schlüssel zurück
+  app.get("/api/push-vapid-key", async (req: Request, res: Response) => {
+    try {
+      const { vapidKeys } = await import('./pushNotifications');
+      res.json({ 
+        publicKey: vapidKeys.publicKey 
+      });
+    } catch (error) {
+      console.error('VAPID key error:', error);
+      res.status(500).json({ 
+        error: "Fehler beim Abrufen des VAPID-Schlüssels",
+        message: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+  });
+  
+  // Registriert eine neue Push-Subscription
+  app.post("/api/push-subscription", async (req: Request, res: Response) => {
+    try {
+      const { endpoint, keys } = req.body;
+      
+      if (!endpoint || !keys || !keys.p256dh || !keys.auth) {
+        return res.status(400).json({ 
+          error: "Missing required subscription data" 
+        });
+      }
+
+      const subscription = {
+        endpoint,
+        keys: {
+          p256dh: keys.p256dh,
+          auth: keys.auth
+        }
+      };
+
+      const success = PushNotificationService.addSubscription(subscription);
+      
+      if (success) {
+        res.json({ 
+          success: true, 
+          message: "Push-Subscription erfolgreich registriert" 
+        });
+      } else {
+        res.status(500).json({ 
+          error: "Fehler beim Registrieren der Push-Subscription" 
+        });
+      }
+    } catch (error) {
+      console.error('Push subscription error:', error);
+      res.status(500).json({ 
+        error: "Internal server error",
+        message: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+  });
+
+  // Entfernt eine Push-Subscription
+  app.post("/api/push-unsubscribe", async (req: Request, res: Response) => {
+    try {
+      const { endpoint } = req.body;
+      
+      if (endpoint) {
+        PushNotificationService.removeSubscription(endpoint);
+      }
+      
+      res.json({ 
+        success: true, 
+        message: "Push-Subscription entfernt" 
+      });
+    } catch (error) {
+      console.error('Push unsubscribe error:', error);
+      res.status(500).json({ 
+        error: "Internal server error",
+        message: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+  });
+
+  // Sendet eine Test-Push-Benachrichtigung
+  app.post("/api/push-test", async (req: Request, res: Response) => {
+    try {
+      const testPayload = {
+        title: 'Test-Benachrichtigung',
+        body: 'Push-Benachrichtigungen funktionieren!',
+        icon: '/icon-192.png',
+        data: { url: '/dashboard' }
+      };
+
+      const successCount = await PushNotificationService.sendToAll(testPayload);
+      
+      res.json({ 
+        success: true, 
+        message: `Test-Benachrichtigung an ${successCount} Geräte gesendet` 
+      });
+    } catch (error) {
+      console.error('Push test error:', error);
+      res.status(500).json({ 
+        error: "Fehler beim Senden der Test-Benachrichtigung",
+        message: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+  });
+
+  // Sendet eine Lern-Erinnerung
+  app.post("/api/push-reminder", async (req: Request, res: Response) => {
+    try {
+      const { userId } = req.body;
+      
+      const success = await PushNotificationService.sendLearningReminder(userId);
+      
+      if (success) {
+        res.json({ 
+          success: true, 
+          message: "Lern-Erinnerung gesendet" 
+        });
+      } else {
+        res.status(500).json({ 
+          error: "Fehler beim Senden der Lern-Erinnerung" 
+        });
+      }
+    } catch (error) {
+      console.error('Push reminder error:', error);
+      res.status(500).json({ 
+        error: "Fehler beim Senden der Lern-Erinnerung",
+        message: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+  });
+
+  // Status der Push-Benachrichtigungen
+  app.get("/api/push-status", async (req: Request, res: Response) => {
+    try {
+      const subscriptionCount = PushNotificationService.getSubscriptionCount();
+      
+      res.json({
+        subscriptions: subscriptionCount,
+        status: subscriptionCount > 0 ? 'active' : 'inactive',
+        service: 'web-push'
+      });
+    } catch (error) {
+      console.error('Push status error:', error);
+      res.status(500).json({ 
+        error: "Fehler beim Abrufen des Push-Status",
+        message: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+  });
+
+  // Starte geplante Push-Erinnerungen beim Server-Start
+  PushNotificationService.startScheduledReminders();
 
   const httpServer = createServer(app);
   return httpServer;

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { pushNotificationManager } from '@/utils/pushNotifications';
 
 interface ReminderSettings {
   enabled: boolean;
@@ -8,6 +9,7 @@ interface ReminderSettings {
   lastShown: number;
   dailyGoal: number; // minutes per day
   streakTarget: number; // days
+  pushNotificationsEnabled: boolean;
 }
 
 interface ReminderContextType {
@@ -20,6 +22,9 @@ interface ReminderContextType {
   studySessionEnded: () => void;
   getTodayStudyTime: () => number;
   getCurrentStreak: () => number;
+  setupPushNotifications: () => Promise<boolean>;
+  disablePushNotifications: () => Promise<boolean>;
+  testPushNotification: () => Promise<void>;
 }
 
 const defaultSettings: ReminderSettings = {
@@ -28,7 +33,8 @@ const defaultSettings: ReminderSettings = {
   selectedInterval: 30, // default 30 minutes
   lastShown: 0,
   dailyGoal: 20, // 20 minutes per day
-  streakTarget: 7 // 7 days streak goal
+  streakTarget: 7, // 7 days streak goal
+  pushNotificationsEnabled: false
 };
 
 const ReminderContext = createContext<ReminderContextType | undefined>(undefined);
@@ -133,6 +139,44 @@ export function ReminderProvider({ children }: { children: ReactNode }) {
     return streak;
   };
 
+  const setupPushNotifications = async (): Promise<boolean> => {
+    const success = await pushNotificationManager.setupPushNotifications();
+    if (success) {
+      setSettings(prev => ({ ...prev, pushNotificationsEnabled: true }));
+      toast({
+        title: "Push-Benachrichtigungen aktiviert",
+        description: "Du erhältst jetzt Erinnerungen auch wenn die App geschlossen ist.",
+      });
+    } else {
+      toast({
+        title: "Push-Benachrichtigungen fehlgeschlagen",
+        description: "Benachrichtigungen konnten nicht aktiviert werden. Prüfe deine Browser-Einstellungen.",
+        variant: "destructive"
+      });
+    }
+    return success;
+  };
+
+  const disablePushNotifications = async (): Promise<boolean> => {
+    const success = await pushNotificationManager.disablePushNotifications();
+    if (success) {
+      setSettings(prev => ({ ...prev, pushNotificationsEnabled: false }));
+      toast({
+        title: "Push-Benachrichtigungen deaktiviert",
+        description: "Du erhältst keine Benachrichtigungen mehr wenn die App geschlossen ist.",
+      });
+    }
+    return success;
+  };
+
+  const testPushNotification = async (): Promise<void> => {
+    await pushNotificationManager.showTestNotification();
+    toast({
+      title: "Test-Benachrichtigung gesendet",
+      description: "Prüfe ob du die Benachrichtigung erhalten hast.",
+    });
+  };
+
   return (
     <ReminderContext.Provider value={{
       settings,
@@ -143,7 +187,10 @@ export function ReminderProvider({ children }: { children: ReactNode }) {
       studySessionStarted,
       studySessionEnded,
       getTodayStudyTime,
-      getCurrentStreak
+      getCurrentStreak,
+      setupPushNotifications,
+      disablePushNotifications,
+      testPushNotification
     }}>
       {children}
     </ReminderContext.Provider>
