@@ -54,6 +54,7 @@ export default function AiChat() {
   // Voice Pipeline state
   const [voiceState, setVoiceState] = useState<'idle' | 'recording' | 'transcribing' | 'thinking' | 'speaking'>('idle');
   const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
+  const [recordingDuration, setRecordingDuration] = useState<number>(5); // seconds
   
 
   
@@ -472,10 +473,10 @@ export default function AiChat() {
       setVoiceState('recording');
       toast({
         title: "Aufnahme gestartet",
-        description: "Sprechen Sie jetzt (5 Sekunden)...",
+        description: `Sprechen Sie jetzt (${recordingDuration} Sekunden)...`,
       });
       
-      const audioBlob = await recordClip(5);
+      const audioBlob = await recordClip(recordingDuration);
       
       setVoiceState('transcribing');
       toast({
@@ -483,7 +484,7 @@ export default function AiChat() {
         description: "Ihre Sprache wird verarbeitet...",
       });
       
-      const transcription = await transcribe(audioBlob, 5000);
+      const transcription = await transcribe(audioBlob, recordingDuration * 1000);
       
       if (!transcription.text.trim()) {
         toast({
@@ -733,6 +734,8 @@ export default function AiChat() {
                 onVoiceInput={handleVoiceInput}
                 voiceState={voiceState}
                 voiceStateText={getVoiceButtonText()}
+                recordingDuration={recordingDuration}
+                onRecordingDurationChange={setRecordingDuration}
               />
             </CardContent>
           </Card>
