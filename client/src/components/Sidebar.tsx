@@ -81,7 +81,7 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-white overflow-hidden">
+    <div className="h-screen flex flex-col bg-white">
       {/* Brand Header */}
       <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-orange-50 to-amber-50">
         <div className="flex items-center gap-3 mb-2">
@@ -103,8 +103,8 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
       </div>
 
       {/* Navigation Links */}
-      <div className="flex-1 relative">
-        <nav className="h-full px-3 space-y-2 overflow-y-auto pb-4 custom-scrollbar" style={{scrollbarWidth: 'thin', scrollbarColor: '#e5e7eb #f9fafb'}}>
+      <div className="flex-1 overflow-y-auto">
+        <nav className="px-3 space-y-2 pb-4">
           {/* Dashboard Link */}
         <Link href="/learn">
           <div
@@ -213,22 +213,6 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
           </div>
         </Link>
         </nav>
-        
-        {/* Scroll Indicators */}
-        <div className="absolute top-0 left-0 right-0 h-6 bg-gradient-to-b from-white via-white/50 to-transparent pointer-events-none z-10"></div>
-        <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-white via-white/50 to-transparent pointer-events-none z-10"></div>
-        
-        {/* Scroll hint dots */}
-        <div className="absolute top-2 right-2 flex flex-col gap-1 pointer-events-none z-20">
-          <div className="w-1 h-1 bg-gray-400 rounded-full opacity-60"></div>
-          <div className="w-1 h-1 bg-gray-400 rounded-full opacity-40"></div>
-          <div className="w-1 h-1 bg-gray-400 rounded-full opacity-20"></div>
-        </div>
-        <div className="absolute bottom-2 right-2 flex flex-col gap-1 pointer-events-none z-20">
-          <div className="w-1 h-1 bg-gray-400 rounded-full opacity-20"></div>
-          <div className="w-1 h-1 bg-gray-400 rounded-full opacity-40"></div>
-          <div className="w-1 h-1 bg-gray-400 rounded-full opacity-60"></div>
-        </div>
       </div>
 
       {/* User Status */}
