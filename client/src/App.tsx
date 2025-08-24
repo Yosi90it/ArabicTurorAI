@@ -31,6 +31,7 @@ import Login from "@/pages/Login";
 import Learn from "@/pages/Learn";
 import SelectLanguage from "@/pages/SelectLanguage";
 import Settings from "@/pages/Settings";
+import VoiceSmoke from "@/pages/VoiceSmoke";
 import TrialExpiredBanner from "@/components/TrialExpiredBanner";
 import GlobalHeader from "@/components/GlobalHeader";
 import NotFound from "@/pages/not-found";
@@ -103,6 +104,7 @@ function Router() {
             <Route path="/weekly-plan" component={WeeklyPlan} />
             <Route path="/gamification" component={SimpleGoalTracker} />
             <Route path="/settings" component={Settings} />
+            <Route path="/voice-smoke" component={VoiceSmoke} />
             <Route path="/admin-panel" component={ProtectedAdminRoute} />
             <Route component={NotFound} />
           </Switch>

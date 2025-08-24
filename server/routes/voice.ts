@@ -1,131 +1,173 @@
-import { Router, type Request, type Response } from "express";
-import multer from "multer";
-import OpenAI from "openai";
-import { toFile } from "openai/uploads";
-
-// --- OpenAI Client ---
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
-
-// --- Upload (Memory) ---
-const upload = multer({ storage: multer.memoryStorage() });
-
-// --- simples Tageslimit im RAM ---
-const DAILY_MINUTES = Number(process.env.DAILY_MINUTES || 10);
-type UsageRow = { date: string; seconds: number };
-const usageMap = new Map<string, UsageRow>();
-const todayStr = () => new Date().toISOString().slice(0, 10);
-const getUserId = (req: Request) => (req.headers["x-user-id"] as string) || req.ip;
-
-function hasBudgetLeft(userId: string, extraSeconds: number) {
-  const t = todayStr();
-  const row = usageMap.get(userId) || { date: t, seconds: 0 };
-  const limit = DAILY_MINUTES * 60;
-  return row.date !== t ? extraSeconds <= limit : row.seconds + extraSeconds <= limit;
-}
-function addUsageSeconds(userId: string, seconds: number) {
-  const t = todayStr();
-  const row = usageMap.get(userId) || { date: t, seconds: 0 };
-  if (row.date !== t) {
-    row.date = t;
-    row.seconds = 0;
-  }
-  row.seconds += seconds;
-  usageMap.set(userId, row);
-  return row.seconds;
-}
+import { Router, Request, Response } from 'express';
+import multer from 'multer';
+import OpenAI from 'openai';
+import { createReadStream } from 'fs';
+import { writeFileSync, unlinkSync } from 'fs';
+import { tmpdir } from 'os';
+import { join } from 'path';
 
 const router = Router();
+const upload = multer({ storage: multer.memoryStorage() });
 
-/**
- * POST /api/transcribe
- * FormData: audio (file), durationMs (number)
- */
-router.post("/api/transcribe", upload.single("audio"), async (req: Request, res: Response) => {
+// Extend Request interface for multer
+interface MulterRequest extends Request {
+  file?: Express.Multer.File;
+}
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+});
+
+// Daily limit tracking (in memory for simplicity)
+let dailyUsage = 0;
+const DAILY_LIMIT = parseInt(process.env.DAILY_MINUTES || '10') * 60; // Convert to seconds
+let lastResetDate = new Date().toDateString();
+
+function checkAndResetDailyLimit() {
+  const today = new Date().toDateString();
+  if (today !== lastResetDate) {
+    dailyUsage = 0;
+    lastResetDate = today;
+  }
+}
+
+function checkDailyLimit(durationSeconds: number): boolean {
+  checkAndResetDailyLimit();
+  return (dailyUsage + durationSeconds) <= DAILY_LIMIT;
+}
+
+function updateDailyUsage(durationSeconds: number) {
+  dailyUsage += durationSeconds;
+}
+
+// Health check endpoint
+router.get('/health', (req: Request, res: Response) => {
+  res.json({ ok: true });
+});
+
+// Transcribe audio using OpenAI Whisper
+router.post('/transcribe', upload.single('audio'), async (req: MulterRequest, res: Response) => {
+  let tempFilePath: string | null = null;
+  
   try {
-    const userId = getUserId(req);
-    const durationMs = Number(req.body.durationMs || 0);
-    const durationSec = Math.ceil(durationMs / 1000);
-
-    if (!req.file) return res.status(400).json({ error: "No audio file" });
-    if (!hasBudgetLeft(userId, durationSec)) {
-      return res.status(429).json({ error: "Tageslimit erreicht" });
+    if (!req.file) {
+      return res.status(400).json({ error: 'No audio file provided' });
     }
 
-    const file = await toFile(
-      new Blob([req.file.buffer], { type: req.file.mimetype || "audio/webm" }),
-      req.file.originalname || "clip.webm"
-    );
+    const durationMs = parseInt(req.body.durationMs || '0');
+    const durationSeconds = Math.ceil(durationMs / 1000);
 
-    const result = await openai.audio.transcriptions.create({
-      model: "whisper-1",
-      file,
+    // Check daily limit
+    if (!checkDailyLimit(durationSeconds)) {
+      return res.status(429).json({ 
+        error: 'Daily usage limit exceeded',
+        dailyUsage,
+        dailyLimit: DAILY_LIMIT
+      });
+    }
+
+    // Create temporary file for OpenAI API
+    const fileExtension = req.file.mimetype.split('/')[1] || 'webm';
+    tempFilePath = join(tmpdir(), `audio_${Date.now()}.${fileExtension}`);
+    writeFileSync(tempFilePath, req.file.buffer);
+
+    const transcription = await openai.audio.transcriptions.create({
+      file: createReadStream(tempFilePath),
+      model: 'whisper-1',
+      language: 'de' // German language
     });
 
-    const used = addUsageSeconds(userId, durationSec);
-    res.json({ text: result.text, usedSeconds: durationSec, usedSecondsToday: used });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Transcribe failed" });
+    // Update daily usage
+    updateDailyUsage(durationSeconds);
+
+    res.json({ 
+      text: transcription.text,
+      dailyUsage,
+      dailyLimit: DAILY_LIMIT
+    });
+
+  } catch (error) {
+    console.error('Transcription error:', error);
+    res.status(500).json({ error: 'Transcription failed' });
+  } finally {
+    // Clean up temporary file
+    if (tempFilePath) {
+      try {
+        unlinkSync(tempFilePath);
+      } catch (cleanupError) {
+        console.error('Error cleaning up temp file:', cleanupError);
+      }
+    }
   }
 });
 
-/**
- * POST /api/chat
- * Body: { messages: [{role:"system"|"user"|"assistant", content:string}] }
- */
-router.post("/api/chat", async (req: Request, res: Response) => {
+// Chat with GPT-4o-mini
+router.post('/chat', async (req: Request, res: Response) => {
   try {
-    const { messages } = req.body as {
-      messages: { role: "system" | "user" | "assistant"; content: string }[];
-    };
+    const { message } = req.body;
+
+    if (!message) {
+      return res.status(400).json({ error: 'No message provided' });
+    }
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      temperature: 0.6,
-      messages,
+      model: 'gpt-4o-mini',
+      messages: [
+        {
+          role: 'system',
+          content: 'Du bist ein hilfreicher Arabisch-Lernassistent. Antworte kurz und prägnant auf Deutsch.'
+        },
+        {
+          role: 'user',
+          content: message
+        }
+      ],
+      max_tokens: 150,
+      temperature: 0.7
     });
 
-    const answer = completion.choices[0]?.message?.content ?? "";
-    res.json({ answer });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Chat failed" });
+    const responseText = completion.choices[0]?.message?.content || 'Entschuldigung, ich konnte keine Antwort generieren.';
+
+    res.json({ 
+      response: responseText,
+      usage: completion.usage
+    });
+
+  } catch (error) {
+    console.error('Chat error:', error);
+    res.status(500).json({ error: 'Chat request failed' });
   }
 });
 
-/**
- * POST /api/tts
- * Body: { text: string, estimateSec?: number }
- * Antwort: audio/mpeg (MP3)
- */
-router.post("/api/tts", async (req: Request, res: Response) => {
+// Text-to-Speech using OpenAI TTS
+router.post('/tts', async (req: Request, res: Response) => {
   try {
-    const userId = getUserId(req);
-    const { text, estimateSec } = req.body as { text: string; estimateSec?: number };
-    if (!text) return res.status(400).json({ error: "Missing text" });
+    const { text } = req.body;
 
-    // grobe Sprechdauer-Schätzung: ~12 Zeichen ≈ 1 Sek
-    const est = Math.ceil(Number(estimateSec || text.length / 12));
-    if (!hasBudgetLeft(userId, est)) {
-      return res.status(429).json({ error: "Tageslimit erreicht" });
+    if (!text) {
+      return res.status(400).json({ error: 'No text provided' });
     }
 
-    const speech = await openai.audio.speech.create({
-      model: "gpt-4o-mini-tts", // alternativ: "tts-1"
-      voice: "alloy",           // Stimmen: alloy, verse, aria, ...
-      input: text,
-      format: "mp3",
+    const mp3 = await openai.audio.speech.create({
+      model: 'tts-1',
+      voice: 'alloy',
+      input: text.substring(0, 4096), // Limit text length
+      response_format: 'mp3'
     });
 
-    const used = addUsageSeconds(userId, est);
-    res.setHeader("Content-Type", "audio/mpeg");
-    res.setHeader("X-Used-Seconds-Today", String(used));
+    const buffer = Buffer.from(await mp3.arrayBuffer());
 
-    const buf = Buffer.from(await speech.arrayBuffer());
-    res.send(buf);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "TTS failed" });
+    res.set({
+      'Content-Type': 'audio/mpeg',
+      'Content-Length': buffer.length.toString(),
+      'Content-Disposition': 'inline; filename="speech.mp3"'
+    });
+
+    res.send(buffer);
+
+  } catch (error) {
+    console.error('TTS error:', error);
+    res.status(500).json({ error: 'Text-to-speech failed' });
   }
 });
 

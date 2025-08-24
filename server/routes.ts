@@ -12,6 +12,7 @@ import { createClient } from '@supabase/supabase-js';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const { parseQiratuRashidaHTML, parseQasasAlAnbiyaPart2HTML } = require('./htmlParser.js');
+import voiceRouter from './routes/voice';
 const fs = require('fs');
 const path = require('path');
 
@@ -996,6 +997,9 @@ Gib nur den arabischen Fließtext zurück, ohne Übersetzung oder Kommentare.`;
       });
     }
   });
+
+  // Voice API Routes
+  app.use('/api', voiceRouter);
 
   // Starte geplante Push-Erinnerungen beim Server-Start
   PushNotificationService.startScheduledReminders();
