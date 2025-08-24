@@ -139,7 +139,8 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
               "/flashcards": "text-indigo-600",
               "/alphabet-trainer": "text-orange-600",
               "/daily-challenge": "text-teal-600",
-              "/gamification": "text-yellow-600"
+              "/gamification": "text-yellow-600",
+              "/settings": "text-gray-600"
             };
             
             return iconColors[route] || "text-gray-600";
@@ -154,7 +155,8 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
                 "/flashcards": "bg-indigo-100 text-gray-700",
                 "/alphabet-trainer": "bg-orange-100 text-gray-700",
                 "/daily-challenge": "bg-teal-100 text-gray-700",
-                "/gamification": "bg-yellow-100 text-gray-700"
+                "/gamification": "bg-yellow-100 text-gray-700",
+                "/settings": "bg-gray-100 text-gray-700"
               };
               return activeStyles[route] || "bg-gray-100 text-gray-700";
             }
