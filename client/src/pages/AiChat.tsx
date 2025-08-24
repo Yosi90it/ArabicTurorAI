@@ -735,7 +735,6 @@ export default function AiChat() {
                 voiceState={voiceState}
                 voiceStateText={getVoiceButtonText()}
                 recordingDuration={recordingDuration}
-                onRecordingDurationChange={setRecordingDuration}
               />
             </CardContent>
           </Card>

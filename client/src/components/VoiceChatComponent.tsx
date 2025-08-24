@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Send, Loader2, Mic, Settings } from "lucide-react";
+import { Send, Loader2, Mic } from "lucide-react";
 
 interface VoiceChatProps {
   onSendMessage: (message: string) => void;
@@ -13,7 +12,6 @@ interface VoiceChatProps {
   voiceState?: 'idle' | 'recording' | 'transcribing' | 'thinking' | 'speaking';
   voiceStateText?: string;
   recordingDuration?: number;
-  onRecordingDurationChange?: (duration: number) => void;
 }
 
 export default function VoiceChatComponent({ 
@@ -24,8 +22,7 @@ export default function VoiceChatComponent({
   onVoiceInput, 
   voiceState = 'idle', 
   voiceStateText,
-  recordingDuration = 5,
-  onRecordingDurationChange
+  recordingDuration = 5
 }: VoiceChatProps) {
   // Keep only synthesis for playing Arabic text
   const [synthesis, setSynthesis] = useState<SpeechSynthesis | null>(null);
@@ -57,25 +54,7 @@ export default function VoiceChatComponent({
 
   return (
     <>
-      {/* Recording Duration Setting */}
-      {onVoiceInput && onRecordingDurationChange && (
-        <div className="flex items-center gap-2 mb-3 justify-center">
-          <Settings className="w-4 h-4 text-gray-500" />
-          <span className="text-sm text-gray-600">Aufnahmedauer:</span>
-          <Select value={recordingDuration.toString()} onValueChange={(value) => onRecordingDurationChange(parseInt(value))}>
-            <SelectTrigger className="w-20 h-8">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="3">3s</SelectItem>
-              <SelectItem value="5">5s</SelectItem>
-              <SelectItem value="8">8s</SelectItem>
-              <SelectItem value="10">10s</SelectItem>
-              <SelectItem value="15">15s</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      )}
+
 
       {/* Text Input with Voice Button */}
       <div className="flex space-x-2">
