@@ -10,6 +10,9 @@ interface VoiceChatProps {
   isLoading: boolean;
   input: string;
   setInput: (value: string) => void;
+  onVoiceInput?: () => void;
+  voiceState?: 'idle' | 'recording' | 'transcribing' | 'thinking' | 'speaking';
+  voiceStateText?: string;
 }
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
@@ -18,7 +21,7 @@ const openai = new OpenAI({
   dangerouslyAllowBrowser: true
 });
 
-export default function VoiceChatComponent({ onSendMessage, isLoading, input, setInput }: VoiceChatProps) {
+export default function VoiceChatComponent({ onSendMessage, isLoading, input, setInput, onVoiceInput, voiceState = 'idle', voiceStateText }: VoiceChatProps) {
   const { toast } = useToast();
   
   // Voice conversation state
@@ -190,7 +193,7 @@ export default function VoiceChatComponent({ onSendMessage, isLoading, input, se
         </div>
       )}
 
-      {/* Text Input */}
+      {/* Text Input with Voice Button */}
       <div className="flex space-x-2">
         <Input
           type="text"
@@ -201,6 +204,22 @@ export default function VoiceChatComponent({ onSendMessage, isLoading, input, se
           className="flex-1"
           disabled={isLoading}
         />
+        {/* Voice Pipeline Button */}
+        {onVoiceInput && (
+          <Button
+            onClick={onVoiceInput}
+            disabled={isLoading || voiceState !== 'idle'}
+            variant="outline"
+            className="px-3"
+            title="Voice input (5 seconds)"
+          >
+            {voiceState === 'idle' ? (
+              <Mic className="w-4 h-4" />
+            ) : (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            )}
+          </Button>
+        )}
         <Button 
           onClick={() => onSendMessage(input)}
           disabled={isLoading || !input.trim()}
@@ -209,6 +228,13 @@ export default function VoiceChatComponent({ onSendMessage, isLoading, input, se
           {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
         </Button>
       </div>
+      
+      {/* Voice State Indicator */}
+      {voiceState !== 'idle' && (
+        <div className="text-sm text-center text-gray-600 mt-2">
+          {voiceStateText}
+        </div>
+      )}
     </>
   );
 }

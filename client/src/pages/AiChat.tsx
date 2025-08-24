@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTashkeel } from "@/contexts/TashkeelContext";
 import { useWordByWord } from "@/contexts/WordByWordContext";
-import { Bot, User, Volume2, Loader2, Plus, BookOpen, Target, CheckCircle, ToggleLeft, ToggleRight, Send } from "lucide-react";
+import { Bot, User, Volume2, Loader2, Plus, BookOpen, Target, CheckCircle, ToggleLeft, ToggleRight, Send, Mic } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import VoiceChatComponent from "@/components/VoiceChatComponent";
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +15,7 @@ import WordModal from "@/components/WordModal";
 import { useSimpleGamification } from "@/contexts/SimpleGamificationContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import OpenAI from "openai";
+import { recordClip, transcribe, chat as voiceChat, tts } from "@/lib/voice";
 
 interface Message {
   id: number;
@@ -49,6 +50,10 @@ export default function AiChat() {
     pronunciation?: string;
   } | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  
+  // Voice Pipeline state
+  const [voiceState, setVoiceState] = useState<'idle' | 'recording' | 'transcribing' | 'thinking' | 'speaking'>('idle');
+  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
   
 
   
@@ -453,6 +458,122 @@ export default function AiChat() {
     setSelectedWord(null);
   };
 
+  // Voice Pipeline Functions
+  const handleVoiceInput = async () => {
+    if (voiceState !== 'idle' && voiceState !== 'speaking') return;
+    
+    try {
+      // Stop any playing audio
+      if (audioElement) {
+        audioElement.pause();
+        audioElement.currentTime = 0;
+      }
+      
+      setVoiceState('recording');
+      toast({
+        title: "Aufnahme gestartet",
+        description: "Sprechen Sie jetzt (5 Sekunden)...",
+      });
+      
+      const audioBlob = await recordClip(5);
+      
+      setVoiceState('transcribing');
+      toast({
+        title: "Transkription läuft",
+        description: "Ihre Sprache wird verarbeitet...",
+      });
+      
+      const transcription = await transcribe(audioBlob, 5000);
+      
+      if (!transcription.text.trim()) {
+        toast({
+          title: "Keine Sprache erkannt",
+          description: "Bitte versuchen Sie es erneut.",
+          variant: "destructive"
+        });
+        setVoiceState('idle');
+        return;
+      }
+      
+      // Add user message
+      const userMessage: Message = {
+        id: messages.length + 1,
+        sender: "ME",
+        arabic: transcription.text,
+        translation: transcription.text
+      };
+      setMessages(prev => [...prev, userMessage]);
+      
+      setVoiceState('thinking');
+      toast({
+        title: "KI denkt nach",
+        description: "Antwort wird generiert...",
+      });
+      
+      const chatResponse = await voiceChat(transcription.text);
+      
+      // Add AI response
+      const aiMessage: Message = {
+        id: messages.length + 2,
+        sender: "AI", 
+        arabic: chatResponse.response,
+        translation: chatResponse.response
+      };
+      setMessages(prev => [...prev, aiMessage]);
+      
+      setVoiceState('speaking');
+      toast({
+        title: "Antwort wird gesprochen",
+        description: "Audio wird generiert...",
+      });
+      
+      const audioBlob2 = await tts(chatResponse.response);
+      const audioUrl = URL.createObjectURL(audioBlob2);
+      
+      const audio = new Audio(audioUrl);
+      setAudioElement(audio);
+      
+      audio.onended = () => {
+        setVoiceState('idle');
+        URL.revokeObjectURL(audioUrl);
+      };
+      
+      await audio.play();
+      
+    } catch (error: any) {
+      console.error('Voice pipeline error:', error);
+      
+      let errorMessage = "Ein Fehler ist aufgetreten";
+      let errorDescription = "Bitte versuchen Sie es erneut";
+      
+      if (error.message?.includes('Daily usage limit exceeded')) {
+        errorMessage = "Tageslimit erreicht";
+        errorDescription = "Sie haben Ihr tägliches Sprachlimit erreicht";
+      } else if (error.message?.includes('429')) {
+        errorMessage = "Zu viele Anfragen";
+        errorDescription = "Bitte warten Sie einen Moment";
+      }
+      
+      toast({
+        title: errorMessage,
+        description: errorDescription,
+        variant: "destructive"
+      });
+      
+      setVoiceState('idle');
+    }
+  };
+
+  const getVoiceButtonText = () => {
+    switch (voiceState) {
+      case 'recording': return 'Aufnahme läuft...';
+      case 'transcribing': return 'Transkription...';
+      case 'thinking': return 'KI denkt...';
+      case 'speaking': return 'Spricht...';
+      default: return '';
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-6">
       {/* Modern Header */}
@@ -609,6 +730,9 @@ export default function AiChat() {
                 isLoading={isLoading}
                 input={input}
                 setInput={setInput}
+                onVoiceInput={handleVoiceInput}
+                voiceState={voiceState}
+                voiceStateText={getVoiceButtonText()}
               />
             </CardContent>
           </Card>
