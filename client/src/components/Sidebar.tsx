@@ -198,69 +198,11 @@ export default function Sidebar({ onLinkClick = () => {} }: SidebarProps) {
           </Link>
         )}
 
-        {/* Weekly Plan */}
-        <Link href="/weekly-plan">
-          <div
-            onClick={onLinkClick}
-            className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 cursor-pointer transform hover:scale-105 ${
-              isActive("/weekly-plan")
-                ? "bg-pink-100 text-gray-700"
-                : "text-gray-700 hover:bg-gray-100"
-            }`}
-          >
-            <FileText size={20} className="drop-shadow-sm text-pink-600" />
-            <span className="font-medium">{strings.weeklyPlan}</span>
-          </div>
-        </Link>
+
         </nav>
       </div>
 
-      {/* User Status */}
-      <div className="p-4 border-t border-gray-200 flex-shrink-0">
-        <div className="bg-white rounded-xl p-4 border">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-              <span className="text-white font-medium text-xs">L</span>
-            </div>
-            <div>
-              <p className="font-medium text-gray-900 text-sm">Lernender</p>
-              <p className="text-xs text-gray-600">Auf dem Weg zur Meisterschaft</p>
-            </div>
-          </div>
 
-          {/* Tashkeel Toggle */}
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-gray-600 text-sm font-medium">
-              {strings.showTashkeel}
-            </span>
-            <Switch
-              checked={tashkeelEnabled}
-              onCheckedChange={setTashkeelEnabled}
-              className="data-[state=checked]:bg-orange-500"
-            />
-          </div>
-
-          {/* Progress */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-gray-600 text-xs">{strings.level} {stats.level}</span>
-              <span className="text-gray-600 text-xs">
-                {getCurrentLevelProgress()}/{getNextLevelPoints()} XP
-              </span>
-            </div>
-            
-            <Progress 
-              value={(getCurrentLevelProgress() / getNextLevelPoints()) * 100} 
-              className="h-2 bg-gray-200"
-            />
-            
-            <div className="flex justify-between text-xs text-gray-500">
-              <span>{stats.totalPoints || 0} {strings.totalPoints}</span>
-              <span>{stats.currentStreak || 0} {strings.dayStreak}</span>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
