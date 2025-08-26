@@ -50,21 +50,7 @@ function QasasAlAnbiyaPart2Pages({ onWordClick }: QasasAlAnbiyaPart2PagesProps) 
   const handleWordClick = (word: string, translation: string, root: string, pos: string) => {
     console.log('Word clicked:', word, translation);
     setSelectedWord(word);
-    
-    // Pass to parent component if provided
-    if (onWordClick) {
-      // Create synthetic event for compatibility with BookReader
-      const syntheticEvent = {
-        target: {
-          classList: {
-            contains: () => true
-          },
-          getAttribute: (attr: string) => word,
-          getBoundingClientRect: () => ({ left: 0, top: 0, width: 0, height: 0 })
-        }
-      } as unknown as React.MouseEvent;
-      onWordClick(syntheticEvent);
-    }
+    // The actual event handling is now done in the onClick handler directly
   };
 
   const handleNextPage = () => {
@@ -195,10 +181,17 @@ function QasasAlAnbiyaPart2Pages({ onWordClick }: QasasAlAnbiyaPart2PagesProps) 
                         return (
                           <span key={wordIndex}>
                             <span
-                              className={`word cursor-pointer hover:bg-purple-100 transition-colors duration-200 px-1 py-0.5 rounded ${
+                              className={`word cursor-pointer hover:bg-purple-100 transition-colors duration-200 px-1 py-0.5 rounded clickable-word ${
                                 selectedWord === word ? 'bg-purple-200' : ''
                               }`}
-                              onClick={() => handleWordClick(word, "", "", "")}
+                              data-word={word}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleWordClick(word, "", "", "");
+                                if (onWordClick) {
+                                  onWordClick(e);
+                                }
+                              }}
                             >
                               {tashkeelEnabled ? word : word.replace(/[\u064B-\u065F\u0670\u0640]/g, '')}
                             </span>
@@ -211,10 +204,17 @@ function QasasAlAnbiyaPart2Pages({ onWordClick }: QasasAlAnbiyaPart2PagesProps) 
                       paragraph.fullText?.split(' ').map((word, wordIndex, array) => (
                         <span key={wordIndex}>
                           <span
-                            className={`word cursor-pointer hover:bg-purple-100 transition-colors duration-200 px-1 py-0.5 rounded ${
+                            className={`word cursor-pointer hover:bg-purple-100 transition-colors duration-200 px-1 py-0.5 rounded clickable-word ${
                               selectedWord === word ? 'bg-purple-200' : ''
                             }`}
-                            onClick={() => handleWordClick(word, "", "", "")}
+                            data-word={word}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleWordClick(word, "", "", "");
+                              if (onWordClick) {
+                                onWordClick(e);
+                              }
+                            }}
                           >
                             {tashkeelEnabled ? word : word.replace(/[\u064B-\u065F\u0670\u0640]/g, '')}
                           </span>
