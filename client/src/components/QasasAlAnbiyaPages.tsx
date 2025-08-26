@@ -49,21 +49,7 @@ function QasasAlAnbiyaPages({ onWordClick }: QasasAlAnbiyaPagesProps) {
   const handleWordClick = (word: string, translation: string, root: string, pos: string) => {
     console.log('Word clicked:', word, translation);
     setSelectedWord(word);
-    
-    // Pass to parent component if provided
-    if (onWordClick) {
-      // Create synthetic event for compatibility with BookReader
-      const syntheticEvent = {
-        target: {
-          classList: {
-            contains: () => true
-          },
-          getAttribute: (attr: string) => word,
-          getBoundingClientRect: () => ({ left: 0, top: 0, width: 0, height: 0 })
-        }
-      } as unknown as React.MouseEvent;
-      onWordClick(syntheticEvent);
-    }
+    // The actual event handling is now done in the onClick handler directly
   };
 
   const handleNextPage = () => {
@@ -157,8 +143,15 @@ function QasasAlAnbiyaPages({ onWordClick }: QasasAlAnbiyaPagesProps) {
                   return (
                     <span key={wIndex}>
                       <span
-                        className="cursor-pointer hover:bg-blue-100 hover:rounded px-1 py-0.5 transition-colors duration-200"
-                        onClick={() => handleWordClick(word.arabic, word.translation, word.root, word.pos)}
+                        className="cursor-pointer hover:bg-blue-100 hover:rounded px-1 py-0.5 transition-colors duration-200 clickable-word"
+                        data-word={word.arabic}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleWordClick(word.arabic, word.translation, word.root, word.pos);
+                          if (onWordClick) {
+                            onWordClick(e);
+                          }
+                        }}
                         title={`${word.arabic} → ${word.translation}`}
                       >
                         {displayText}
