@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, Loader2, Mic } from "lucide-react";
+import { Send, Loader2, Phone } from "lucide-react";
 
 interface VoiceChatProps {
   onSendMessage: (message: string) => void;
@@ -60,24 +60,24 @@ export default function VoiceChatComponent({
       <div className="flex space-x-2">
         <Input
           type="text"
-          placeholder="Nachricht eingeben oder Mikrofon verwenden..."
+          placeholder="Nachricht eingeben oder Anruf starten..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyPress={(e) => e.key === "Enter" && onSendMessage(input)}
           className="flex-1"
           disabled={isLoading}
         />
-        {/* Voice Input Button */}
+        {/* Voice Call Button */}
         {onVoiceInput && (
           <Button
             onClick={onVoiceInput}
             disabled={isLoading || voiceState !== 'idle'}
             variant="outline"
-            className="px-4"
-            title={`${recordingDuration}-Sekunden Sprachaufnahme`}
+            className={`px-4 ${voiceState === 'speaking' ? 'bg-green-50 border-green-300' : ''}`}
+            title="Sprachanruf starten"
           >
             {voiceState === 'idle' ? (
-              <Mic className="w-4 h-4" />
+              <Phone className="w-4 h-4 text-green-600" />
             ) : (
               <Loader2 className="w-4 h-4 animate-spin" />
             )}

@@ -472,7 +472,7 @@ export default function AiChat() {
       
       setVoiceState('recording');
       toast({
-        title: "Aufnahme gestartet",
+        title: "📞 Anruf gestartet",
         description: `Sprechen Sie jetzt (${recordingDuration} Sekunden)...`,
       });
       
@@ -567,10 +567,10 @@ export default function AiChat() {
 
   const getVoiceButtonText = () => {
     switch (voiceState) {
-      case 'recording': return 'Aufnahme läuft...';
-      case 'transcribing': return 'Transkription...';
-      case 'thinking': return 'KI denkt...';
-      case 'speaking': return 'Spricht...';
+      case 'recording': return '📞 Gespräch läuft...';
+      case 'transcribing': return '🔄 Verarbeitung...';
+      case 'thinking': return '🤔 KI denkt nach...';
+      case 'speaking': return '🗣️ KI antwortet...';
       default: return '';
     }
   };
