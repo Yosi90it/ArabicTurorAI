@@ -86,9 +86,20 @@ router.post('/transcribe', upload.single('audio'), async (req: MulterRequest, re
       dailyLimit: DAILY_LIMIT
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Transcription error:', error);
-    res.status(500).json({ error: 'Transcription failed' });
+    
+    if (error?.status === 429) {
+      return res.status(429).json({ 
+        error: 'OpenAI-Guthaben aufgebraucht. Bitte laden Sie Ihr OpenAI-Konto auf.',
+        details: 'insufficient_quota'
+      });
+    }
+    
+    res.status(500).json({ 
+      error: 'Transcription failed',
+      details: error?.message || 'Unknown error'
+    });
   } finally {
     // Clean up temporary file
     if (tempFilePath) {
@@ -133,9 +144,20 @@ router.post('/chat', async (req: Request, res: Response) => {
       usage: completion.usage
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Chat error:', error);
-    res.status(500).json({ error: 'Chat request failed' });
+    
+    if (error?.status === 429) {
+      return res.status(429).json({ 
+        error: 'OpenAI-Guthaben aufgebraucht. Bitte laden Sie Ihr OpenAI-Konto auf.',
+        details: 'insufficient_quota'
+      });
+    }
+    
+    res.status(500).json({ 
+      error: 'Chat request failed',
+      details: error?.message || 'Unknown error'
+    });
   }
 });
 
@@ -165,9 +187,20 @@ router.post('/tts', async (req: Request, res: Response) => {
 
     res.send(buffer);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('TTS error:', error);
-    res.status(500).json({ error: 'Text-to-speech failed' });
+    
+    if (error?.status === 429) {
+      return res.status(429).json({ 
+        error: 'OpenAI-Guthaben aufgebraucht. Bitte laden Sie Ihr OpenAI-Konto auf.',
+        details: 'insufficient_quota'
+      });
+    }
+    
+    res.status(500).json({ 
+      error: 'Text-to-speech failed',
+      details: error?.message || 'Unknown error'
+    });
   }
 });
 
