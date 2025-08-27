@@ -119,7 +119,7 @@ function MinAkhlaqPages({ onWordClick }: MinAkhlaqPagesProps) {
             من أخلاق الرسول - Min Akhlaq ar-Rasul
           </div>
           <div className="text-sm text-muted-foreground">
-            Page {currentPage.number} of {pages.length}
+            Seite {currentPage.number} von {pages.length}
           </div>
         </CardTitle>
       </CardHeader>
@@ -135,9 +135,22 @@ function MinAkhlaqPages({ onWordClick }: MinAkhlaqPagesProps) {
         {/* Page Content */}
         <div 
           className="font-arabic text-lg leading-relaxed text-right"
-          onClick={onWordClick}
+          onClick={(e) => {
+            const target = e.target as HTMLElement;
+            if (target.classList.contains('word') || target.classList.contains('clickable-word')) {
+              const word = target.textContent || target.getAttribute('data-word');
+              if (word) {
+                handleWordClick(word);
+                if (onWordClick) {
+                  onWordClick(e);
+                }
+              }
+            }
+          }}
           dangerouslySetInnerHTML={{
-            __html: currentPage.content.replace(/class="word"/g, 'class="word clickable-word"')
+            __html: currentPage.content
+              .replace(/class="word"/g, 'class="word clickable-word"')
+              .replace(/<div[^>]*class="page-number"[^>]*>.*?<\/div>/g, '')
           }}
           dir="rtl"
         />

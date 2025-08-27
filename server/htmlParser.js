@@ -398,46 +398,49 @@ function parseQasasAlAnbiyaPart2HTML(htmlContent) {
   }
 }
 
-// Parse Min Akhlaq ar-Rasul HTML for single page with continuous text
+// Parse Min Akhlaq ar-Rasul HTML with multiple pages based on page divs
 function parseMinAkhlaqHTML(htmlContent) {
   try {
     console.log('Parsing Min Akhlaq ar-Rasul HTML file for pages...');
     
     const pages = [];
     
-    // Extract title from h1 element
-    const titleMatch = htmlContent.match(/<h1[^>]*>(.*?)<\/h1>/s);
-    let title = 'مُقَدِّمَةٌ';
-    if (titleMatch) {
-      const titleWords = extractWordsFromHTML(titleMatch[1]);
-      if (titleWords.length > 0) {
-        title = titleWords.join(' ');
+    // Find all page divs 
+    const pageRegex = /<div[^>]*class="page"[^>]*>(.*?)(?=<div[^>]*class="page"|$)/gs;
+    const pageMatches = Array.from(htmlContent.matchAll(pageRegex));
+    
+    console.log(`Found ${pageMatches.length} page sections`);
+    
+    pageMatches.forEach((match, index) => {
+      let pageContent = match[1];
+      
+      // Extract title from h1 or use default
+      const titleMatch = pageContent.match(/<h1[^>]*>(.*?)<\/h1>/s);
+      let title = index === 0 ? 'مُقَدِّمَةٌ' : `الصفحة ${index + 1}`;
+      
+      if (titleMatch) {
+        const titleWords = extractWordsFromHTML(titleMatch[1]);
+        if (titleWords.length > 0) {
+          title = titleWords.join(' ');
+        }
       }
-    }
-    
-    // Extract all content after the title, treating everything as one page
-    let content = htmlContent;
-    
-    // Remove HTML structure tags but keep span.word elements
-    content = content.replace(/<\/?(!doctype|html|head|meta|style|body)[^>]*>/gi, '');
-    content = content.replace(/body\s*{[^}]*}/g, '');
-    content = content.replace(/\.word\s*{[^}]*}/g, '');
-    content = content.replace(/\.word:hover\s*{[^}]*}/g, '');
-    content = content.replace(/h2\s*{[^}]*}/g, '');
-    
-    // Remove page div wrapper but keep inner content
-    content = content.replace(/<div[^>]*class="page"[^>]*>(.*?)<\/div>/s, '$1');
-    
-    // Clean up the content while preserving spans
-    content = content.trim();
-    
-    pages.push({
-      number: 1,
-      title: title,
-      content: content
+      
+      // Clean content - remove page-number divs and unwanted elements
+      pageContent = pageContent.replace(/<div[^>]*class="page-number"[^>]*>.*?<\/div>/g, '');
+      pageContent = pageContent.replace(/<h1[^>]*>.*?<\/h1>/g, ''); // Remove h1 as it's now the title
+      pageContent = pageContent.trim();
+      
+      // Only add non-empty pages
+      if (pageContent && pageContent.length > 50) {
+        pages.push({
+          number: index + 1,
+          title: title,
+          content: pageContent
+        });
+        
+        console.log(`Processed page ${index + 1}: "${title}"`);
+      }
     });
-    
-    console.log(`Processed Min Akhlaq ar-Rasul: "${title}" as single page`);
     
     return pages;
     
