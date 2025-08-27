@@ -10,6 +10,7 @@ import WordModal from "@/components/WordModal";
 import QiratuRashidaPages from "@/components/QiratuRashidaPages";
 import QasasAlAnbiyaPages from "@/components/QasasAlAnbiyaPages";
 import QasasAlAnbiyaPart2Pages from "@/components/QasasAlAnbiyaPart2Pages";
+import MinAkhlaqPages from "@/components/MinAkhlaqPages";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useReminder } from "@/contexts/ReminderContext";
 
@@ -88,6 +89,16 @@ export default function BookReader() {
     },
     {
       id: 4,
+      title: "من أخلاق الرسول",
+      author: "عبد المحسن العباد البدر",
+      level: "mittelstufe",
+      progress: 0,
+      status: "bereit",
+      wordCount: 0,
+      description: "Über die edlen Charaktereigenschaften des Propheten Muhammad"
+    },
+    {
+      id: 5,
       title: "موسم الهجرة إلى الشمال",
       author: "الطيب صالح", 
       level: "fortgeschritten",
@@ -364,15 +375,18 @@ export default function BookReader() {
             <CardContent className="p-8">
               <div className="max-w-4xl mx-auto">
                 {selectedBook.id === 1 && (
-                  <QiratuRashidaPages />
+                  <QasasAlAnbiyaPages onWordClick={handleContentClick} />
                 )}
                 {selectedBook.id === 2 && (
-                  <QasasAlAnbiyaPages onWordClick={handleContentClick} />
+                  <QiratuRashidaPages />
                 )}
                 {selectedBook.id === 3 && (
                   <QasasAlAnbiyaPart2Pages onWordClick={handleContentClick} />
                 )}
-                {![1, 2, 3].includes(selectedBook.id) && (
+                {selectedBook.id === 4 && (
+                  <MinAkhlaqPages onWordClick={handleContentClick} />
+                )}
+                {![1, 2, 3, 4].includes(selectedBook.id) && (
                   <div className="min-h-[600px] p-8 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl leading-relaxed text-lg text-right">
                     <p className="text-gray-600 text-center">Dieser Buchinhalt wird bald verfügbar sein.</p>
                   </div>

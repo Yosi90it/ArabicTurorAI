@@ -398,7 +398,57 @@ function parseQasasAlAnbiyaPart2HTML(htmlContent) {
   }
 }
 
+// Parse Min Akhlaq ar-Rasul HTML for single page with continuous text
+function parseMinAkhlaqHTML(htmlContent) {
+  try {
+    console.log('Parsing Min Akhlaq ar-Rasul HTML file for pages...');
+    
+    const pages = [];
+    
+    // Extract title from h1 element
+    const titleMatch = htmlContent.match(/<h1[^>]*>(.*?)<\/h1>/s);
+    let title = 'مُقَدِّمَةٌ';
+    if (titleMatch) {
+      const titleWords = extractWordsFromHTML(titleMatch[1]);
+      if (titleWords.length > 0) {
+        title = titleWords.join(' ');
+      }
+    }
+    
+    // Extract all content after the title, treating everything as one page
+    let content = htmlContent;
+    
+    // Remove HTML structure tags but keep span.word elements
+    content = content.replace(/<\/?(!doctype|html|head|meta|style|body)[^>]*>/gi, '');
+    content = content.replace(/body\s*{[^}]*}/g, '');
+    content = content.replace(/\.word\s*{[^}]*}/g, '');
+    content = content.replace(/\.word:hover\s*{[^}]*}/g, '');
+    content = content.replace(/h2\s*{[^}]*}/g, '');
+    
+    // Remove page div wrapper but keep inner content
+    content = content.replace(/<div[^>]*class="page"[^>]*>(.*?)<\/div>/s, '$1');
+    
+    // Clean up the content while preserving spans
+    content = content.trim();
+    
+    pages.push({
+      number: 1,
+      title: title,
+      content: content
+    });
+    
+    console.log(`Processed Min Akhlaq ar-Rasul: "${title}" as single page`);
+    
+    return pages;
+    
+  } catch (error) {
+    console.error('Error parsing Min Akhlaq ar-Rasul HTML:', error);
+    return [];
+  }
+}
+
 module.exports = {
   parseQiratuRashidaHTML,
-  parseQasasAlAnbiyaPart2HTML
+  parseQasasAlAnbiyaPart2HTML,
+  parseMinAkhlaqHTML
 };

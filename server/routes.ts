@@ -11,7 +11,7 @@ import { createClient } from '@supabase/supabase-js';
 // Dynamische HTML-Parser für beide Bücher
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
-const { parseQiratuRashidaHTML, parseQasasAlAnbiyaPart2HTML } = require('./htmlParser.js');
+const { parseQiratuRashidaHTML, parseQasasAlAnbiyaPart2HTML, parseMinAkhlaqHTML } = require('./htmlParser.js');
 import voiceRouter from './routes/voice';
 const fs = require('fs');
 const path = require('path');
@@ -843,6 +843,34 @@ Gib nur den arabischen Fließtext zurück, ohne Übersetzung oder Kommentare.`;
       console.error('Error parsing Qasas al-Anbiya Teil 2 HTML:', error);
       res.status(500).json({ 
         error: "Failed to parse Qasas al-Anbiya Teil 2 HTML file",
+        message: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+  });
+
+  // Min Akhlaq ar-Rasul pages endpoint
+  app.get("/api/min-akhlaq-pages", async (req: Request, res: Response) => {
+    try {
+      console.log('Parsing Min Akhlaq ar-Rasul HTML file for pages...');
+      
+      // Parse the Min Akhlaq ar-Rasul HTML file
+      const htmlContent = fs.readFileSync(path.join(process.cwd(), 'books', 'min akhlaq ar rasul.html'), 'utf-8');
+      const pages = parseMinAkhlaqHTML(htmlContent);
+      
+      console.log(`Found ${pages.length} pages in Min Akhlaq ar-Rasul`);
+      pages.forEach((page) => {
+        console.log(`Processed page ${page.number}: ${page.title}`);
+      });
+      
+      res.json({
+        pages: pages,
+        totalPages: pages.length,
+        lastUpdated: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Error parsing Min Akhlaq ar-Rasul HTML:', error);
+      res.status(500).json({ 
+        error: "Failed to parse Min Akhlaq ar-Rasul HTML file",
         message: error instanceof Error ? error.message : "Unknown error"
       });
     }
