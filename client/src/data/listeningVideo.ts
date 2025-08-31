@@ -374,9 +374,14 @@ export const listeningVideoData = {
       arabic: "جِدًّا"
     },
     {
-      timestamp: "5:40",
-      arabic: "وَهَذَا مِنْ طَبِيعَةِ النَّاسِ الْيَوْمَ يُرِيدُونَ الطَّرِيقَ الأَسْهَلَ",
-      german: "Und das liegt in der Natur der Menschen heute, sie wollen den einfachsten Weg"
+      timestamp: "5:36",
+      arabic: "فَأَنَا",
+      german: "Also ich"
+    },
+    {
+      timestamp: "5:39", 
+      arabic: "حَالِيًّا لَا أَقْرَأُ بِالعَرَبِيَّةِ إِلَّا",
+      german: "lese zur Zeit nur selten auf Arabisch"
     },
     {
       timestamp: "5:46",
