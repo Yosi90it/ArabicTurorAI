@@ -4,13 +4,15 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { Bot, MessageCircle, Target, BookOpen, ArrowLeft, Send, Loader2, Phone, PhoneOff, Plus } from "lucide-react";
+import { Bot, MessageCircle, Target, BookOpen, ArrowLeft, Send, Loader2, Phone, PhoneOff, Plus, Eye, EyeOff } from "lucide-react";
 import { Link } from "wouter";
 import { useFlashcards } from "@/contexts/FlashcardContext";
 import { useSimpleGamification } from "@/contexts/SimpleGamificationContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { recordClip, transcribe, voiceChat, tts } from "@/lib/voice";
+import { useTashkeel } from "@/hooks/useTashkeel";
+import { ContinuousVoiceChat } from "@/lib/voiceChat";
 
 interface Message {
   id: number;
@@ -33,6 +35,7 @@ export default function AiChat() {
   const { addFlashcard } = useFlashcards();
   const { updateProgress } = useSimpleGamification();
   const { strings } = useLanguage();
+  const { showTashkeel, toggleTashkeel, removeTashkeel } = useTashkeel();
   
   // Chat state
   const [messages, setMessages] = useState<Message[]>([]);
@@ -44,11 +47,10 @@ export default function AiChat() {
   const [selectedWord, setSelectedWord] = useState<WordInfo | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   
-  // Voice Pipeline state
-  const [voiceState, setVoiceState] = useState<'idle' | 'recording' | 'transcribing' | 'thinking' | 'speaking'>('idle');
-  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
-  const [recordingDuration, setRecordingDuration] = useState<number>(5);
+  // Voice Pipeline state - using new VAD system
+  const [voiceStatus, setVoiceStatus] = useState<string>('Bereit');
   const [isCallActive, setIsCallActive] = useState(false);
+  const [voiceChat, setVoiceChat] = useState<ContinuousVoiceChat | null>(null);
 
   // Practice mode state
   const [practiceMessages, setPracticeMessages] = useState<Message[]>([]);
@@ -62,14 +64,14 @@ export default function AiChat() {
   }[]>([]);
   const [practiceStarted, setPracticeStarted] = useState(false);
 
-  // Suggestions with Arabic text and full tashkeel
+  // Suggestions with complete tashkeel for all words
   const suggestions = [
-    "كَيْفَ حَالُكَ؟",
-    "مَا اسْمُكَ؟", 
-    "مِنْ أَيْنَ أَنْتَ؟",
-    "مَاذَا تَفْعَلُ؟",
-    "كَمْ عُمْرُكَ؟",
-    "هَلْ تَتَكَلَّمُ الْعَرَبِيَّةَ؟"
+    "كَيْفَ حَالُكَ الْيَوْمَ؟",
+    "مَا اسْمُكَ الْكَرِيمُ؟", 
+    "مِنْ أَيْنَ أَنْتَ قَادِمٌ؟",
+    "مَاذَا تَفْعَلُ فِي وَقْتِ الْفَرَاغِ؟",
+    "كَمْ عُمْرُكَ الآنَ؟",
+    "هَلْ تَتَكَلَّمُ الْعَرَبِيَّةَ بِطَلَاقَةٍ؟"
   ];
 
   // Auto-scroll to bottom
@@ -115,28 +117,50 @@ export default function AiChat() {
     return groups;
   };
 
-  // Voice Pipeline Functions - Continuous Phone Call
+  // Initialize voice chat with VAD
+  useEffect(() => {
+    const chat = new ContinuousVoiceChat({
+      onStatusChange: (status) => setVoiceStatus(status),
+      onMessage: (message) => {
+        const newMessage: Message = {
+          id: messages.length + 1,
+          sender: message.sender === 'user' ? "ME" : "AI",
+          arabic: message.text,
+          translation: message.text
+        };
+        setMessages(prev => [...prev, newMessage]);
+      },
+      onError: (error) => {
+        toast({
+          title: "Voice Chat Fehler",
+          description: error,
+          variant: "destructive"
+        });
+      }
+    });
+    setVoiceChat(chat);
+    
+    return () => {
+      chat.stopConversation();
+    };
+  }, []);
+
+  // Voice Pipeline Functions - Using VAD system
   const handleVoiceInput = async () => {
     console.log('Voice input clicked, current state:', isCallActive);
     try {
-      if (!isCallActive) {
-        // Test microphone permission first
-        console.log('Testing microphone access...');
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        console.log('Microphone access granted');
-        stream.getTracks().forEach(track => track.stop()); // Clean up test stream
-        
-        // Start call
-        console.log('Starting continuous call...');
+      if (!isCallActive && voiceChat) {
+        console.log('Starting VAD voice chat...');
         setIsCallActive(true);
-        setVoiceState('recording');
-        // Pass true to indicate call is active
-        await startContinuousCall(true);
-      } else {
-        // End call
-        console.log('Ending call...');
+        await voiceChat.startConversation();
+        toast({
+          title: "📞 Anruf aktiv",
+          description: "VAD-System aktiviert - Sprechen Sie natürlich!",
+        });
+      } else if (voiceChat) {
+        console.log('Stopping VAD voice chat...');
         setIsCallActive(false);
-        setVoiceState('idle');
+        voiceChat.stopConversation();
         toast({
           title: "📞 Anruf beendet",
           description: "Gespräch wurde beendet.",
@@ -150,124 +174,6 @@ export default function AiChat() {
         variant: "destructive"
       });
       setIsCallActive(false);
-      setVoiceState('idle');
-    }
-  };
-
-  const startContinuousCall = async (callActive = true) => {
-    console.log('startContinuousCall called, callActive param:', callActive);
-    try {
-      // Stop any playing audio
-      if (audioElement) {
-        audioElement.pause();
-        audioElement.currentTime = 0;
-      }
-      
-      toast({
-        title: "📞 Anruf aktiv",
-        description: "Sprechen Sie jetzt, wir hören zu...",
-      });
-      
-      console.log('Entering conversation loop...');
-      while (callActive && isCallActive) {
-        console.log('Loop iteration, callActive:', callActive, 'isCallActive:', isCallActive);
-        if (!callActive || !isCallActive) break; // Double check for loop exit
-        try {
-          console.log('Starting voice recording...');
-          setVoiceState('recording');
-          const audioBlob = await recordClip(5); // 5 seconds recording chunks
-          console.log('Audio recorded, blob size:', audioBlob.size);
-          
-          if (!callActive || !isCallActive) break; // Exit if call ended during recording
-          
-          setVoiceState('transcribing');
-          console.log('Sending audio for transcription...');
-          const transcription = await transcribe(audioBlob, 5000);
-          console.log('Transcription result:', transcription);
-          
-          if (!transcription.text.trim()) {
-            console.log('No speech detected, continuing...');
-            // No speech detected, continue listening
-            await new Promise(resolve => setTimeout(resolve, 500));
-            continue;
-          }
-          
-          // Add user message
-          const userMessage: Message = {
-            id: messages.length + 1,
-            sender: "ME",
-            arabic: transcription.text,
-            translation: transcription.text
-          };
-          setMessages(prev => [...prev, userMessage]);
-          
-          setVoiceState('thinking');
-          console.log('Sending message to chat:', transcription.text);
-          const chatResponse = await voiceChat(transcription.text);
-          console.log('Chat response received:', chatResponse);
-          
-          // Add AI response
-          const aiMessage: Message = {
-            id: messages.length + 2,
-            sender: "AI", 
-            arabic: chatResponse.response,
-            translation: chatResponse.response
-          };
-          setMessages(prev => [...prev, aiMessage]);
-          
-          setVoiceState('speaking');
-          console.log('Generating TTS for:', chatResponse.response);
-          
-          const ttsBlob = await tts(chatResponse.response);
-          console.log('TTS generated, blob size:', ttsBlob.size);
-          
-          // Play TTS response
-          const url = URL.createObjectURL(ttsBlob);
-          const audio = new Audio(url);
-          setAudioElement(audio);
-          
-          await audio.play();
-          
-          // Wait for audio to finish before continuing to listen
-          await new Promise(resolve => {
-            audio.onended = resolve;
-          });
-          
-          // Continue the conversation loop
-          await new Promise(resolve => setTimeout(resolve, 1000)); // Brief pause
-          
-        } catch (error: any) {
-          console.error("Voice pipeline error:", error);
-          toast({
-            title: "❌ Fehler im Gespräch",
-            description: `${error.message || 'Unbekannter Fehler'}`,
-            variant: "destructive"
-          });
-          // Continue listening even if there's an error
-          await new Promise(resolve => setTimeout(resolve, 1000));
-        }
-      }
-      
-    } catch (error: any) {
-      console.error("Continuous call error:", error);
-      toast({
-        title: "Fehler im Sprachchat",
-        description: "Bitte versuchen Sie es erneut.",
-        variant: "destructive"
-      });
-      setIsCallActive(false);
-      setVoiceState('idle');
-    }
-  };
-
-  const getVoiceButtonText = () => {
-    if (!isCallActive) return '';
-    switch (voiceState) {
-      case 'recording': return '📞 Zuhören aktiv...';
-      case 'transcribing': return '🔄 Verarbeitung...';
-      case 'thinking': return '🤔 KI denkt nach...';
-      case 'speaking': return '🗣️ KI spricht...';
-      default: return '📞 Anruf aktiv...';
     }
   };
 
@@ -336,8 +242,11 @@ export default function AiChat() {
   };
 
   const renderArabicText = (text: string) => {
+    // Apply tashkeel toggle
+    const displayText = removeTashkeel(text);
+    
     // Split by spaces and render each word as clickable
-    const words = text.trim().split(/\s+/);
+    const words = displayText.trim().split(/\s+/);
     return (
       <div className="inline" dir="rtl" lang="ar">
         {words.map((word, index) => (
@@ -374,7 +283,10 @@ export default function AiChat() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ message })
+        body: JSON.stringify({ 
+          message,
+          useFullTashkeel: true // Request complete tashkeel from AI
+        })
       });
 
       const result = await response.json();
@@ -382,7 +294,7 @@ export default function AiChat() {
       const aiMessage: Message = {
         id: messages.length + 2,
         sender: "AI",
-        arabic: result.response || result.arabic || "عذراً، لم أتمكن من فهم رسالتك.",
+        arabic: result.response || result.arabic || "عَذْراً، لَمْ أَتَمَكَّنْ مِنْ فَهْمِ رِسَالَتِكَ.",
         translation: result.translation || result.response || "Sorry, I couldn't understand your message."
       };
       setMessages(prev => [...prev, aiMessage]);
@@ -442,7 +354,7 @@ export default function AiChat() {
           message,
           context: "practice",
           challengeWords: currentChallengeWords,
-          usedWords: Array.from(usedWords),
+          usedWords: [...usedWords],
           newlyUsedWords
         })
       });
@@ -558,10 +470,22 @@ export default function AiChat() {
                 </Button>
               </div>
 
-              {/* Voice State Display */}
-              {getVoiceButtonText() && (
+              {/* Tashkeel Toggle */}
+              <div className="mb-4 flex items-center justify-center gap-4">
+                <div className="flex items-center gap-2">
+                  {showTashkeel ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                  <span className="text-sm font-medium">Tashkeel anzeigen</span>
+                  <Switch
+                    checked={showTashkeel}
+                    onCheckedChange={toggleTashkeel}
+                  />
+                </div>
+              </div>
+
+              {/* Voice Status Display */}
+              {isCallActive && (
                 <div className="text-center mb-4 p-3 bg-blue-50 rounded-lg">
-                  <div className="text-blue-700 font-medium">{getVoiceButtonText()}</div>
+                  <div className="text-blue-700 font-medium">{voiceStatus}</div>
                 </div>
               )}
 
@@ -615,7 +539,7 @@ export default function AiChat() {
                         className="cursor-pointer hover:bg-orange-50"
                         onClick={() => handleSuggestionClick(suggestion)}
                       >
-                        <span dir="rtl" lang="ar">{suggestion}</span>
+                        <span dir="rtl" lang="ar">{removeTashkeel(suggestion)}</span>
                       </Badge>
                     ))}
                   </div>
