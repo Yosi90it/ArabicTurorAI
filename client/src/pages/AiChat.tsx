@@ -185,16 +185,28 @@ export default function AiChat() {
   };
 
   const addVoiceMessageToFlashcards = (message: Message) => {
-    // Split sentence into words and add each word
-    const words = message.arabic.trim().split(/\s+/);
-    words.forEach(word => {
-      addFlashcard(word, `Wort aus: ${message.arabic}`, "Unbekannt");
+    // Split by commas and periods to create meaningful chunks
+    const chunks = message.arabic
+      .split(/[،。,.]/) // Split by Arabic and English punctuation
+      .map(chunk => chunk.trim())
+      .filter(chunk => chunk.length > 0);
+
+    let wordsAdded = 0;
+    chunks.forEach((chunk, index) => {
+      if (chunk.length > 0) {
+        addFlashcard(
+          chunk, 
+          `Teil ${index + 1} aus Voice-Chat`,
+          "Phrase"
+        );
+        wordsAdded++;
+      }
     });
-    
+
     updateProgress('word', { word: message.arabic });
     toast({
-      title: "Zu Lernkarten hinzugefügt!",
-      description: `${words.length} Wörter aus der Voice-Nachricht hinzugefügt.`,
+      title: "Phrasen zu Lernkarten hinzugefügt!",
+      description: `${wordsAdded} sinnvolle Phrasen aus der Voice-Nachricht erstellt.`,
     });
     setSelectedVoiceMessage(null);
   };
@@ -539,16 +551,16 @@ export default function AiChat() {
                 {/* TTS Speed Control */}
                 <div className="flex items-center gap-2 min-w-[150px]">
                   <Volume2 className="w-4 h-4" />
-                  <span className="text-sm font-medium">Sprechgeschwindigkeit:</span>
+                  <span className="text-sm font-medium">Sprachtempo:</span>
                   <Slider
                     value={[ttsSpeed]}
                     onValueChange={(value) => setTtsSpeed(value[0])}
-                    max={2.0}
-                    min={0.3}
-                    step={0.1}
+                    max={1.3}
+                    min={0.7}
+                    step={0.05}
                     className="w-20"
                   />
-                  <span className="text-xs text-gray-500 min-w-[2rem]">{ttsSpeed.toFixed(1)}x</span>
+                  <span className="text-xs text-gray-500 min-w-[2rem]">{ttsSpeed.toFixed(2)}x</span>
                 </div>
               </div>
 
@@ -602,7 +614,7 @@ export default function AiChat() {
                               className="text-xs"
                             >
                               <Plus className="w-3 h-3 mr-1" />
-                              Zu Lernkarten
+                              Phrasen hinzufügen
                             </Button>
                           </div>
                         )}
