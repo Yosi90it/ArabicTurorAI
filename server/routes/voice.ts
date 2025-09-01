@@ -122,12 +122,16 @@ router.post('/chat', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'No message provided' });
     }
 
+    const systemPrompt = req.body.useFullTashkeel 
+      ? 'أنت مساعد تعليم اللغة العربية المفيد. أجب بوضوح وإيجاز باللغة العربية الفصحى. استخدم تشكيلاً كاملاً (الحركات) لجميع الكلمات العربية بما في ذلك الضمة والفتحة والكسرة والسكون والتنوين. كل كلمة عربية يجب أن تكون مشكولة بالكامل.'
+      : 'أنت مساعد تعليم اللغة العربية المفيد. أجب بوضوح وإيجاز باللغة العربية الفصحى. استخدم تشكيلاً كاملاً (الحركات) لجميع الكلمات العربية بما في ذلك الضمة والفتحة والكسرة والسكون والتنوين. كل كلمة عربية يجب أن تكون مشكولة بالكامل.';
+
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
         {
           role: 'system',
-          content: 'أنت مساعد تعليم اللغة العربية المفيد. أجب بوضوح وإيجاز باللغة العربية الفصحى. استخدم تشكيلاً كاملاً لمساعدة المتعلمين.'
+          content: systemPrompt
         },
         {
           role: 'user',
@@ -165,17 +169,21 @@ router.post('/chat', async (req: Request, res: Response) => {
 // Text-to-Speech using OpenAI TTS
 router.post('/tts', async (req: Request, res: Response) => {
   try {
-    const { text } = req.body;
+    const { text, speed = 0.8 } = req.body; // Slower default speed
 
     if (!text) {
       return res.status(400).json({ error: 'No text provided' });
     }
 
+    // Clamp speed between 0.25 and 4.0 (OpenAI limits)
+    const clampedSpeed = Math.max(0.25, Math.min(4.0, speed));
+
     const mp3 = await openai.audio.speech.create({
       model: 'tts-1',
       voice: 'alloy',
       input: text.substring(0, 4096), // Limit text length
-      response_format: 'mp3'
+      response_format: 'mp3',
+      speed: clampedSpeed
     });
 
     const buffer = Buffer.from(await mp3.arrayBuffer());

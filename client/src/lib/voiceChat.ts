@@ -23,6 +23,7 @@ export class ContinuousVoiceChat {
   private isActive = false;
   private currentAudio: HTMLAudioElement | null = null;
   private isSpeaking = false;
+  private ttsSpeed = 0.8;
   
   // Callbacks
   private onStatusChange?: (status: string) => void;
@@ -33,10 +34,16 @@ export class ContinuousVoiceChat {
     onStatusChange?: (status: string) => void;
     onMessage?: (message: { sender: 'user' | 'ai', text: string, audio?: string }) => void;
     onError?: (error: string) => void;
+    ttsSpeed?: number;
   } = {}) {
     this.onStatusChange = callbacks.onStatusChange;
     this.onMessage = callbacks.onMessage;
     this.onError = callbacks.onError;
+    this.ttsSpeed = callbacks.ttsSpeed || 0.8;
+  }
+
+  setTtsSpeed(speed: number) {
+    this.ttsSpeed = speed;
   }
 
   async startConversation() {
@@ -215,9 +222,9 @@ export class ContinuousVoiceChat {
       
       this.onMessage?.({ sender: 'ai', text: aiResponse });
       
-      // Convert to speech and play
+      // Convert to speech and play with custom speed
       this.updateStatus('🗣️ KI spricht...');
-      await this.speakResponse(aiResponse);
+      await this.speakResponse(aiResponse, this.ttsSpeed || 0.8);
       
       // Continue listening
       this.updateStatus('Bereit - Sprechen Sie!');
@@ -255,7 +262,10 @@ export class ContinuousVoiceChat {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ message })
+      body: JSON.stringify({ 
+        message,
+        useFullTashkeel: true // Always request full tashkeel for voice
+      })
     });
     
     if (!response.ok) {
@@ -263,10 +273,10 @@ export class ContinuousVoiceChat {
     }
     
     const data = await response.json();
-    return data.response || 'عذراً، لم أتمكن من فهم رسالتك.';
+    return data.response || 'عَذْراً، لَمْ أَتَمَكَّنْ مِنْ فَهْمِ رِسَالَتِكَ.';
   }
 
-  private async speakResponse(text: string): Promise<void> {
+  private async speakResponse(text: string, speed: number = 0.8): Promise<void> {
     return new Promise(async (resolve, reject) => {
       try {
         this.isSpeaking = true;
@@ -276,7 +286,7 @@ export class ContinuousVoiceChat {
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ text })
+          body: JSON.stringify({ text, speed })
         });
         
         if (!response.ok) {

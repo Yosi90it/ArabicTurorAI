@@ -5,8 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
+import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/hooks/use-toast";
-import { Bot, MessageCircle, Target, BookOpen, ArrowLeft, Send, Loader2, Phone, PhoneOff, Plus, Eye, EyeOff } from "lucide-react";
+import { Bot, MessageCircle, Target, BookOpen, ArrowLeft, Send, Loader2, Phone, PhoneOff, Plus, Eye, EyeOff, Volume2, Languages } from "lucide-react";
 import { Link } from "wouter";
 import { useFlashcards } from "@/contexts/FlashcardContext";
 import { useSimpleGamification } from "@/contexts/SimpleGamificationContext";
@@ -51,6 +52,8 @@ export default function AiChat() {
   const [voiceStatus, setVoiceStatus] = useState<string>('Bereit');
   const [isCallActive, setIsCallActive] = useState(false);
   const [voiceChat, setVoiceChat] = useState<ContinuousVoiceChat | null>(null);
+  const [ttsSpeed, setTtsSpeed] = useState<number>(0.8);
+  const [selectedVoiceMessage, setSelectedVoiceMessage] = useState<Message | null>(null);
 
   // Practice mode state
   const [practiceMessages, setPracticeMessages] = useState<Message[]>([]);
@@ -144,6 +147,57 @@ export default function AiChat() {
       chat.stopConversation();
     };
   }, []);
+
+  // Update TTS speed when changed
+  useEffect(() => {
+    if (voiceChat) {
+      voiceChat.setTtsSpeed(ttsSpeed);
+    }
+  }, [ttsSpeed, voiceChat]);
+
+  // Voice message translation and flashcard functions
+  const translateVoiceMessage = async (message: Message) => {
+    try {
+      const response = await fetch("/api/translate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ text: message.arabic })
+      });
+
+      const result = await response.json();
+      
+      if (response.ok) {
+        setSelectedVoiceMessage({
+          ...message,
+          translation: result.translation || message.translation
+        });
+      }
+    } catch (error) {
+      console.error("Translation error:", error);
+      toast({
+        title: "Übersetzungsfehler",
+        description: "Konnte die Nachricht nicht übersetzen.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const addVoiceMessageToFlashcards = (message: Message) => {
+    // Split sentence into words and add each word
+    const words = message.arabic.trim().split(/\s+/);
+    words.forEach(word => {
+      addFlashcard(word, `Wort aus: ${message.arabic}`, "Unbekannt");
+    });
+    
+    updateProgress('word', { word: message.arabic });
+    toast({
+      title: "Zu Lernkarten hinzugefügt!",
+      description: `${words.length} Wörter aus der Voice-Nachricht hinzugefügt.`,
+    });
+    setSelectedVoiceMessage(null);
+  };
 
   // Voice Pipeline Functions - Using VAD system
   const handleVoiceInput = async () => {
@@ -470,8 +524,9 @@ export default function AiChat() {
                 </Button>
               </div>
 
-              {/* Tashkeel Toggle */}
-              <div className="mb-4 flex items-center justify-center gap-4">
+              {/* Controls Row */}
+              <div className="mb-4 flex items-center justify-center gap-6 flex-wrap">
+                {/* Tashkeel Toggle */}
                 <div className="flex items-center gap-2">
                   {showTashkeel ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                   <span className="text-sm font-medium">Tashkeel anzeigen</span>
@@ -479,6 +534,21 @@ export default function AiChat() {
                     checked={showTashkeel}
                     onCheckedChange={toggleTashkeel}
                   />
+                </div>
+
+                {/* TTS Speed Control */}
+                <div className="flex items-center gap-2 min-w-[150px]">
+                  <Volume2 className="w-4 h-4" />
+                  <span className="text-sm font-medium">Sprechgeschwindigkeit:</span>
+                  <Slider
+                    value={[ttsSpeed]}
+                    onValueChange={(value) => setTtsSpeed(value[0])}
+                    max={2.0}
+                    min={0.3}
+                    step={0.1}
+                    className="w-20"
+                  />
+                  <span className="text-xs text-gray-500 min-w-[2rem]">{ttsSpeed.toFixed(1)}x</span>
                 </div>
               </div>
 
@@ -510,6 +580,30 @@ export default function AiChat() {
                         {message.translation && message.translation !== message.arabic && (
                           <div className="text-sm opacity-75">
                             {message.translation}
+                          </div>
+                        )}
+                        
+                        {/* Voice Message Actions */}
+                        {message.sender === "AI" && (
+                          <div className="flex gap-2 mt-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => translateVoiceMessage(message)}
+                              className="text-xs"
+                            >
+                              <Languages className="w-3 h-3 mr-1" />
+                              Übersetzen
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => addVoiceMessageToFlashcards(message)}
+                              className="text-xs"
+                            >
+                              <Plus className="w-3 h-3 mr-1" />
+                              Zu Lernkarten
+                            </Button>
                           </div>
                         )}
                       </div>
