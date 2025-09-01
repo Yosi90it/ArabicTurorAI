@@ -104,6 +104,14 @@ export async function tts(text: string): Promise<Blob> {
   return await response.blob();
 }
 
+// Voice chat wrapper function
+export async function voiceChat(message: string): Promise<{ response: string; usage?: any }> {
+  console.log('voiceChat called with message:', message);
+  const result = await chat(message);
+  console.log('voiceChat result:', result);
+  return result;
+}
+
 // Helper function to get auth user ID
 function getAuthUserId(): string | null {
   // This is a workaround since we can't use useAuth hook in a utility function
