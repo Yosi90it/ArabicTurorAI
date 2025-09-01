@@ -85,7 +85,8 @@ export default function AiChat() {
         console.log('Starting continuous call...');
         setIsCallActive(true);
         setVoiceState('recording');
-        await startContinuousCall();
+        // Pass true to indicate call is active
+        await startContinuousCall(true);
       } else {
         // End call
         console.log('Ending call...');
@@ -108,8 +109,8 @@ export default function AiChat() {
     }
   };
 
-  const startContinuousCall = async () => {
-    console.log('startContinuousCall called, isCallActive:', isCallActive);
+  const startContinuousCall = async (callActive = true) => {
+    console.log('startContinuousCall called, callActive param:', callActive);
     try {
       // Stop any playing audio
       if (audioElement) {
@@ -123,16 +124,16 @@ export default function AiChat() {
       });
       
       console.log('Entering conversation loop...');
-      while (isCallActive) {
-        console.log('Loop iteration, isCallActive:', isCallActive);
-        if (!isCallActive) break; // Double check for loop exit
+      while (callActive && isCallActive) {
+        console.log('Loop iteration, callActive:', callActive, 'isCallActive:', isCallActive);
+        if (!callActive || !isCallActive) break; // Double check for loop exit
         try {
           console.log('Starting voice recording...');
           setVoiceState('recording');
           const audioBlob = await recordClip(5); // 5 seconds recording chunks
           console.log('Audio recorded, blob size:', audioBlob.size);
           
-          if (!isCallActive) break; // Exit if call ended during recording
+          if (!callActive || !isCallActive) break; // Exit if call ended during recording
           
           setVoiceState('transcribing');
           console.log('Sending audio for transcription...');
@@ -239,7 +240,7 @@ export default function AiChat() {
     setInput("");
 
     try {
-      const response = await fetch("/api/chat", {
+      const response = await fetch("/api/voice/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -252,8 +253,8 @@ export default function AiChat() {
       const aiMessage: Message = {
         id: messages.length + 2,
         sender: "AI",
-        arabic: result.arabic || result.response,
-        translation: result.translation || result.response
+        arabic: result.response || result.arabic || "عذراً، لم أتمكن من فهم رسالتك.",
+        translation: result.translation || result.response || "Sorry, I couldn't understand your message."
       };
       setMessages(prev => [...prev, aiMessage]);
     } catch (error: any) {
