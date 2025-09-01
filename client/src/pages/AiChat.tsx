@@ -1,14 +1,16 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Bot, MessageCircle, Target, BookOpen, ArrowLeft, Mic, MicOff, Phone, PhoneOff } from "lucide-react";
+import { Bot, MessageCircle, Target, BookOpen, ArrowLeft, Send, Loader2, Phone, PhoneOff, Plus } from "lucide-react";
 import { Link } from "wouter";
-import VoiceChatComponent from "@/components/VoiceChatComponent";
+import { useFlashcards } from "@/contexts/FlashcardContext";
+import { useSimpleGamification } from "@/contexts/SimpleGamificationContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { recordClip, transcribe, voiceChat, tts } from "@/lib/voice";
-// Removed unused imports
 
 interface Message {
   id: number;
@@ -17,14 +19,30 @@ interface Message {
   translation: string;
 }
 
+interface WordInfo {
+  word: string;
+  translation: string;
+  grammar: string;
+  position: { x: number; y: number };
+  examples?: string[];
+  pronunciation?: string;
+}
+
 export default function AiChat() {
   const { toast } = useToast();
+  const { addFlashcard } = useFlashcards();
+  const { updateProgress } = useSimpleGamification();
+  const { strings } = useLanguage();
   
   // Chat state
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  // Word analysis state
+  const [selectedWord, setSelectedWord] = useState<WordInfo | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   
   // Voice Pipeline state
   const [voiceState, setVoiceState] = useState<'idle' | 'recording' | 'transcribing' | 'thinking' | 'speaking'>('idle');
@@ -44,14 +62,14 @@ export default function AiChat() {
   }[]>([]);
   const [practiceStarted, setPracticeStarted] = useState(false);
 
-  // Suggestions
+  // Suggestions with Arabic text and full tashkeel
   const suggestions = [
-    "كيف حالك؟",
-    "ما اسمك؟", 
-    "من أين أنت؟",
-    "ماذا تفعل؟",
-    "كم عمرك؟",
-    "هل تتكلم العربية؟"
+    "كَيْفَ حَالُكَ؟",
+    "مَا اسْمُكَ؟", 
+    "مِنْ أَيْنَ أَنْتَ؟",
+    "مَاذَا تَفْعَلُ؟",
+    "كَمْ عُمْرُكَ؟",
+    "هَلْ تَتَكَلَّمُ الْعَرَبِيَّةَ؟"
   ];
 
   // Auto-scroll to bottom
@@ -59,15 +77,42 @@ export default function AiChat() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, practiceMessages]);
 
-  // Simplified for now - no complex practice logic needed for voice testing
+  // Load challenge words when starting practice
+  useEffect(() => {
+    if (practiceStarted && currentChallengeWords.length === 0) {
+      const recentWords = getWordsFromLastDays(3);
+      setCurrentChallengeWords(recentWords);
+    }
+  }, [practiceStarted]);
 
   const getWordsFromLastDays = (days: number) => {
-    // Mock data for demo - in real app this would use actual flashcards
-    return [];
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - days);
+    
+    const allFlashcards = JSON.parse(localStorage.getItem('flashcards') || '[]');
+    return allFlashcards
+      .filter((card: any) => new Date(card.dateAdded) >= cutoffDate)
+      .map((card: any) => ({
+        word: card.arabic,
+        translation: card.translation,
+        grammar: card.grammar || 'noun'
+      }));
   };
 
   const getWordsByDateGroup = () => {
-    return { today: [], yesterday: [], dayBeforeYesterday: [] };
+    const today = new Date().toDateString();
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
+    const dayBeforeYesterday = new Date(Date.now() - 172800000).toDateString();
+    
+    const allFlashcards = JSON.parse(localStorage.getItem('flashcards') || '[]');
+    
+    const groups = {
+      today: allFlashcards.filter((card: any) => new Date(card.dateAdded).toDateString() === today),
+      yesterday: allFlashcards.filter((card: any) => new Date(card.dateAdded).toDateString() === yesterday),
+      dayBeforeYesterday: allFlashcards.filter((card: any) => new Date(card.dateAdded).toDateString() === dayBeforeYesterday)
+    };
+    
+    return groups;
   };
 
   // Voice Pipeline Functions - Continuous Phone Call
@@ -226,6 +271,90 @@ export default function AiChat() {
     }
   };
 
+  // Word Analysis Functions
+  const analyzeWord = async (word: string, event: React.MouseEvent) => {
+    const rect = (event.target as Element).getBoundingClientRect();
+    setSelectedWord({
+      word,
+      translation: "Lade...",
+      grammar: "Analysiere...",
+      position: { x: rect.left, y: rect.bottom }
+    });
+    setIsAnalyzing(true);
+
+    try {
+      const response = await fetch("/api/analyze-word", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ word })
+      });
+
+      const result = await response.json();
+      
+      if (response.ok) {
+        setSelectedWord({
+          word,
+          translation: result.translation || "Keine Übersetzung verfügbar",
+          grammar: result.grammar || "Unbekannt",
+          position: { x: rect.left, y: rect.bottom },
+          examples: result.examples || [],
+          pronunciation: result.pronunciation || ""
+        });
+      } else {
+        setSelectedWord({
+          word,
+          translation: "Fehler beim Laden",
+          grammar: "Unbekannt", 
+          position: { x: rect.left, y: rect.bottom }
+        });
+      }
+    } catch (error) {
+      console.error("Word analysis error:", error);
+      setSelectedWord({
+        word,
+        translation: "Fehler beim Laden",
+        grammar: "Unbekannt",
+        position: { x: rect.left, y: rect.bottom }
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  const addToFlashcards = () => {
+    if (selectedWord) {
+      addFlashcard(selectedWord.word, selectedWord.translation, selectedWord.grammar);
+      updateProgress('word', { word: selectedWord.word });
+      toast({
+        title: "Wort hinzugefügt!",
+        description: `"${selectedWord.word}" wurde zu deinen Lernkarten hinzugefügt.`,
+      });
+      setSelectedWord(null);
+    }
+  };
+
+  const renderArabicText = (text: string) => {
+    // Split by spaces and render each word as clickable
+    const words = text.trim().split(/\s+/);
+    return (
+      <div className="inline" dir="rtl" lang="ar">
+        {words.map((word, index) => (
+          <span key={index}>
+            <span
+              className="hover:bg-yellow-100 cursor-pointer transition-colors duration-200 px-1 rounded"
+              onClick={(e) => analyzeWord(word, e)}
+            >
+              {word}
+            </span>
+            {index < words.length - 1 && " "}
+          </span>
+        ))}
+      </div>
+    );
+  };
+
   const handleSend = async (message: string = input) => {
     if (!message.trim() || isLoading) return;
 
@@ -257,6 +386,7 @@ export default function AiChat() {
         translation: result.translation || result.response || "Sorry, I couldn't understand your message."
       };
       setMessages(prev => [...prev, aiMessage]);
+      updateProgress('chat');
     } catch (error: any) {
       console.error("Chat error:", error);
       toast({
@@ -272,6 +402,93 @@ export default function AiChat() {
   const handleSuggestionClick = (suggestion: string) => {
     setInput(suggestion);
     handleSend(suggestion);
+  };
+
+  const handlePracticeMessage = async (message: string) => {
+    if (!message.trim() || isPracticeLoading) return;
+
+    setIsPracticeLoading(true);
+    const userMessage: Message = {
+      id: practiceMessages.length + 1,
+      sender: "ME",
+      arabic: message,
+      translation: message
+    };
+    setPracticeMessages(prev => [...prev, userMessage]);
+    setPracticeInput("");
+
+    try {
+      // Check which words from the challenge were used
+      const wordsUsedInMessage = currentChallengeWords.filter(w => 
+        message.includes(w.word)
+      ).map(w => w.word);
+
+      const newlyUsedWords = wordsUsedInMessage.filter(word => !usedWords.has(word));
+      
+      if (newlyUsedWords.length > 0) {
+        setUsedWords(prev => new Set([...prev, ...newlyUsedWords]));
+      }
+
+      const totalWordsToUse = currentChallengeWords.length;
+      const totalWordsUsed = usedWords.size + newlyUsedWords.length;
+      const remainingWords = currentChallengeWords.filter(w => !usedWords.has(w.word) && !newlyUsedWords.includes(w.word));
+
+      const response = await fetch("/api/voice/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ 
+          message,
+          context: "practice",
+          challengeWords: currentChallengeWords,
+          usedWords: Array.from(usedWords),
+          newlyUsedWords
+        })
+      });
+
+      const result = await response.json();
+      
+      const aiResponse: Message = {
+        id: practiceMessages.length + 2,
+        sender: "AI",
+        arabic: result.response || "عذراً، لم أتمكن من فهم رسالتك.",
+        translation: result.translation || "Sorry, I couldn't understand your message."
+      };
+      
+      setPracticeMessages(prev => [...prev, aiResponse]);
+
+      // Award points based on words used
+      if (newlyUsedWords.length > 0) {
+        const basePoints = 10 * newlyUsedWords.length;
+        const bonusPoints = newlyUsedWords.length > 1 ? 10 : 0; // Bonus for using multiple words
+        updateProgress('chat');
+        newlyUsedWords.forEach(word => updateProgress('word', { word }));
+        
+        toast({
+          title: `Excellent! +${basePoints + bonusPoints} Punkte`,
+          description: `Du hast ${newlyUsedWords.length} neue Wörter verwendet: ${newlyUsedWords.join(', ')}`,
+        });
+      } else if (wordsUsedInMessage.length > 0) {
+        updateProgress('chat');
+        toast({
+          title: "Gut gemacht! +10 Punkte",
+          description: `Du wiederholst erfolgreich: ${wordsUsedInMessage.join(', ')}`,
+        });
+      } else {
+        updateProgress('chat');
+      }
+      
+    } catch (error: any) {
+      console.error("Practice error:", error);
+      toast({
+        title: "Error",
+        description: "Failed to get AI response",
+        variant: "destructive"
+      });
+    } finally {
+      setIsPracticeLoading(false);
+    }
   };
 
   return (
@@ -363,8 +580,8 @@ export default function AiChat() {
                             : "bg-white border border-gray-200 mr-4"
                         }`}
                       >
-                        <div className="font-medium text-lg mb-1" dir="rtl" lang="ar">
-                          {message.arabic}
+                        <div className="font-medium text-lg mb-1">
+                          {renderArabicText(message.arabic)}
                         </div>
                         {message.translation && message.translation !== message.arabic && (
                           <div className="text-sm opacity-75">
@@ -398,23 +615,28 @@ export default function AiChat() {
                         className="cursor-pointer hover:bg-orange-50"
                         onClick={() => handleSuggestionClick(suggestion)}
                       >
-                        {suggestion}
+                        <span dir="rtl" lang="ar">{suggestion}</span>
                       </Badge>
                     ))}
                   </div>
                 </div>
               )}
               
-              <VoiceChatComponent 
-                onSendMessage={handleSend}
-                isLoading={isLoading}
-                input={input}
-                setInput={setInput}
-                onVoiceInput={handleVoiceInput}
-                voiceState={voiceState}
-                voiceStateText={getVoiceButtonText()}
-                recordingDuration={recordingDuration}
-              />
+              {/* Text Input for Regular Chat */}
+              <div className="flex gap-2">
+                <Input
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Type your message in Arabic..."
+                  onKeyPress={(e) => e.key === "Enter" && handleSend()}
+                  disabled={isLoading}
+                  className="flex-1"
+                  dir="rtl"
+                />
+                <Button onClick={() => handleSend()} disabled={isLoading || !input.trim()}>
+                  {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -440,9 +662,6 @@ export default function AiChat() {
               {(() => {
                 const recentWords = getWordsFromLastDays(3);
                 const wordsByDate = getWordsByDateGroup();
-                const today = new Date().toDateString();
-                const yesterday = new Date(Date.now() - 86400000).toDateString();
-                const dayBeforeYesterday = new Date(Date.now() - 172800000).toDateString();
 
                 if (recentWords.length === 0) {
                   return (
@@ -462,61 +681,132 @@ export default function AiChat() {
                   );
                 }
 
+                if (!practiceStarted) {
+                  return (
+                    <div className="space-y-6">
+                      {/* Word Overview by Date */}
+                      <div className="space-y-4">
+                        <h4 className="font-medium text-gray-700">Neue Wörter nach Datum:</h4>
+                        
+                        {wordsByDate.today.length > 0 && (
+                          <div className="bg-green-50 p-4 rounded-lg">
+                            <h5 className="font-medium text-green-800 mb-2">Heute ({wordsByDate.today.length} Wörter)</h5>
+                            <div className="flex flex-wrap gap-2">
+                              {wordsByDate.today.map((card: any, index: number) => (
+                                <Badge key={index} variant="secondary" className="bg-green-100 text-green-800">
+                                  <span dir="rtl" lang="ar">{card.arabic}</span> - {card.translation}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
+                        {wordsByDate.yesterday.length > 0 && (
+                          <div className="bg-blue-50 p-4 rounded-lg">
+                            <h5 className="font-medium text-blue-800 mb-2">Gestern ({wordsByDate.yesterday.length} Wörter)</h5>
+                            <div className="flex flex-wrap gap-2">
+                              {wordsByDate.yesterday.map((card: any, index: number) => (
+                                <Badge key={index} variant="secondary" className="bg-blue-100 text-blue-800">
+                                  <span dir="rtl" lang="ar">{card.arabic}</span> - {card.translation}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
+                        {wordsByDate.dayBeforeYesterday.length > 0 && (
+                          <div className="bg-purple-50 p-4 rounded-lg">
+                            <h5 className="font-medium text-purple-800 mb-2">Vorgestern ({wordsByDate.dayBeforeYesterday.length} Wörter)</h5>
+                            <div className="flex flex-wrap gap-2">
+                              {wordsByDate.dayBeforeYesterday.map((card: any, index: number) => (
+                                <Badge key={index} variant="secondary" className="bg-purple-100 text-purple-800">
+                                  <span dir="rtl" lang="ar">{card.arabic}</span> - {card.translation}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Practice Button */}
+                      <div className="text-center">
+                        <Button 
+                          onClick={() => setPracticeStarted(true)}
+                          size="lg"
+                          className="bg-orange-500 hover:bg-orange-600"
+                        >
+                          <Target className="w-5 h-5 mr-2" />
+                          Alle {recentWords.length} Wörter üben
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                }
+
+                // Practice mode active
                 return (
                   <div className="space-y-6">
-                    {/* Word Overview by Date */}
-                    <div className="space-y-4">
-                      <h4 className="font-medium text-gray-700">Neue Wörter nach Datum:</h4>
-                      
-                      {wordsByDate.today.length > 0 && (
-                        <div className="bg-green-50 p-4 rounded-lg">
-                          <h5 className="font-medium text-green-800 mb-2">Heute ({wordsByDate.today.length} Wörter)</h5>
-                          <div className="flex flex-wrap gap-2">
-                            {wordsByDate.today.map((card: any, index: number) => (
-                              <Badge key={index} variant="secondary" className="bg-green-100 text-green-800">
-                                {card.arabic} - {card.translation}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      
-                      {wordsByDate.yesterday.length > 0 && (
-                        <div className="bg-blue-50 p-4 rounded-lg">
-                          <h5 className="font-medium text-blue-800 mb-2">Gestern ({wordsByDate.yesterday.length} Wörter)</h5>
-                          <div className="flex flex-wrap gap-2">
-                            {wordsByDate.yesterday.map((card: any, index: number) => (
-                              <Badge key={index} variant="secondary" className="bg-blue-100 text-blue-800">
-                                {card.arabic} - {card.translation}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      
-                      {wordsByDate.dayBeforeYesterday.length > 0 && (
-                        <div className="bg-purple-50 p-4 rounded-lg">
-                          <h5 className="font-medium text-purple-800 mb-2">Vorgestern ({wordsByDate.dayBeforeYesterday.length} Wörter)</h5>
-                          <div className="flex flex-wrap gap-2">
-                            {wordsByDate.dayBeforeYesterday.map((card: any, index: number) => (
-                              <Badge key={index} variant="secondary" className="bg-purple-100 text-purple-800">
-                                {card.arabic} - {card.translation}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-                      )}
+                    {/* Challenge Words Display */}
+                    <div className="bg-orange-50 p-4 rounded-lg">
+                      <h4 className="font-medium text-orange-800 mb-2">
+                        Übungsfortschritt: {usedWords.size}/{currentChallengeWords.length} Wörter verwendet
+                      </h4>
+                      <div className="flex flex-wrap gap-2">
+                        {currentChallengeWords.map((word, index) => (
+                          <Badge 
+                            key={index} 
+                            variant={usedWords.has(word.word) ? "default" : "outline"}
+                            className={usedWords.has(word.word) ? "bg-green-500 text-white" : ""}
+                          >
+                            <span dir="rtl" lang="ar">{word.word}</span> - {word.translation}
+                          </Badge>
+                        ))}
+                      </div>
                     </div>
 
-                    {/* Practice Button */}
-                    <div className="text-center">
+                    {/* Practice Messages */}
+                    <div className="space-y-4 max-h-64 overflow-y-auto">
+                      {practiceMessages.map((message) => (
+                        <div
+                          key={message.id}
+                          className={`flex ${message.sender === "ME" ? "justify-end" : "justify-start"}`}
+                        >
+                          <div
+                            className={`max-w-[70%] p-3 rounded-lg ${
+                              message.sender === "ME"
+                                ? "bg-orange-500 text-white"
+                                : "bg-gray-100"
+                            }`}
+                          >
+                            <div className="font-medium">
+                              {renderArabicText(message.arabic)}
+                            </div>
+                            {message.translation && message.translation !== message.arabic && (
+                              <div className="text-sm opacity-75 mt-1">
+                                {message.translation}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Practice Input */}
+                    <div className="flex gap-2">
+                      <Input
+                        value={practiceInput}
+                        onChange={(e) => setPracticeInput(e.target.value)}
+                        placeholder="Verwende die Übungswörter in einem arabischen Satz..."
+                        onKeyPress={(e) => e.key === "Enter" && handlePracticeMessage(practiceInput)}
+                        disabled={isPracticeLoading}
+                        className="flex-1"
+                        dir="rtl"
+                      />
                       <Button 
-                        onClick={() => setPracticeStarted(true)}
-                        size="lg"
-                        className="bg-orange-500 hover:bg-orange-600"
+                        onClick={() => handlePracticeMessage(practiceInput)} 
+                        disabled={isPracticeLoading || !practiceInput.trim()}
                       >
-                        <Target className="w-5 h-5 mr-2" />
-                        Alle {recentWords.length} Wörter üben
+                        {isPracticeLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                       </Button>
                     </div>
                   </div>
@@ -526,6 +816,60 @@ export default function AiChat() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Word Analysis Popup */}
+      {selectedWord && (
+        <div 
+          className="fixed bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-50 max-w-sm"
+          style={{
+            left: selectedWord.position.x,
+            top: selectedWord.position.y + 10,
+          }}
+        >
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold text-lg" dir="rtl" lang="ar">{selectedWord.word}</h3>
+              <button
+                onClick={() => setSelectedWord(null)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="space-y-2">
+              <div>
+                <span className="text-sm font-medium text-gray-600">Übersetzung:</span>
+                <p className="text-gray-800">{isAnalyzing ? "Lade..." : selectedWord.translation}</p>
+              </div>
+              <div>
+                <span className="text-sm font-medium text-gray-600">Grammatik:</span>
+                <p className="text-gray-800">{isAnalyzing ? "Analysiere..." : selectedWord.grammar}</p>
+              </div>
+              
+              {selectedWord.examples && selectedWord.examples.length > 0 && (
+                <div>
+                  <span className="text-sm font-medium text-gray-600">Beispiele:</span>
+                  <ul className="text-sm text-gray-700">
+                    {selectedWord.examples.map((example, index) => (
+                      <li key={index} dir="rtl" lang="ar">• {example}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+            
+            <Button
+              onClick={addToFlashcards}
+              className="w-full bg-orange-500 hover:bg-orange-600"
+              disabled={isAnalyzing}
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Zu Lernkarten hinzufügen
+            </Button>
+          </div>
+        </div>
+      )}
       
       <div ref={messagesEndRef} />
     </div>
