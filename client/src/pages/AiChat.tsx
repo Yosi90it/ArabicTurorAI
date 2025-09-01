@@ -495,15 +495,20 @@ export default function AiChat() {
       while (isCallActive) {
         if (!isCallActive) break; // Double check for loop exit
         try {
+          console.log('Starting voice recording...');
           setVoiceState('recording');
           const audioBlob = await recordClip(5); // 5 seconds recording chunks
+          console.log('Audio recorded, blob size:', audioBlob.size);
           
           if (!isCallActive) break; // Exit if call ended during recording
           
           setVoiceState('transcribing');
+          console.log('Sending audio for transcription...');
           const transcription = await transcribe(audioBlob, 5000);
+          console.log('Transcription result:', transcription);
           
           if (!transcription.text.trim()) {
+            console.log('No speech detected, continuing...');
             // No speech detected, continue listening
             await new Promise(resolve => setTimeout(resolve, 500));
             continue;
@@ -519,7 +524,9 @@ export default function AiChat() {
           setMessages(prev => [...prev, userMessage]);
           
           setVoiceState('thinking');
+          console.log('Sending message to chat:', transcription.text);
           const chatResponse = await voiceChat(transcription.text);
+          console.log('Chat response received:', chatResponse);
           
           // Add AI response
           const aiMessage: Message = {
@@ -531,8 +538,10 @@ export default function AiChat() {
           setMessages(prev => [...prev, aiMessage]);
           
           setVoiceState('speaking');
+          console.log('Generating TTS for:', chatResponse.response);
           
           const ttsBlob = await tts(chatResponse.response);
+          console.log('TTS generated, blob size:', ttsBlob.size);
           
           // Play TTS response
           const url = URL.createObjectURL(ttsBlob);
@@ -551,6 +560,11 @@ export default function AiChat() {
           
         } catch (error) {
           console.error("Voice pipeline error:", error);
+          toast({
+            title: "❌ Fehler im Gespräch",
+            description: `${error.message || 'Unbekannter Fehler'}`,
+            variant: "destructive"
+          });
           // Continue listening even if there's an error
           await new Promise(resolve => setTimeout(resolve, 1000));
         }

@@ -47,7 +47,7 @@ export async function transcribe(blob: Blob, durationMs: number): Promise<{ text
   formData.append('audio', blob, 'audio.webm');
   formData.append('durationMs', durationMs.toString());
   
-  const response = await fetch('/api/transcribe', {
+  const response = await fetch('/api/voice/transcribe', {
     method: 'POST',
     headers: {
       'x-user-id': getAuthUserId() || ''
@@ -65,7 +65,7 @@ export async function transcribe(blob: Blob, durationMs: number): Promise<{ text
 }
 
 export async function chat(message: string): Promise<{ response: string; usage?: any }> {
-  const response = await fetch('/api/chat', {
+  const response = await fetch('/api/voice/chat', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -84,7 +84,7 @@ export async function chat(message: string): Promise<{ response: string; usage?:
 }
 
 export async function tts(text: string): Promise<Blob> {
-  const response = await fetch('/api/tts', {
+  const response = await fetch('/api/voice/tts', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

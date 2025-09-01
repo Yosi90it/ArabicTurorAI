@@ -1027,7 +1027,7 @@ Gib nur den arabischen Fließtext zurück, ohne Übersetzung oder Kommentare.`;
   });
 
   // Voice API Routes
-  app.use('/api', voiceRouter);
+  app.use('/api/voice', voiceRouter);
 
   // Starte geplante Push-Erinnerungen beim Server-Start
   PushNotificationService.startScheduledReminders();

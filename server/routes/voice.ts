@@ -114,6 +114,7 @@ router.post('/transcribe', upload.single('audio'), async (req: MulterRequest, re
 
 // Chat with GPT-4o-mini
 router.post('/chat', async (req: Request, res: Response) => {
+  console.log('Voice chat request received:', req.body);
   try {
     const { message } = req.body;
 
