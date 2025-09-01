@@ -459,10 +459,27 @@ export default function AiChat() {
     setSelectedWord(null);
   };
 
-  // Voice Pipeline Functions
+  // Voice Pipeline Functions - Continuous Phone Call
+  const [isCallActive, setIsCallActive] = useState(false);
+  
   const handleVoiceInput = async () => {
-    if (voiceState !== 'idle' && voiceState !== 'speaking') return;
-    
+    if (!isCallActive) {
+      // Start call
+      setIsCallActive(true);
+      setVoiceState('recording');
+      await startContinuousCall();
+    } else {
+      // End call
+      setIsCallActive(false);
+      setVoiceState('idle');
+      toast({
+        title: "📞 Anruf beendet",
+        description: "Gespräch wurde beendet.",
+      });
+    }
+  };
+
+  const startContinuousCall = async () => {
     try {
       // Stop any playing audio
       if (audioElement) {
@@ -470,108 +487,95 @@ export default function AiChat() {
         audioElement.currentTime = 0;
       }
       
-      setVoiceState('recording');
       toast({
-        title: "📞 Anruf gestartet",
-        description: `Sprechen Sie jetzt (${recordingDuration} Sekunden)...`,
+        title: "📞 Anruf aktiv",
+        description: "Sprechen Sie jetzt, wir hören zu...",
       });
       
-      const audioBlob = await recordClip(recordingDuration);
-      
-      setVoiceState('transcribing');
-      toast({
-        title: "Transkription läuft",
-        description: "Ihre Sprache wird verarbeitet...",
-      });
-      
-      const transcription = await transcribe(audioBlob, recordingDuration * 1000);
-      
-      if (!transcription.text.trim()) {
-        toast({
-          title: "Keine Sprache erkannt",
-          description: "Bitte versuchen Sie es erneut.",
-          variant: "destructive"
-        });
-        setVoiceState('idle');
-        return;
+      while (isCallActive) {
+        if (!isCallActive) break; // Double check for loop exit
+        try {
+          setVoiceState('recording');
+          const audioBlob = await recordClip(5); // 5 seconds recording chunks
+          
+          if (!isCallActive) break; // Exit if call ended during recording
+          
+          setVoiceState('transcribing');
+          const transcription = await transcribe(audioBlob, 5000);
+          
+          if (!transcription.text.trim()) {
+            // No speech detected, continue listening
+            await new Promise(resolve => setTimeout(resolve, 500));
+            continue;
+          }
+          
+          // Add user message
+          const userMessage: Message = {
+            id: messages.length + 1,
+            sender: "ME",
+            arabic: transcription.text,
+            translation: transcription.text
+          };
+          setMessages(prev => [...prev, userMessage]);
+          
+          setVoiceState('thinking');
+          const chatResponse = await voiceChat(transcription.text);
+          
+          // Add AI response
+          const aiMessage: Message = {
+            id: messages.length + 2,
+            sender: "AI", 
+            arabic: chatResponse.response,
+            translation: chatResponse.response
+          };
+          setMessages(prev => [...prev, aiMessage]);
+          
+          setVoiceState('speaking');
+          
+          const ttsBlob = await tts(chatResponse.response);
+          
+          // Play TTS response
+          const url = URL.createObjectURL(ttsBlob);
+          const audio = new Audio(url);
+          setAudioElement(audio);
+          
+          await audio.play();
+          
+          // Wait for audio to finish before continuing to listen
+          await new Promise(resolve => {
+            audio.onended = resolve;
+          });
+          
+          // Continue the conversation loop
+          await new Promise(resolve => setTimeout(resolve, 1000)); // Brief pause
+          
+        } catch (error) {
+          console.error("Voice pipeline error:", error);
+          // Continue listening even if there's an error
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
       }
       
-      // Add user message
-      const userMessage: Message = {
-        id: messages.length + 1,
-        sender: "ME",
-        arabic: transcription.text,
-        translation: transcription.text
-      };
-      setMessages(prev => [...prev, userMessage]);
-      
-      setVoiceState('thinking');
+    } catch (error) {
+      console.error("Continuous call error:", error);
       toast({
-        title: "KI denkt nach",
-        description: "Antwort wird generiert...",
-      });
-      
-      const chatResponse = await voiceChat(transcription.text);
-      
-      // Add AI response
-      const aiMessage: Message = {
-        id: messages.length + 2,
-        sender: "AI", 
-        arabic: chatResponse.response,
-        translation: chatResponse.response
-      };
-      setMessages(prev => [...prev, aiMessage]);
-      
-      setVoiceState('speaking');
-      toast({
-        title: "Antwort wird gesprochen",
-        description: "Audio wird generiert...",
-      });
-      
-      const audioBlob2 = await tts(chatResponse.response);
-      const audioUrl = URL.createObjectURL(audioBlob2);
-      
-      const audio = new Audio(audioUrl);
-      setAudioElement(audio);
-      
-      audio.onended = () => {
-        setVoiceState('idle');
-        URL.revokeObjectURL(audioUrl);
-      };
-      
-      await audio.play();
-      
-    } catch (error: any) {
-      console.error('Voice pipeline error:', error);
-      
-      let errorMessage = "Ein Fehler ist aufgetreten";
-      let errorDescription = "Bitte versuchen Sie es erneut";
-      
-      if (error.message?.includes('Daily usage limit exceeded')) {
-        errorMessage = "Tageslimit erreicht";
-        errorDescription = "Sie haben Ihr tägliches Sprachlimit erreicht";
-      } else if (error.message?.includes('429')) {
-        errorMessage = "Zu viele Anfragen";
-        errorDescription = "Bitte warten Sie einen Moment";
-      }
-      
-      toast({
-        title: errorMessage,
-        description: errorDescription,
+        title: "Fehler im Sprachchat",
+        description: "Bitte versuchen Sie es erneut.",
         variant: "destructive"
       });
-      
+      setIsCallActive(false);
       setVoiceState('idle');
     }
   };
 
   const getVoiceButtonText = () => {
+    if (!isCallActive) return '';
     switch (voiceState) {
-      case 'recording': return '📞 Gespräch läuft...';
+      case 'recording': return '📞 Zuhören aktiv...';
       case 'transcribing': return '🔄 Verarbeitung...';
       case 'thinking': return '🤔 KI denkt nach...';
-      case 'speaking': return '🗣️ KI antwortet...';
-      default: return '';
+      case 'speaking': return '🗣️ KI spricht...';
+      default: return '📞 Anruf aktiv...';
     }
   };
 

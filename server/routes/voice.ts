@@ -74,7 +74,7 @@ router.post('/transcribe', upload.single('audio'), async (req: MulterRequest, re
     const transcription = await openai.audio.transcriptions.create({
       file: createReadStream(tempFilePath),
       model: 'whisper-1',
-      language: 'de' // German language
+      language: 'ar' // Arabic language for proper recognition
     });
 
     // Update daily usage
@@ -126,7 +126,7 @@ router.post('/chat', async (req: Request, res: Response) => {
       messages: [
         {
           role: 'system',
-          content: 'Du bist ein hilfreicher Arabisch-Lernassistent. Antworte kurz und prägnant auf Deutsch.'
+          content: 'أنت مساعد تعليم اللغة العربية المفيد. أجب بوضوح وإيجاز باللغة العربية الفصحى. استخدم تشكيلاً كاملاً لمساعدة المتعلمين.'
         },
         {
           role: 'user',

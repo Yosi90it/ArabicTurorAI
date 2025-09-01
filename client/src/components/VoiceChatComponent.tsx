@@ -71,13 +71,15 @@ export default function VoiceChatComponent({
         {onVoiceInput && (
           <Button
             onClick={onVoiceInput}
-            disabled={isLoading || voiceState !== 'idle'}
-            variant="outline"
+            disabled={isLoading}
+            variant={voiceState === 'idle' ? "outline" : "destructive"}
             className={`px-4 ${voiceState === 'speaking' ? 'bg-green-50 border-green-300' : ''}`}
-            title="Sprachanruf starten"
+            title={voiceState === 'idle' ? "Anruf starten" : "Anruf beenden"}
           >
             {voiceState === 'idle' ? (
               <Phone className="w-4 h-4 text-green-600" />
+            ) : voiceState === 'recording' || voiceState === 'transcribing' || voiceState === 'thinking' || voiceState === 'speaking' ? (
+              <Phone className="w-4 h-4 text-white" />
             ) : (
               <Loader2 className="w-4 h-4 animate-spin" />
             )}
