@@ -20,6 +20,7 @@ interface Message {
   sender: "ME" | "AI";
   arabic: string;
   translation: string;
+  chunks?: string[];
 }
 
 interface WordInfo {
@@ -184,29 +185,32 @@ export default function AiChat() {
     }
   };
 
-  const addVoiceMessageToFlashcards = (message: Message) => {
+  const showPhraseSelector = (message: Message) => {
     // Split by commas and periods to create meaningful chunks
     const chunks = message.arabic
       .split(/[،。,.]/) // Split by Arabic and English punctuation
       .map(chunk => chunk.trim())
       .filter(chunk => chunk.length > 0);
 
-    let wordsAdded = 0;
-    chunks.forEach((chunk, index) => {
-      if (chunk.length > 0) {
-        addFlashcard(
-          chunk, 
-          `Teil ${index + 1} aus Voice-Chat`,
-          "Phrase"
-        );
-        wordsAdded++;
-      }
+    setSelectedVoiceMessage({
+      ...message,
+      chunks: chunks
+    });
+  };
+
+  const addSelectedPhrasesToFlashcards = (selectedPhrases: string[]) => {
+    selectedPhrases.forEach((phrase, index) => {
+      addFlashcard(
+        phrase, 
+        `Voice-Chat Phrase`,
+        "Phrase"
+      );
     });
 
-    updateProgress('word', { word: message.arabic });
+    updateProgress('word', { word: selectedPhrases.join(' ') });
     toast({
-      title: "Phrasen zu Lernkarten hinzugefügt!",
-      description: `${wordsAdded} sinnvolle Phrasen aus der Voice-Nachricht erstellt.`,
+      title: "Ausgewählte Phrasen hinzugefügt!",
+      description: `${selectedPhrases.length} Phrasen zu Lernkarten hinzugefügt.`,
     });
     setSelectedVoiceMessage(null);
   };
@@ -610,11 +614,11 @@ export default function AiChat() {
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => addVoiceMessageToFlashcards(message)}
+                              onClick={() => showPhraseSelector(message)}
                               className="text-xs"
                             >
                               <Plus className="w-3 h-3 mr-1" />
-                              Phrasen hinzufügen
+                              Phrasen auswählen
                             </Button>
                           </div>
                         )}
@@ -897,6 +901,65 @@ export default function AiChat() {
               <Plus className="w-4 h-4 mr-2" />
               Zu Lernkarten hinzufügen
             </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Voice Message Phrase Selector */}
+      {selectedVoiceMessage && selectedVoiceMessage.chunks && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-bold text-lg">Phrasen auswählen</h3>
+              <button
+                onClick={() => setSelectedVoiceMessage(null)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                ×
+              </button>
+            </div>
+            
+            <p className="text-sm text-gray-600 mb-4">
+              Wählen Sie die Phrasen aus, die Sie zu Ihren Lernkarten hinzufügen möchten:
+            </p>
+            
+            <div className="space-y-2 mb-4 max-h-64 overflow-y-auto">
+              {selectedVoiceMessage.chunks.map((chunk, index) => (
+                <label key={index} className="flex items-start gap-2 p-2 border rounded hover:bg-gray-50">
+                  <input
+                    type="checkbox"
+                    className="mt-1"
+                    defaultChecked={true}
+                    id={`phrase-${index}`}
+                  />
+                  <span className="text-sm" dir="rtl" lang="ar">{removeTashkeel(chunk)}</span>
+                </label>
+              ))}
+            </div>
+            
+            <div className="flex gap-2">
+              <Button
+                onClick={() => {
+                  const checkboxes = document.querySelectorAll('input[id^="phrase-"]:checked') as NodeListOf<HTMLInputElement>;
+                  const selectedPhrases = Array.from(checkboxes).map((checkbox, idx) => {
+                    const index = parseInt(checkbox.id.split('-')[1]);
+                    return selectedVoiceMessage.chunks![index];
+                  });
+                  addSelectedPhrasesToFlashcards(selectedPhrases);
+                }}
+                className="flex-1 bg-orange-500 hover:bg-orange-600"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Ausgewählte hinzufügen
+              </Button>
+              <Button
+                onClick={() => setSelectedVoiceMessage(null)}
+                variant="outline"
+                className="flex-1"
+              >
+                Abbrechen
+              </Button>
+            </div>
           </div>
         </div>
       )}

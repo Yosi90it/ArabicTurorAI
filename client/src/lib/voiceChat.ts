@@ -44,6 +44,15 @@ export class ContinuousVoiceChat {
 
   setTtsSpeed(speed: number) {
     this.ttsSpeed = speed;
+    // Stop current audio if playing and restart with new speed
+    if (this.currentAudio && !this.currentAudio.paused) {
+      this.currentAudio.pause();
+      this.currentAudio = null;
+    }
+  }
+
+  getCurrentSpeed(): number {
+    return this.ttsSpeed;
   }
 
   async startConversation() {
@@ -222,9 +231,9 @@ export class ContinuousVoiceChat {
       
       this.onMessage?.({ sender: 'ai', text: aiResponse });
       
-      // Convert to speech and play with custom speed
+      // Convert to speech and play with current speed
       this.updateStatus('🗣️ KI spricht...');
-      await this.speakResponse(aiResponse, this.ttsSpeed || 0.8);
+      await this.speakResponse(aiResponse, this.getCurrentSpeed());
       
       // Continue listening
       this.updateStatus('Bereit - Sprechen Sie!');
