@@ -379,64 +379,239 @@ export const listeningVideoData = {
       german: "Also ich"
     },
     {
-      timestamp: "5:39", 
+      timestamp: "5:39",
       arabic: "حَالِيًّا لَا أَقْرَأُ بِالعَرَبِيَّةِ إِلَّا",
       german: "lese zur Zeit nur selten auf Arabisch"
     },
     {
-      timestamp: "5:46",
-      arabic: "وَالأَسْرَعَ لِذَلِكَ الِاسْتِمَاعُ مُهِمٌّ جِدًّا وَيَنْبَغِي عَلَيْكَ",
-      german: "und den schnellsten. Deshalb ist das Zuhören sehr wichtig und du solltest"
+      timestamp: "5:43",
+      arabic: "نَادِرًا وَلَكِنَّنِي أَقْضِي وَقْتًا",
+      german: "aber ich verbringe viel Zeit"
     },
     {
-      timestamp: "5:53",
-      arabic: "أَنْ تَسْتَمِعَ كُلَّ يَوْمٍ وَلَوْ عَشْرَ دَقَائِقَ",
-      german: "jeden Tag zuhören, und sei es auch nur zehn Minuten"
+      timestamp: "5:47",
+      arabic: "كَثِيرًا عَلَى اليُوتُيوبِ أَوْ فِي اليُوتُيوبِ وَأَنَا",
+      german: "auf YouTube, und ich"
     },
     {
-      timestamp: "5:58",
-      arabic: "كُلَّ يَوْمٍ عَشْرَ دَقَائِقَ سَتَرَى نَتِيجَةً مُبْهَرَةً",
-      german: "Jeden Tag zehn Minuten, du wirst erstaunliche Ergebnisse sehen"
+      timestamp: "5:52",
+      arabic: "أُشَاهِدُ مُحَاضَرَاتٍ لِقَاءَاتٍ",
+      german: "schaue Vorlesungen und Gespräche"
     },
     {
-      timestamp: "6:06",
-      arabic: "بَعْدَ سَنَةٍ مِنَ الِاسْتِمَاعِ لِكُلِّ يَوْمٍ عَشْرَ دَقَائِقَ",
-      german: "nach einem Jahr des Zuhörens, jeden Tag zehn Minuten"
+      timestamp: "5:56",
+      arabic: "مُقَابَلَاتٍ بَرَامِجَ",
+      german: "Interviews und Programme"
     },
     {
-      timestamp: "6:14",
-      arabic: "لِذَلِكَ أَنَا أَنْصَحُكَ بِأَنْ تَسْتَمِعَ وَتَسْتَمِعَ وَتَسْتَمِعَ",
-      german: "Deshalb rate ich dir zu zuhören und zu zuhören und zu zuhören"
+      timestamp: "6:00",
+      arabic: "وَثَائِقِيَّةً أَشْيَاءَ كَثِيرَةً الحَمْدُ لِلَّهِ أَسْتَفِيدُ مِنْ",
+      german: "Dokumentationen, viele Dinge, Gott sei Dank profitiere ich von"
+    },
+    {
+      timestamp: "6:03",
+      arabic: "اليُوتُيوبِ اسْتِفَادَةً",
+      german: "YouTube sehr"
+    },
+    {
+      timestamp: "6:08",
+      arabic: "عَظِيمَةً وَأَسْتَطِيعُ أَنْ أَجْزِمَ أَنَّ",
+      german: "stark und ich kann mit Sicherheit sagen, dass"
+    },
+    {
+      timestamp: "6:13",
+      arabic: "٩٠٪ مِنْ",
+      german: "90% meiner"
+    },
+    {
+      timestamp: "6:16",
+      arabic: "مَعْلُومَاتِي أَخَذْتُهَا مِنْ اليُوتُيوبِ أَخَذْتُهَا مِنْ",
+      german: "Informationen habe ich von YouTube, von"
     },
     {
       timestamp: "6:21",
-      arabic: "وَلَيْسَ المُهِمُّ أَنْ تَفْهَمَ كُلَّ شَيْءٍ المُهِمُّ أَنْ تَعْتَادَ",
-      german: "Und es ist nicht wichtig, dass du alles verstehst, wichtig ist, dass du dich gewöhnst"
+      arabic: "اليُوتُيوبِ أَعْنِي أَخَذْتُهَا مِنْ مُحَاضَرَاتٍ مَرْئِيَّةٍ",
+      german: "YouTube, ich meine von Videovorlesungen"
     },
     {
-      timestamp: "6:28",
-      arabic: "عَلَى سَمَاعِ اللُّغَةِ وَتَعَرُّفِ أَصْوَاتِهَا وَتَرْكِيبِهَا",
-      german: "an das Hören der Sprache und das Erkennen ihrer Laute und Strukturen"
+      timestamp: "6:26",
+      arabic: "وَمِنْ",
+      german: "und von"
+    },
+    {
+      timestamp: "6:27",
+      arabic: "المُقَابَلَاتِ وَمِنْ الأَخْبَارِ وَمِنْ البَرَامِجِ",
+      german: "Interviews und von Nachrichten und von Programmen"
+    },
+    {
+      timestamp: "6:30",
+      arabic: "الوَثَائِقِيَّةِ وَمِنْ",
+      german: "Dokumentationen und von"
+    },
+    {
+      timestamp: "6:32",
+      arabic: "الدُّرُوسِ الموْجُودَةِ عَلَى",
+      german: "den Lektionen auf"
+    },
+    {
+      timestamp: "6:34",
+      arabic: "اليُوتُيوبِ لِذَلِكَ يَا إِخْوَانِي",
+      german: "YouTube. Deshalb, meine Brüder"
     },
     {
       timestamp: "6:37",
-      arabic: "وَسَيَأْتِي يَوْمٌ تَجِدُ فِيهِ أَنَّكَ تَفْهَمُ بِدُونِ تَرْجَمَةٍ",
-      german: "Und es wird ein Tag kommen, an dem du merkst, dass du ohne Übersetzung verstehst"
+      arabic: "الكِرَامِ مِنْ الضَّرُورِيِّ",
+      german: "und Schwestern, es ist unbedingt notwendig"
     },
     {
-      timestamp: "6:45",
-      arabic: "وَبِدُونِ قَامُوسٍ هَذَا هُوَ السِّرُّ فِي الِاسْتِمَاعِ",
-      german: "und ohne Wörterbuch. Das ist das Geheimnis des Zuhörens"
+      timestamp: "6:40",
+      arabic: "جِدًّا أَنْ تُطَوِّرُوا مَهَارَةَ",
+      german: "dass ihr die Fertigkeit des"
+    },
+    {
+      timestamp: "6:44",
+      arabic: "الِاسْتِمَاعِ لِأَنَّهَا سَوْفَ تُفِيدُكُمْ إِفَادَةً",
+      german: "Zuhörens entwickelt, denn sie wird euch sehr"
     },
     {
       timestamp: "6:51",
-      arabic: "لِذَلِكَ اجْعَلْ لَكَ وَقْتًا ثَابِتًا لِهَذِهِ العَادَةِ",
-      german: "Deshalb plane dir feste Zeit für diese Gewohnheit ein"
+      arabic: "كَبِيرَةً انْتَ تَقْرَأُ كِتَابًا تَحْتَاجُ إِلَى مَكَانٍ",
+      german: "nutzen. Du liest ein Buch, du brauchst einen Ort"
     },
     {
-      timestamp: "6:58",
-      arabic: "وَسَتَشْكُرُنِي بَعْدَ عَامٍ أَوْ عَامَيْنِ إِنْ شَاءَ اللَّهُ",
-      german: "Und du wirst mir nach einem oder zwei Jahren danken, so Gott will"
+      timestamp: "6:56",
+      arabic: "هَادِئٍ إِلَى وَقْتٍ",
+      german: "der ruhig ist, eine Zeit"
+    },
+    {
+      timestamp: "6:59",
+      arabic: "مُخَصَّصٍ",
+      german: "die speziell dafür reserviert ist"
+    },
+    {
+      timestamp: "7:00",
+      arabic: "إِلَى يَعْنِي إِلَى ظُرُوفٍ",
+      german: "also bestimmte Umstände"
+    },
+    {
+      timestamp: "7:04",
+      arabic: "مُعَيَّنَةٍ أَمَّا الِاسْتِمَاعُ فَتَسْتَطِيعُ أَنْ تَسْتَمِعَ إِلَى",
+      german: "Aber beim Zuhören kannst du zuhören"
+    },
+    {
+      timestamp: "7:09",
+      arabic: "مُحَاضَرَةٍ وَأَنْتَ تَقُودُ السَّيَّارَةَ وَأَنْتَ تُمَارِسُ",
+      german: "einer Vorlesung während du Auto fährst und während du"
+    },
+    {
+      timestamp: "7:12",
+      arabic: "الرِّيَاضَةَ وَأَنْتَ تَذْهَبُ إِلَى الجَامِعَةِ وَهَكَذَا",
+      german: "Sport treibst und während du zur Universität gehst und so weiter"
+    },
+    {
+      timestamp: "7:18",
+      arabic: "لِذَلِكَ فِي هَذَا الزَّمَانِ نَحْنُ بِحَاجَةٍ",
+      german: "Deshalb brauchen wir in dieser Zeit dringend"
+    },
+    {
+      timestamp: "7:23",
+      arabic: "مَاسَّةٍ إِلَى مَهَارَةِ",
+      german: "die Fertigkeit des"
+    },
+    {
+      timestamp: "7:27",
+      arabic: "الِاسْتِمَاعِ وَالآنَ السُّؤَالُ الَّذِي يَطْرَحُ",
+      german: "Zuhörens. Und jetzt die Frage, die sich"
+    },
+    {
+      timestamp: "7:31",
+      arabic: "نَفْسَهُ كَيْفَ نُطَوِّرُ مَهَارَةَ",
+      german: "stellt: Wie entwickeln wir die Fertigkeit des"
+    },
+    {
+      timestamp: "7:38",
+      arabic: "الِاسْتِمَاعِ كَثِيرٌ مِنَ النَّاسِ عِنْدَمَا يَسْتَمِعُونَ إِلَى",
+      german: "Zuhörens? Viele Menschen, wenn sie"
+    },
+    {
+      timestamp: "7:42",
+      arabic: "كَلَامِي",
+      german: "meiner Rede zuhören"
+    },
+    {
+      timestamp: "7:44",
+      arabic: "يَفْهَمُونَهُ وَلَكِنْ عِنْدَمَا يَسْتَمِعُونَ إِلَى كَلَامِ",
+      german: "verstehen sie es, aber wenn sie der Rede"
+    },
+    {
+      timestamp: "7:48",
+      arabic: "الْعَرَبِ لَا يَفْهَمُونَ إِلَّا قَلِيلًا",
+      german: "der Araber zuhören, verstehen sie nur wenig"
+    },
+    {
+      timestamp: "7:51",
+      arabic: "مِنْهُ وَالسُّؤَالُ لِمَاذَا؟ هَلْ أَنَا أَتَكَلَّمُ بِلُغَةٍ",
+      german: "davon. Und die Frage ist: warum? Spreche ich eine Sprache"
+    },
+    {
+      timestamp: "7:55",
+      arabic: "تَخْتَلِفُ عَنْ لُغَةِ الْعَرَبِ؟ لَا أَنَا أَتَكَلَّمُ بِاللُّغَةِ",
+      german: "die sich von der Sprache der Araber unterscheidet? Nein, ich spreche"
+    },
+    {
+      timestamp: "8:01",
+      arabic: "الْعَرَبِيَّةِ وَمَا الْفَرْقُ إِذًا؟ الْفَرْقُ أَنَّنِي عِنْدَمَا",
+      german: "Arabisch. Was ist also der Unterschied? Der Unterschied ist, dass ich, wenn ich"
+    },
+    {
+      timestamp: "8:06",
+      arabic: "أَتَكَلَّمُ أَسْتَخْدِمُ لُغَةً",
+      german: "spreche, eine Sprache verwende"
+    },
+    {
+      timestamp: "8:09",
+      arabic: "بَسِيطَةً وَأَتَكَلَّمُ بِسُرْعَةٍ",
+      german: "die einfach ist und ich spreche mit einer Geschwindigkeit"
+    },
+    {
+      timestamp: "8:13",
+      arabic: "مُتَوَسِّطَةٍ لِأَنَّنِي",
+      german: "die mittelmäßig ist, weil ich"
+    },
+    {
+      timestamp: "8:16",
+      arabic: "أُرَاعِي",
+      german: "berücksichtige"
+    },
+    {
+      timestamp: "8:18",
+      arabic: "حَالَكُمْ أُرَاعِي",
+      german: "euren Zustand, ich berücksichtige"
+    },
+    {
+      timestamp: "8:22",
+      arabic: "مُسْتَوَيَاتِكُمْ لِأَنَّنِي أَعْلَمُ أَنَّكُمْ مَا زِلْتُمْ فِي",
+      german: "eure Niveaus, weil ich weiß, dass ihr noch"
+    },
+    {
+      timestamp: "8:27",
+      arabic: "مُنْتَصَفِ الطَّرِيقِ أَوْ فِي بِدَايَةِ",
+      german: "in der Mitte des Weges oder am Anfang"
+    },
+    {
+      timestamp: "8:31",
+      arabic: "الطَّرِيقِ لِذَا إِذَا بَدَأْتُ أَتَكَلَّمُ بِلُغَةٍ سَرِيعَةٍ",
+      german: "des Weges seid. Wenn ich also anfangen würde, schnell zu sprechen"
+    },
+    {
+      timestamp: "8:35",
+      arabic: "وَإِذَا بَدَأْتُ أَتَكَلَّمُ كَمَا أَتَكَلَّمُ مَعَ الْعَرَبِ فَلَنْ",
+      german: "und wenn ich anfangen würde zu sprechen, wie ich mit Arabern spreche, dann würdet ihr"
+    },
+    {
+      timestamp: "8:40",
+      arabic: "تَفْهَمُوا كَلَامِي",
+      german: "meine Rede nicht verstehen"
     }
   ]
 };
