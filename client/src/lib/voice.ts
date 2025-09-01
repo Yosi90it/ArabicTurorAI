@@ -1,7 +1,9 @@
 // Voice API functions for non-realtime voice pipeline
 
 export async function recordClip(seconds: number): Promise<Blob> {
+  console.log(`Starting ${seconds}s recording...`);
   const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  console.log('MediaStream obtained:', stream.getTracks().length, 'tracks');
   
   // Check for webm support, fallback to mp4
   let mimeType = 'audio/webm;codecs=opus';
@@ -21,6 +23,7 @@ export async function recordClip(seconds: number): Promise<Blob> {
     
     mediaRecorder.onstop = () => {
       const blob = new Blob(chunks, { type: mimeType });
+      console.log('Recording completed, blob size:', blob.size, 'bytes');
       // Stop all tracks to release microphone
       stream.getTracks().forEach(track => track.stop());
       resolve(blob);

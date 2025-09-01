@@ -463,19 +463,39 @@ export default function AiChat() {
   const [isCallActive, setIsCallActive] = useState(false);
   
   const handleVoiceInput = async () => {
-    if (!isCallActive) {
-      // Start call
-      setIsCallActive(true);
-      setVoiceState('recording');
-      await startContinuousCall();
-    } else {
-      // End call
+    console.log('Voice input clicked, current state:', isCallActive);
+    try {
+      if (!isCallActive) {
+        // Test microphone permission first
+        console.log('Testing microphone access...');
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        console.log('Microphone access granted');
+        stream.getTracks().forEach(track => track.stop()); // Clean up test stream
+        
+        // Start call
+        console.log('Starting continuous call...');
+        setIsCallActive(true);
+        setVoiceState('recording');
+        await startContinuousCall();
+      } else {
+        // End call
+        console.log('Ending call...');
+        setIsCallActive(false);
+        setVoiceState('idle');
+        toast({
+          title: "📞 Anruf beendet",
+          description: "Gespräch wurde beendet.",
+        });
+      }
+    } catch (error) {
+      console.error('Voice input error:', error);
+      toast({
+        title: "❌ Mikrofon-Fehler",
+        description: `Fehler beim Zugriff auf das Mikrofon: ${error.message}`,
+        variant: "destructive"
+      });
       setIsCallActive(false);
       setVoiceState('idle');
-      toast({
-        title: "📞 Anruf beendet",
-        description: "Gespräch wurde beendet.",
-      });
     }
   };
 
